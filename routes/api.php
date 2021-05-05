@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,7 +21,7 @@ Route::post("/login",[UserController::class,"login"]);
 Route::middleware('auth:api')->group(function (){
     Route::group(['prefix'=>'/user'],function(){
         Route::get("",[UserController::class,"index"]);
-        Route::post("/updatepicture",[UserController::class,"updateAvatar"]);
+        Route::post("/avatar/update",[UserController::class,"updateAvatar"]);
         Route::post("/logout",[UserController::class,"logout"]);
         //Route::post("add",[ReviewController::class,"addReview"]);
     });});
