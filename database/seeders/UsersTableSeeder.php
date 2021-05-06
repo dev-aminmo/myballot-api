@@ -17,14 +17,14 @@ class UsersTableSeeder extends Seeder
         //
       $user=  User::create([
       'name'=>"mo amin",
-'email'=>"momo@gmail.com",
-'password'=>bcrypt('123456'),]
+      'email'=>"momo@gmail.com",
+      'password'=>bcrypt('123456'),]
         );
-      $user->attachRole('admin');
+      $user->attachRole('organizer');
       $user=  User::create([
       'name'=>"molacha",
-'email'=>"movoter@gmail.com",
-'password'=>bcrypt('123456'),]
+      'email'=>"movoter@gmail.com",
+      'password'=>bcrypt('123456'),]
         );
       $user->attachRole('voter');
     }

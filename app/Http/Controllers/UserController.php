@@ -58,8 +58,8 @@ class UserController extends Controller
         if($deatails['avatar']==""){
             $deatails['avatar']="place_holder.jpg" ;
         }
-        if(auth()->user()->hasRole("admin")){
-            $deatails['role']='admin';
+        if(auth()->user()->hasRole("organizer")){
+            $deatails['role']='organizer';
         }else{
             $deatails['role']='voter';
         }
