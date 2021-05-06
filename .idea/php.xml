@@ -125,6 +125,8 @@
       <path value="$PROJECT_DIR$/vendor/cloudinary-labs/cloudinary-laravel" />
       <path value="$PROJECT_DIR$/vendor/teapot/status-code" />
       <path value="$PROJECT_DIR$/vendor/cloudinary/cloudinary_php" />
+      <path value="$PROJECT_DIR$/vendor/kkszymanowski/traitor" />
+      <path value="$PROJECT_DIR$/vendor/santigarcor/laratrust" />
     </include_path>
   </component>
   <component name="PhpUnit">
