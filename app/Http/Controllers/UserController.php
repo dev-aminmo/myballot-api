@@ -23,6 +23,7 @@ class UserController extends Controller
             $allData = $request->all();
             $allData['password'] = bcrypt($allData['password']);
             $newUser = User::create($allData);
+            $newUser->attachRole("voter");
             $tokenStr = $newUser->createToken('api-application')->accessToken;
             $resArr["token"] = $tokenStr;
             $resArr["status code"] = 201;
@@ -52,11 +53,17 @@ class UserController extends Controller
     }
     public function index()
     {
-        $deatails=auth()->user();
+     // echo auth()->user()->with("roles");die;
+      $deatails=auth()->user();
         if($deatails['avatar']==""){
             $deatails['avatar']="place_holder.jpg" ;
         }
-        return response()->json(['user'=> $deatails],200);
+        if(auth()->user()->hasRole("admin")){
+            $deatails['role']='admin';
+        }else{
+            $deatails['role']='voter';
+        }
+        return response()->json(['data'=>$deatails,'message'=>'success'],200);
     }
     public function updateAvatar(Request $request){
         try{
