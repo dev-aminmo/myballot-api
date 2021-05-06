@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class LaratrustSetupTables extends Migration
@@ -21,6 +22,15 @@ class LaratrustSetupTables extends Migration
             $table->string('description')->nullable();
             $table->timestamps();
         });
+        DB::table('roles')->insert(['name'=>'organizer',
+            'display_name'=>"organizer",
+            'description'=>"can manage elections,polls",
+        ]);
+        DB::table('roles')->insert([
+            'name'=>"voter",
+            'display_name'=>"voter",
+            'description'=>"can vote",
+        ]);
 
         // Create table for storing permissions
         Schema::create('permissions', function (Blueprint $table) {
