@@ -3,7 +3,7 @@
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\ElectionController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -24,4 +24,9 @@ Route::middleware('auth:api')->group(function (){
         Route::post("/avatar/update",[UserController::class,"updateAvatar"]);
         Route::post("/logout",[UserController::class,"logout"]);
         //Route::post("add",[ReviewController::class,"addReview"]);
-    });});
+    });
+    Route::middleware('role:organizer')->group(function (){
+    Route::post("/election/create",[ElectionController::class,"create"]);
+    });
+
+});

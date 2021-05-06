@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-
-    return view('welcome');
+return response()->json([
+    'message' => 'User does not have any of the necessary access rights.',
+    'code' => 403
+],403);
+   // return view('welcome');
 });

@@ -17,7 +17,7 @@ class UserController extends Controller
             'password' => 'required|min:6',
         ]);
         if ($validation->fails()) {
-            return response()->json($validation->errors(), 202);
+            return response()->json($validation->errors(), 422);
         }
         try{
             $allData = $request->all();
@@ -78,7 +78,7 @@ class UserController extends Controller
                 ]
             );
             if($validation->fails()) {
-                return response()->json($validation->errors(), 202);
+                return response()->json($validation->errors(), 422);
             }
             $id= auth()->user()['id'];
             $response = cloudinary()->upload($request->file('file')->getRealPath(),[
