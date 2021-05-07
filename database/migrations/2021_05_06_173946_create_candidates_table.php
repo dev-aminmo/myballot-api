@@ -18,8 +18,8 @@ class CreateCandidatesTable extends Migration
             $table->string('name');
             $table->string('description')->nullable();
             $table->string('picture',255);
-           // $table->bigInteger('party_id')->unsigned();
-            //$table->foreign("party_id")->references('id')->on("parties");
+            $table->bigInteger('party_id')->unsigned();
+           $table->foreign("party_id")->references('id')->on("parties");
         });
     }
 
