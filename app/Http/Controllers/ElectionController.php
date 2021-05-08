@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Candidate;
 use App\Models\Election;
+use App\Models\Party;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
@@ -18,7 +20,6 @@ class ElectionController extends Controller
         }
             $todayDate =Carbon::now();
         $todayDate = $todayDate->setTimezone($request->timezone);
-echo $todayDate;
         $validation =  Validator::make($request->all(), [
             'timezone'=> 'integer|min:-12|max:+14',
             'start_date'    => 'required|date|date_format:Y-m-d H:i|after_or_equal:'.$todayDate,
@@ -46,16 +47,13 @@ echo $todayDate;
                 $candidates_count += count(  $party['candidates']);
             }
         }
-        echo ($candidates_count);
         if ($candidates_count<2) {
             return response()->json([
                 'message'=>"the minimum number of candidates is 2",
                     'code'=>'422'] ,422);
         }
-        //echo (count($request->free_candidates));
-        die;
-            $start = Carbon::parse($request->start_date);
-            $end = Carbon::parse($request->end_date);
+        $start = Carbon::parse($request->start_date);
+        $end = Carbon::parse($request->end_date);
         $diff_in_minutes = $end->diffInMinutes($start);
         if ($diff_in_minutes < 5)  {
             return response()->json([
@@ -67,12 +65,38 @@ echo $todayDate;
             $id= auth()->user()['id'];
             $allData = $request->all();
             $allData['organizer_id']=$id;
-            Election::create($allData);
-            $data = ['message' => 'election created successfully'];
+            $election_id=Election::create($allData)->id;
+
+            if (!empty($request->parties)) {
+                foreach($request->parties as $party){
+                  $party_id = Party::create(['name'=> $party['name'],
+                      'election_id'=>$election_id])->id;
+                    foreach($party['candidates']as $candidate){
+                        Candidate::create([
+                        'name'=> $candidate['name'],
+                         'description'=>(!empty($candidate['description'])) ? $candidate['description'] : null,
+                         'party_id'=>$party_id,
+                         'election_id'=>$election_id,
+                            ]
+                    );
+                }
+                }
+            }
+            if (!empty($request->free_candidates)) {
+                foreach($request->free_candidates as $candidate){
+                    Candidate::create([
+                            'name'=> $candidate['name'],
+                            'description'=>(!empty($candidate['description'])) ? $candidate['description'] : null,
+                            'election_id'=>$election_id,
+                        ]
+                    );
+                }
+            }
+            $data = ['message' => 'election created successfully','code'=>201];
             return Response()->json($data,201);
         }catch ( \Exception  $exception){
-            $response['error']="an error has occured";
-            return response()->json($response, 400);
+            $response['error']=$exception;
+            return response()->json($exception->getTrace(), 400);
         }
     }
 }

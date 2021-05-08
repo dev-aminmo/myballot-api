@@ -17,10 +17,12 @@ class CreateCandidatesTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('description',400)->nullable();
-            $table->string('picture',255);
+            $table->string('picture',255)->nullable();
             $table->bigInteger('party_id')->nullable()->unsigned();
+            $table->bigInteger('election_id')->unsigned();
             //$table->bigInteger('party_id')->unsigned();
            $table->foreign("party_id")->references('id')->on("parties");
+           $table->foreign("election_id")->references('id')->on("elections");
         });
     }
 

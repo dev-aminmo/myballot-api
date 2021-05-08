@@ -17,6 +17,9 @@ class CreatePartiesTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('picture',255)->nullable();
+            $table->bigInteger('election_id')->unsigned();
+            $table->foreign("election_id")->references('id')->on("elections");
+
         });
     }
 
