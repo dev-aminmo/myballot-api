@@ -4,6 +4,8 @@ use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ElectionController;
+use \App\Http\Controllers\PartyController;
+use App\Http\Controllers\CandidateController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -27,6 +29,8 @@ Route::middleware('auth:api')->group(function (){
     });
     Route::middleware('role:organizer')->group(function (){
     Route::post("/election/create",[ElectionController::class,"create"]);
+    Route::post("/party/create",[PartyController::class,"create"]);
+    Route::post("/candidate/create",[CandidateController::class,"create"]);
     });
 
 });
