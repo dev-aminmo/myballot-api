@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePartiesTable extends Migration
+class CreateFreeCandidatesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,10 @@ class CreatePartiesTable extends Migration
      */
     public function up()
     {
-        Schema::create('parties', function (Blueprint $table) {
+        Schema::create('free_candidates', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('description',400)->nullable();
             $table->string('picture',255)->nullable();
             $table->bigInteger('election_id')->unsigned();
             $table->foreign("election_id")->references('id')->on("elections")->onDelete('cascade');
@@ -29,6 +30,6 @@ class CreatePartiesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('parties');
+        Schema::dropIfExists('free_candidates');
     }
 }

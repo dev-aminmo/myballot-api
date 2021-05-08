@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Candidate;
 use App\Models\Election;
+use App\Models\FreeCandidate;
+use App\Models\PartisanCandidate;
 use App\Models\Party;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -72,11 +73,10 @@ class ElectionController extends Controller
                   $party_id = Party::create(['name'=> $party['name'],
                       'election_id'=>$election_id])->id;
                     foreach($party['candidates']as $candidate){
-                        Candidate::create([
+                        PartisanCandidate::create([
                         'name'=> $candidate['name'],
                          'description'=>(!empty($candidate['description'])) ? $candidate['description'] : null,
-                         'party_id'=>$party_id,
-                         'election_id'=>$election_id,
+                         'party_id'=>$party_id
                             ]
                     );
                 }
@@ -84,7 +84,7 @@ class ElectionController extends Controller
             }
             if (!empty($request->free_candidates)) {
                 foreach($request->free_candidates as $candidate){
-                    Candidate::create([
+                    FreeCandidate::create([
                             'name'=> $candidate['name'],
                             'description'=>(!empty($candidate['description'])) ? $candidate['description'] : null,
                             'election_id'=>$election_id,
