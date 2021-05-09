@@ -14,16 +14,7 @@ class ElectionController extends Controller
 {
     function create(Request $request){
         $validation =  Validator::make($request->all(), [
-            'timezone'=> 'integer|min:-12|max:+14',
-        ]);
-        if ($validation->fails()) {
-            return response()->json($validation->errors(), 422);
-        }
-            $todayDate =Carbon::now();
-        $todayDate = $todayDate->setTimezone($request->timezone);
-        $validation =  Validator::make($request->all(), [
-            'timezone'=> 'integer|min:-12|max:+14',
-            'start_date'    => 'required|date|date_format:Y-m-d H:i|after_or_equal:'.$todayDate,
+            'start_date'    => 'required|date|date_format:Y-m-d H:i|after_or_equal:now',
             'end_date'      => 'required|date|date_format:Y-m-d H:i|after:start_date',
             'title'=> 'required|string|min:2|max:255',
             'description'=> 'string|min:10|max:400',

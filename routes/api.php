@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Poll\PollController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,6 @@ Route::middleware('auth:api')->group(function (){
     Route::post("/election/create",[ElectionController::class,"create"]);
     Route::post("/party/create",[PartyController::class,"create"]);
     Route::post("/candidate/create",[CandidateController::class,"create"]);
+    Route::post("/poll/create",[PollController::class,"create"]);
     });
-
 });

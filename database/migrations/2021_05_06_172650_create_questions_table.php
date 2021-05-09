@@ -25,7 +25,7 @@ class CreateQuestionsTable extends Migration
         ]);
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
-            $table->string('value',255);
+            $table->string('value',400);
             $table->bigInteger('type_id')->unsigned();
             $table->bigInteger('poll_id')->unsigned();
             $table->foreign("type_id")->references('id')->on("question_types");
