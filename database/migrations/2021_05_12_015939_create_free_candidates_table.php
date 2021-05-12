@@ -20,7 +20,7 @@ class CreateFreeCandidatesTable extends Migration
             $table->string('picture',255)->nullable();
             $table->bigInteger('election_id')->unsigned();
             $table->foreign("election_id")->references('id')->on("plurality_elections")->onDelete('cascade');
-              $table->bigInteger('list_id')->unsigned();
+              $table->bigInteger('list_id')->unsigned()->nullable();
             $table->foreign("list_id")->references('id')->on("free_election_lists")->onDelete('cascade');
         });
     }

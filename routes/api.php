@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ElectionController;
 use \App\Http\Controllers\PartyController;
 use App\Http\Controllers\CandidateController;
+use App\Http\Controllers\PluralityElection\PluralityElectionController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -29,7 +30,7 @@ Route::middleware('auth:api')->group(function (){
         //Route::post("add",[ReviewController::class,"addReview"]);
     });
     Route::middleware('role:organizer')->group(function (){
-    Route::post("/election/create",[ElectionController::class,"create"]);
+    Route::post("/plurality-elections/create",[PluralityElectionController::class,"create"]);
     Route::post("/party/create",[PartyController::class,"create"]);
     Route::post("/candidate/create",[CandidateController::class,"create"]);
     Route::post("/poll/create",[PollController::class,"create"]);

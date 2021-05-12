@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\ListsElection;
 
-use App\Models\ListsElection;
+use App\Http\Controllers\Controller;
+use App\Models\PartisanElectionList;
 use Illuminate\Http\Request;
 
-class ListsElectionController extends Controller
+class PartisanElectionListController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -41,10 +42,10 @@ class ListsElectionController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\ListsElection  $listsElection
+     * @param  \App\Models\PartisanElectionList  $partisanElectionList
      * @return \Illuminate\Http\Response
      */
-    public function show(ListsElection $listsElection)
+    public function show(PartisanElectionList $partisanElectionList)
     {
         //
     }
@@ -52,10 +53,10 @@ class ListsElectionController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\ListsElection  $listsElection
+     * @param  \App\Models\PartisanElectionList  $partisanElectionList
      * @return \Illuminate\Http\Response
      */
-    public function edit(ListsElection $listsElection)
+    public function edit(PartisanElectionList $partisanElectionList)
     {
         //
     }
@@ -64,10 +65,10 @@ class ListsElectionController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\ListsElection  $listsElection
+     * @param  \App\Models\PartisanElectionList  $partisanElectionList
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, ListsElection $listsElection)
+    public function update(Request $request, PartisanElectionList $partisanElectionList)
     {
         //
     }
@@ -75,10 +76,10 @@ class ListsElectionController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\ListsElection  $listsElection
+     * @param  \App\Models\PartisanElectionList  $partisanElectionList
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ListsElection $listsElection)
+    public function destroy(PartisanElectionList $partisanElectionList)
     {
         //
     }

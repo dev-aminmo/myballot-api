@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\ListsElection;
 
-use App\Models\PluralityElection;
+use App\Http\Controllers\Controller;
+use App\Models\FreeElectionList;
 use Illuminate\Http\Request;
 
-class PluralityElectionController extends Controller
+class FreeElectionListController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -41,10 +42,10 @@ class PluralityElectionController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\PluralityElection  $pluralityElection
+     * @param  \App\Models\FreeElectionList  $freeElectionList
      * @return \Illuminate\Http\Response
      */
-    public function show(PluralityElection $pluralityElection)
+    public function show(FreeElectionList $freeElectionList)
     {
         //
     }
@@ -52,10 +53,10 @@ class PluralityElectionController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\PluralityElection  $pluralityElection
+     * @param  \App\Models\FreeElectionList  $freeElectionList
      * @return \Illuminate\Http\Response
      */
-    public function edit(PluralityElection $pluralityElection)
+    public function edit(FreeElectionList $freeElectionList)
     {
         //
     }
@@ -64,10 +65,10 @@ class PluralityElectionController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\PluralityElection  $pluralityElection
+     * @param  \App\Models\FreeElectionList  $freeElectionList
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, PluralityElection $pluralityElection)
+    public function update(Request $request, FreeElectionList $freeElectionList)
     {
         //
     }
@@ -75,10 +76,10 @@ class PluralityElectionController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\PluralityElection  $pluralityElection
+     * @param  \App\Models\FreeElectionList  $freeElectionList
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PluralityElection $pluralityElection)
+    public function destroy(FreeElectionList $freeElectionList)
     {
         //
     }

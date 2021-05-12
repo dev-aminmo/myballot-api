@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\ListsElection;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PluralityElection extends Model
+class ListsElection extends Model
 {
     use HasFactory;
 }

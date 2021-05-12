@@ -10,7 +10,7 @@ class Party extends Model
     use HasFactory;
     protected $table="parties";
 public $timestamps=false;
-    protected $fillable=['name','picture','election_id'];
+    protected $fillable=['name','picture','election_id','list_id'];
     public function candidates()
     {
         return $this->hasMany(Candidate::class,'party_id');

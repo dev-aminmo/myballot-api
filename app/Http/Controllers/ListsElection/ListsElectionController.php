@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\ListsElection;
 
-use App\Models\FreeElectionList;
+use App\Http\Controllers\Controller;
+use App\Models\ListsElection;
 use Illuminate\Http\Request;
 
-class FreeElectionListController extends Controller
+class ListsElectionController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -41,10 +42,10 @@ class FreeElectionListController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\FreeElectionList  $freeElectionList
+     * @param  \App\Models\ListsElection  $listsElection
      * @return \Illuminate\Http\Response
      */
-    public function show(FreeElectionList $freeElectionList)
+    public function show(ListsElection $listsElection)
     {
         //
     }
@@ -52,10 +53,10 @@ class FreeElectionListController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\FreeElectionList  $freeElectionList
+     * @param  \App\Models\ListsElection  $listsElection
      * @return \Illuminate\Http\Response
      */
-    public function edit(FreeElectionList $freeElectionList)
+    public function edit(ListsElection $listsElection)
     {
         //
     }
@@ -64,10 +65,10 @@ class FreeElectionListController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\FreeElectionList  $freeElectionList
+     * @param  \App\Models\ListsElection  $listsElection
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, FreeElectionList $freeElectionList)
+    public function update(Request $request, ListsElection $listsElection)
     {
         //
     }
@@ -75,10 +76,10 @@ class FreeElectionListController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\FreeElectionList  $freeElectionList
+     * @param  \App\Models\ListsElection  $listsElection
      * @return \Illuminate\Http\Response
      */
-    public function destroy(FreeElectionList $freeElectionList)
+    public function destroy(ListsElection $listsElection)
     {
         //
     }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateElectionsTable extends Migration
+class CreatePluralityElectionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,14 @@ class CreateElectionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('elections', function (Blueprint $table) {
+        Schema::create('plurality_elections', function (Blueprint $table) {
             $table->id();
             $table->dateTime('start_date');
             $table->dateTime('end_date');
             $table->string('title',255);
             $table->string('description',400)->nullable();
             $table->bigInteger('organizer_id')->unsigned();
-            $table->foreign("organizer_id")->references('id')->on("users");
+            $table->foreign("organizer_id")->references('id')->on("users")->onDelete('cascade');
         });
     }
 
@@ -31,6 +31,6 @@ class CreateElectionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('elections');
+        Schema::dropIfExists('plurality_elections');
     }
 }
