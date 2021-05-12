@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ListsElection\ListsElectionController;
 use App\Http\Controllers\Poll\PollController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -30,7 +31,8 @@ Route::middleware('auth:api')->group(function (){
         //Route::post("add",[ReviewController::class,"addReview"]);
     });
     Route::middleware('role:organizer')->group(function (){
-    Route::post("/plurality-elections/create",[PluralityElectionController::class,"create"]);
+    Route::post("/plurality-election/create",[PluralityElectionController::class,"create"]);
+    Route::post("/lists-election/create",[ListsElectionController::class,"create"]);
     Route::post("/party/create",[PartyController::class,"create"]);
     Route::post("/candidate/create",[CandidateController::class,"create"]);
     Route::post("/poll/create",[PollController::class,"create"]);

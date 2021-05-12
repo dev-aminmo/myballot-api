@@ -24,11 +24,7 @@ class PluralityElectionController extends Controller
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     function create(Request $request){
         $validation =  Validator::make($request->all(), [
             'start_date'    => 'required|date|date_format:Y-m-d H:i|after_or_equal:now',
