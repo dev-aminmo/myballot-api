@@ -5,7 +5,6 @@ use App\Http\Controllers\Poll\PollController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ElectionController;
 use \App\Http\Controllers\PartyController;
 use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\PluralityElection\PluralityElectionController;

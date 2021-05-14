@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\ListsElection;
 
 use App\Http\Controllers\Controller;
-use App\Models\Election;
 use App\Models\FreeCandidate;
 use App\Models\ListsElection\FreeElectionList;
 use App\Models\ListsElection\ListsElection;

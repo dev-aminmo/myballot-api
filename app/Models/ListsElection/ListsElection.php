@@ -19,4 +19,11 @@ class ListsElection extends Model
     ];
     protected $hidden=['count'];
     public $timestamps=false;
+
+    public function partisan_lists(){
+        return $this->hasMany(PartisanElectionList::class,'election_id');
+    }
+    public function free_lists(){
+        return $this->hasMany(FreeElectionList::class,'election_id');
+    }
 }

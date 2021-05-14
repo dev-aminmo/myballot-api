@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\PluralityElection;
 
 use App\Http\Controllers\Controller;
-use App\Models\Election;
 use App\Models\FreeCandidate;
 use App\Models\PartisanCandidate;
 use App\Models\Party;
@@ -14,16 +13,6 @@ use Illuminate\Support\Facades\Validator;
 
 class PluralityElectionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
 
     function create(Request $request){
         $validation =  Validator::make($request->all(), [
@@ -104,62 +93,5 @@ class PluralityElectionController extends Controller
             $response['error']=$exception;
             return response()->json($exception->getTrace(), 400);
         }
-    }
-
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\PluralityElection  $pluralityElection
-     * @return \Illuminate\Http\Response
-     */
-    public function show(PluralityElection $pluralityElection)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\PluralityElection  $pluralityElection
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(PluralityElection $pluralityElection)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\PluralityElection  $pluralityElection
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, PluralityElection $pluralityElection)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\PluralityElection  $pluralityElection
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(PluralityElection $pluralityElection)
-    {
-        //
     }
 }
