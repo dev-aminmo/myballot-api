@@ -106,7 +106,7 @@ class PluralityElectionController extends Controller
             return response()->json($validation->errors(), 422);
         }
         $election_id= $request->election_id;
-        if (!$this->isOrganizer($election_id)) return  redirect('/');
+        if (!$this->isAvailable($election_id) || !$this->isOrganizer($election_id)) return  redirect('/');
         $party_id=Party::create(['name'=> $request->name,
             'election_id'=> $election_id])->id;
         foreach( $request->candidates as $candidate){
@@ -129,7 +129,7 @@ class PluralityElectionController extends Controller
         }
         $id= $request->id;
        $party=Party::where('id',$id)->first();
-        if (!$this->isOrganizer($party->election_id)) return  redirect('/');
+        if (!$this->isAvailable($party->election_id) || !$this->isOrganizer($party->election_id)) return  redirect('/');
         $party->name=$request->name;
         $party->save();
         $data = ['message' => 'party updated successfully','code'=>201];
@@ -143,7 +143,7 @@ class PluralityElectionController extends Controller
         }
         $id= $request->id;
        $party=Party::where('id',$id)->first();
-        if (!$this->isOrganizer($party->election_id)) return  redirect('/');
+        if (!$this->isAvailable($party->election_id) ||!$this->isOrganizer($party->election_id)) return  redirect('/');
         $party->delete();
         $data = ['message' => 'party deleted successfully','code'=>201];
         return Response()->json($data,201);
@@ -161,7 +161,7 @@ class PluralityElectionController extends Controller
         $id= $request->id;
         $candidate=PartisanCandidate::where('id',$id)->first();
         $party=Party::where('id',$candidate->id)->first();
-        if (!$this->isOrganizer($party->election_id)) return  redirect('/');
+        if (!$this->isAvailable($party->election_id) || !$this->isOrganizer($party->election_id)) return  redirect('/');
         $candidate->update($request->only(['name', 'description']));
         $data = ['message' => 'candidate updated successfully','code'=>201];
         return Response()->json($data,201);
@@ -179,6 +179,20 @@ class PluralityElectionController extends Controller
             return false;
         }
         if($p->organizer_id == auth()->user()['id']){
+            return true;
+        }
+        return false;
+    }
+    public function isAvailable($election_id){
+
+        $p=PluralityElection::where('id',$election_id)->first();
+        if(empty($p)){
+            return false;
+        }
+        $start = Carbon::parse($p->start_date);
+        $b=Carbon::now()->isBefore($start);
+
+        if($b){
             return true;
         }
         return false;
