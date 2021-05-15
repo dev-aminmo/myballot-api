@@ -119,6 +119,35 @@ class PluralityElectionController extends Controller
         $data = ['message' => 'party added successfully','code'=>201];
         return Response()->json($data,201);
     }
+    function update_party(Request $request){
+        $validation =  Validator::make($request->all(), [
+            'id'=>'required|integer|exists:parties,id',
+            'name'=>'required|string|min:4|max:255',
+        ]);
+        if ($validation->fails()) {
+            return response()->json($validation->errors(), 422);
+        }
+        $id= $request->id;
+       $party=Party::where('id',$id)->first();
+        if (!$this->isOrganizer($party->election_id)) return  redirect('/');
+        $party->name=$request->name;
+        $party->save();
+        $data = ['message' => 'party updated successfully','code'=>201];
+        return Response()->json($data,201);
+    }
+    function delete_party(Request $request){
+        $validation =  Validator::make($request->all(), [
+            'id'=>'required|integer|exists:parties,id']);
+        if ($validation->fails()){
+            return response()->json($validation->errors(), 422);
+        }
+        $id= $request->id;
+       $party=Party::where('id',$id)->first();
+        if (!$this->isOrganizer($party->election_id)) return  redirect('/');
+        $party->delete();
+        $data = ['message' => 'party deleted successfully','code'=>201];
+        return Response()->json($data,201);
+    }
 
     public function isOrganizer($election_id)
     {

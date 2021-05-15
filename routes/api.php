@@ -35,6 +35,8 @@ Route::middleware('auth:api')->group(function (){
     Route::middleware('role:organizer')->group(function (){
     Route::post("/plurality-election/create",[PluralityElectionController::class,"create"]);
     Route::post("/plurality-election/party/add",[PluralityElectionController::class,"add_party"]);
+    Route::post("/plurality-election/party/update",[PluralityElectionController::class,"update_party"]);
+    Route::delete("/plurality-election/party/delete",[PluralityElectionController::class,"delete_party"]);
 
 
 
