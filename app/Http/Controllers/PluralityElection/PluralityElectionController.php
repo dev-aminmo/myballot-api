@@ -148,6 +148,29 @@ class PluralityElectionController extends Controller
         $data = ['message' => 'party deleted successfully','code'=>201];
         return Response()->json($data,201);
     }
+    function update_candidate(Request $request){
+        $validation =  Validator::make($request->all(), [
+            'id'=>'required|integer|exists:partisan_candidates,id',
+            'name' => 'string|min:4|max:255',
+            'description' => 'string|min:4|max:400',
+            ]);
+        if ($validation->fails()){
+            return response()->json($validation->errors(), 422);
+        }
+     try{
+        $id= $request->id;
+        $candidate=PartisanCandidate::where('id',$id)->first();
+        $party=Party::where('id',$candidate->id)->first();
+        if (!$this->isOrganizer($party->election_id)) return  redirect('/');
+        $candidate->update($request->only(['name', 'description']));
+        $data = ['message' => 'candidate updated successfully','code'=>201];
+        return Response()->json($data,201);
+        }catch ( \Exception  $exception){
+            $response=['message'=>"error has occurred",
+                "code"=>"400"];
+            return response()->json($response, 400);
+            }
+    }
 
     public function isOrganizer($election_id)
     {
