@@ -19,6 +19,9 @@ use App\Http\Controllers\PluralityElection\PluralityElectionController;
 |
 */
 
+
+
+
 Route::post("/register",[UserController::class,"register"]);
 Route::post("/login",[UserController::class,"login"]);
 //Route::get("/login",[UserController::class,"login"])->name('login');
@@ -31,6 +34,10 @@ Route::middleware('auth:api')->group(function (){
     });
     Route::middleware('role:organizer')->group(function (){
     Route::post("/plurality-election/create",[PluralityElectionController::class,"create"]);
+    Route::post("/plurality-election/party/add",[PluralityElectionController::class,"add_party"]);
+
+
+
     Route::post("/lists-election/create",[ListsElectionController::class,"create"]);
     Route::post("/party/create",[PartyController::class,"create"]);
     Route::post("/candidate/create",[CandidateController::class,"create"]);

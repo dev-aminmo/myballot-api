@@ -94,4 +94,41 @@ class PluralityElectionController extends Controller
             return response()->json($exception->getTrace(), 400);
         }
     }
+    function add_party(Request $request){
+        $validation =  Validator::make($request->all(), [
+            'name'=>'required',
+            'candidates' => 'required|array|min:1|max:1',
+            'candidates.*.name' => 'required|string|min:4|max:255',
+            'candidates.*.description' => 'string|min:4|max:400',
+            'election_id'=>'required|integer|exists:plurality_elections,id'
+        ]);
+        if ($validation->fails()) {
+            return response()->json($validation->errors(), 422);
+        }
+        $election_id= $request->election_id;
+        if (!$this->isOrganizer($election_id)) return  redirect('/');
+        $party_id=Party::create(['name'=> $request->name,
+            'election_id'=> $election_id])->id;
+        foreach( $request->candidates as $candidate){
+            PartisanCandidate::create([
+                'name'=> $candidate['name'],
+                'description'=>(!empty($candidate['description'])) ? $candidate['description'] : null,
+                'party_id'=>$party_id,
+            ]
+        );}
+        $data = ['message' => 'party added successfully','code'=>201];
+        return Response()->json($data,201);
+    }
+
+    public function isOrganizer($election_id)
+    {
+        $p=PluralityElection::where('id',$election_id)->first();
+        if(empty($p)){
+            return false;
+        }
+        if($p->organizer_id == auth()->user()['id']){
+            return true;
+        }
+        return false;
+    }
 }
