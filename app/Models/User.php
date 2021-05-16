@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\PluralityElection\PluralityElection;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -44,4 +45,8 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    public function plurality_elections()
+    {
+        return $this->belongsToMany(PluralityElection::class, 'plurality_election_user', 'user_id', 'plurality_election_id');
+    }
 }

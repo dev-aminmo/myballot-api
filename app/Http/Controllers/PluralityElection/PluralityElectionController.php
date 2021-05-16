@@ -3,13 +3,19 @@
 namespace App\Http\Controllers\PluralityElection;
 
 use App\Http\Controllers\Controller;
+use App\Mail\YouAreInvited;
 use App\Models\FreeCandidate;
 use App\Models\PartisanCandidate;
 use App\Models\Party;
 use App\Models\PluralityElection\PluralityElection;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use App\Mail\MyTestMail;
+use Illuminate\Validation\Rule;
 
 class PluralityElectionController extends Controller
 {
@@ -170,6 +176,64 @@ class PluralityElectionController extends Controller
                 "code"=>"400"];
             return response()->json($response, 400);
             }
+    }
+    function add_voters(Request $request)
+    {
+        $validation = Validator::make($request->all(), [
+            'election_id' => 'required|integer|exists:plurality_elections,id',
+            'emails' => 'required|array|min:1|max:150',
+            'emails.*' => 'email',
+                ]);
+        if ($validation->fails()) {
+            return response()->json($validation->errors(), 422);
+        }
+        if (!$this->isAvailable($request->election_id) ||!$this->isOrganizer($request->election_id)) return  redirect('/');
+
+        try {
+            $organizers = User::whereRoleIs(['organizer'])->get();
+            $intersection = $organizers->intersect(User::whereIn('email', $request->emails)->get());
+
+            if (count($intersection)) {
+                $ad = [];
+                $intersection->each(function ($org) use (&$ad) {
+                    $ad[] = $org->email;
+                    return $org->email;
+                });
+                return response()->json([
+                    "message" => "organizers cannot vote",
+                    "emails" => $ad,
+                    "code" => 422
+                ], 422);
+            }
+            foreach ($request->emails as $email) {
+                $u = User::where('email', $email)->first();
+                if (!empty($u)) {
+                    $u->plurality_elections()->syncWithoutDetaching($request->election_id);
+                    $details = [
+                        'link' => "https://www.google.com/",
+                    ];
+                    Mail::to($email)->send(new YouAreInvited($details));
+                } else {
+                    $pass = Str::random(6);
+                    $user = User::create([
+                            'email' => $email,
+                            'password' => bcrypt($pass),]
+                    );
+                    $user->attachRole('voter');
+                    $user->plurality_elections()->attach($request->election_id);
+                    $details = [
+                        'email' => $email,
+                        'password' => $pass
+                    ];
+
+                    Mail::to($email)->send(new MyTestMail($details));
+                }
+            }
+        } catch (\Exception  $exception) {
+            $response = ['message' => "error has occurred",
+                "code" => "400"];
+            return response()->json($exception->getTrace(), 400);
+        }
     }
 
     public function isOrganizer($election_id)

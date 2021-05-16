@@ -21,7 +21,7 @@ class UsersTableSeeder extends Seeder
       'password'=>bcrypt('123456'),]
         );
       $user->attachRole('organizer');
-      /*$user=  User::create([
+      $user=  User::create([
       'name'=>"mo amin",
       'email'=>"momo@gmail.com",
       'password'=>bcrypt('123456'),]
@@ -32,6 +32,6 @@ class UsersTableSeeder extends Seeder
       'email'=>"movoter@gmail.com",
       'password'=>bcrypt('123456'),]
         );
-      $user->attachRole('voter')*/;
+      $user->attachRole('voter');
     }
 }
