@@ -14,10 +14,9 @@ class CreatePartisanCandidatesTable extends Migration
     public function up()
     {
         Schema::create('partisan_candidates', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('description',400)->nullable();
-            $table->string('picture',255)->nullable();
+            $table->bigInteger('id')->unsigned();
+            $table->foreign("id")->references('id')->on("candidates")->onDelete('cascade');
+
             $table->bigInteger('party_id')->unsigned();
            $table->foreign("party_id")->references('id')->on("parties")->onDelete('cascade');
         });

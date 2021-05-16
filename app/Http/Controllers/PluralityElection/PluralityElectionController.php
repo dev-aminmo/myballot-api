@@ -4,6 +4,7 @@ namespace App\Http\Controllers\PluralityElection;
 
 use App\Http\Controllers\Controller;
 use App\Mail\YouAreInvited;
+use App\Models\Candidate;
 use App\Models\FreeCandidate;
 use App\Models\PartisanCandidate;
 use App\Models\Party;
@@ -11,6 +12,7 @@ use App\Models\PluralityElection\PluralityElection;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -72,9 +74,12 @@ class PluralityElectionController extends Controller
                     $party_id = Party::create(['name'=> $party['name'],
                         'election_id'=>$election_id])->id;
                     foreach($party['candidates']as $candidate){
+                       $candidate_id= Candidate::create([ 'name'=> $candidate['name'],
+                           'description'=>(!empty($candidate['description'])) ? $candidate['description'] : null,
+                           "election_id"=>$election_id
+                       ])->id;
                         PartisanCandidate::create([
-                                'name'=> $candidate['name'],
-                                'description'=>(!empty($candidate['description'])) ? $candidate['description'] : null,
+                                 'id'=>$candidate_id,
                                 'party_id'=>$party_id,
                             ]
                         );
@@ -83,11 +88,12 @@ class PluralityElectionController extends Controller
             }
             if (!empty($request->free_candidates)) {
                 foreach($request->free_candidates as $candidate){
+                    $candidate_id= Candidate::create([ 'name'=> $candidate['name'],
+                        'description'=>(!empty($candidate['description'])) ? $candidate['description'] : null,
+                        "election_id"=>$election_id
+                    ])->id;
                     FreeCandidate::create([
-                            'name'=> $candidate['name'],
-                            'description'=>(!empty($candidate['description'])) ? $candidate['description'] : null,
-                            'election_id'=>$election_id,
-
+                          "id"=>$candidate_id
                         ]
                     );
                 }
@@ -212,7 +218,7 @@ class PluralityElectionController extends Controller
                     $details = [
                         'link' => "https://www.google.com/",
                     ];
-                    Mail::to($email)->send(new YouAreInvited($details));
+                  //  Mail::to($email)->send(new YouAreInvited($details));
                 } else {
                     $pass = Str::random(6);
                     $user = User::create([
@@ -235,6 +241,37 @@ class PluralityElectionController extends Controller
             return response()->json($exception->getTrace(), 400);
         }
     }
+
+    function vote(Request $request){
+
+        $validation =  Validator::make($request->all(), [
+            'election_id'=>'required|integer|exists:plurality_elections,id',
+            'candidate_id'=>'required|integer|exists:candidates,id'
+        ]);
+        if ($validation->fails()) {
+            return response()->json($validation->errors(), 422);
+        }
+
+        $election_id= $request->election_id;
+        if (!$this->isAvailable($election_id) ) return  redirect('/');
+
+        $user_id=auth()->user()['id'];
+        $user=User::where("id",$user_id)->first();
+        $is_voter =  $user->plurality_elections()->where('plurality_election_id', $election_id)->first();
+        if( $is_voter){
+            $voted =   $is_voter->pivot->voted;
+            if( $voted){
+              $data = ['message' => 'vote already casted','code'=>422];
+              return response()->json($data, 422);
+           }
+        Candidate::where('id',$request->candidate_id)->update(['count'=> DB::raw('count+1'),]);
+        $user->plurality_elections()->updateExistingPivot($election_id, ['voted'=>true]);
+        $data = ['message' => 'vote casted successfully','code'=>201];
+        return Response()->json($data,201);
+        }else{
+            return  redirect('/');
+        }
+        }
 
     public function isOrganizer($election_id)
     {

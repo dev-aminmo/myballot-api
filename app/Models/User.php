@@ -47,6 +47,7 @@ class User extends Authenticatable
     ];
     public function plurality_elections()
     {
-        return $this->belongsToMany(PluralityElection::class, 'plurality_election_user', 'user_id', 'plurality_election_id');
-    }
+        return $this->belongsToMany(PluralityElection::class, 'plurality_election_user', 'user_id', 'plurality_election_id')
+            ->withPivot('voted');
+            }
 }

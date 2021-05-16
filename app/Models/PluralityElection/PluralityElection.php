@@ -31,6 +31,7 @@ class PluralityElection extends Model
     }
     public function users()
     {
-        return $this->belongsToMany(User::class, 'plurality_election_user', 'user_id', 'plurality_election_id');
+        return $this->belongsToMany(User::class, 'plurality_election_user', 'user_id', 'plurality_election_id')     ->withPivot('voted');
+
     }
 }

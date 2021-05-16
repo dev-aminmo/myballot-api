@@ -14,6 +14,7 @@ class CreatePluralityElectionUserTable extends Migration
     public function up()
     {
         Schema::create('plurality_election_user', function (Blueprint $table) {
+            $table->id();
             $table->bigInteger('plurality_election_id')->unsigned()->nullable();
             $table->bigInteger('user_id')->unsigned()->nullable();
             $table->boolean('voted')->default(false);

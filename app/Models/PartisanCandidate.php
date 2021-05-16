@@ -11,7 +11,7 @@ class PartisanCandidate extends Model
 {
     use HasFactory;
     protected $table="partisan_candidates";
-    protected $fillable=['name','description','picture','party_id'];
+    protected $fillable=['id'/*,'name','description','picture',*/,'party_id'];
     public $timestamps=false;
 
     public function party(){

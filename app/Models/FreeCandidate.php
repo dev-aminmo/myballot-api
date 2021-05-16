@@ -11,7 +11,7 @@ class FreeCandidate extends Model
 {
     use HasFactory;
     protected $table="free_candidates";
-    protected $fillable=['name','description','picture','election_id','list_id'];
+    protected $fillable=["id",/*'name','description','picture','election_id',*/'list_id'];
     public $timestamps=false;
 
     public function election(){
