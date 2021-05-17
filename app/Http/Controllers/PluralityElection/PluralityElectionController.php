@@ -118,7 +118,7 @@ class PluralityElectionController extends Controller
             return response()->json($validation->errors(), 422);
         }
         $election_id= $request->election_id;
-        if (!$this->isAvailable($election_id) || !$this->isOrganizer($election_id)) return  redirect('/');
+        if ($this->isStarted($election_id) || !$this->isOrganizer($election_id)) return  redirect('/');
         $party_id=Party::create(['name'=> $request->name,
             'election_id'=> $election_id])->id;
         foreach( $request->candidates as $candidate){
@@ -141,7 +141,7 @@ class PluralityElectionController extends Controller
         }
         $id= $request->id;
        $party=Party::where('id',$id)->first();
-        if (!$this->isAvailable($party->election_id) || !$this->isOrganizer($party->election_id)) return  redirect('/');
+        if ($this->isStarted($party->election_id) || !$this->isOrganizer($party->election_id)) return  redirect('/');
         $party->name=$request->name;
         $party->save();
         $data = ['message' => 'party updated successfully','code'=>201];
@@ -155,7 +155,7 @@ class PluralityElectionController extends Controller
         }
         $id= $request->id;
        $party=Party::where('id',$id)->first();
-        if (!$this->isAvailable($party->election_id) ||!$this->isOrganizer($party->election_id)) return  redirect('/');
+        if ($this->isStarted($party->election_id) ||!$this->isOrganizer($party->election_id)) return  redirect('/');
         $party->delete();
         $data = ['message' => 'party deleted successfully','code'=>201];
         return Response()->json($data,201);
@@ -173,7 +173,7 @@ class PluralityElectionController extends Controller
         $id= $request->id;
         $candidate=PartisanCandidate::where('id',$id)->first();
         $party=Party::where('id',$candidate->id)->first();
-        if (!$this->isAvailable($party->election_id) || !$this->isOrganizer($party->election_id)) return  redirect('/');
+        if ($this->isStarted($party->election_id) || !$this->isOrganizer($party->election_id)) return  redirect('/');
         $candidate->update($request->only(['name', 'description']));
         $data = ['message' => 'candidate updated successfully','code'=>201];
         return Response()->json($data,201);
@@ -193,7 +193,7 @@ class PluralityElectionController extends Controller
         if ($validation->fails()) {
             return response()->json($validation->errors(), 422);
         }
-        if (!$this->isAvailable($request->election_id) ||!$this->isOrganizer($request->election_id)) return  redirect('/');
+        if ($this->isStarted($request->election_id) ||!$this->isOrganizer($request->election_id)) return  redirect('/');
 
         try {
             $organizers = User::whereRoleIs(['organizer'])->get();
@@ -252,12 +252,17 @@ class PluralityElectionController extends Controller
             return response()->json($validation->errors(), 422);
         }
 
+
+
         $election_id= $request->election_id;
-        if (!$this->isAvailable($election_id) ) return  redirect('/');
+
+
+        if (!$this->isStarted($election_id)|| $this->isEnded($election_id)) return  redirect('/');
 
         $user_id=auth()->user()['id'];
         $user=User::where("id",$user_id)->first();
         $is_voter =  $user->plurality_elections()->where('plurality_election_id', $election_id)->first();
+
         if( $is_voter){
             $voted =   $is_voter->pivot->voted;
             if( $voted){
@@ -284,7 +289,7 @@ class PluralityElectionController extends Controller
         }
         return false;
     }
-    public function isAvailable($election_id){
+    public function isStarted($election_id){
 
         $p=PluralityElection::where('id',$election_id)->first();
         if(empty($p)){
@@ -293,6 +298,18 @@ class PluralityElectionController extends Controller
         $start = Carbon::parse($p->start_date);
         $b=Carbon::now()->isBefore($start);
 
+        if($b){
+            return false;
+        }
+        return true;
+    }
+    public function isEnded($election_id){
+        $p=PluralityElection::where('id',$election_id)->first();
+        if(empty($p)){
+            return false;
+        }
+        $end = Carbon::parse($p->end_date);
+        $b=Carbon::now()->isAfter($end);
         if($b){
             return true;
         }
