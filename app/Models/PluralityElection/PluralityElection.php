@@ -14,11 +14,12 @@ class PluralityElection extends Model
     public $timestamps=false;
     protected $table="plurality_elections";
     protected $fillable = [
-        'start_date',
+        'id'
+        /*'start_date',
         'end_date',
         'title',
         'description',
-        'organizer_id',
+        'organizer_id',*/
     ];
 
     public function partisan_candidates()
@@ -29,9 +30,5 @@ class PluralityElection extends Model
     {
         return $this->hasMany(FreeCandidate::class,'election_id');
     }
-    public function users()
-    {
-        return $this->belongsToMany(User::class, 'plurality_election_user', 'user_id', 'plurality_election_id')     ->withPivot('voted');
 
-    }
 }

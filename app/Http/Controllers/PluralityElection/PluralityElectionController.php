@@ -5,6 +5,7 @@ namespace App\Http\Controllers\PluralityElection;
 use App\Http\Controllers\Controller;
 use App\Mail\YouAreInvited;
 use App\Models\Candidate;
+use App\Models\Election;
 use App\Models\FreeCandidate;
 use App\Models\PartisanCandidate;
 use App\Models\Party;
@@ -67,7 +68,10 @@ class PluralityElectionController extends Controller
             $id= auth()->user()['id'];
             $allData = $request->all();
             $allData['organizer_id']=$id;
-            $election_id=PluralityElection::create($allData)->id;
+            $election_id=Election::create($allData)->id;
+            PluralityElection::create([
+                'id'=>$election_id
+            ]);
 
             if (!empty($request->parties)) {
                 foreach($request->parties as $party){
@@ -106,6 +110,8 @@ class PluralityElectionController extends Controller
             return response()->json($exception->getTrace(), 400);
         }
     }
+
+
     function add_party(Request $request){
         $validation =  Validator::make($request->all(), [
             'name'=>'required',
@@ -183,10 +189,12 @@ class PluralityElectionController extends Controller
             return response()->json($response, 400);
             }
     }
+
+
     function add_voters(Request $request)
     {
         $validation = Validator::make($request->all(), [
-            'election_id' => 'required|integer|exists:plurality_elections,id',
+            'election_id' => 'required|integer|exists:elections,id',
             'emails' => 'required|array|min:1|max:150',
             'emails.*' => 'email',
                 ]);
@@ -213,12 +221,17 @@ class PluralityElectionController extends Controller
             }
             foreach ($request->emails as $email) {
                 $u = User::where('email', $email)->first();
+
                 if (!empty($u)) {
-                    $u->plurality_elections()->syncWithoutDetaching($request->election_id);
+
+                    $u->elections()->syncWithoutDetaching($request->election_id);
+
+
                     $details = [
                         'link' => "https://www.google.com/",
                     ];
                   //  Mail::to($email)->send(new YouAreInvited($details));
+
                 } else {
                     $pass = Str::random(6);
                     $user = User::create([
@@ -226,14 +239,17 @@ class PluralityElectionController extends Controller
                             'password' => bcrypt($pass),]
                     );
                     $user->attachRole('voter');
-                    $user->plurality_elections()->attach($request->election_id);
+                    $user->elections()->attach($request->election_id);
                     $details = [
                         'email' => $email,
                         'password' => $pass
                     ];
 
                     Mail::to($email)->send(new MyTestMail($details));
+
                 }
+                $data = ['message' => 'voters added successfully','code'=>201];
+                return Response()->json($data,201);
             }
         } catch (\Exception  $exception) {
             $response = ['message' => "error has occurred",
@@ -245,7 +261,7 @@ class PluralityElectionController extends Controller
     function vote(Request $request){
 
         $validation =  Validator::make($request->all(), [
-            'election_id'=>'required|integer|exists:plurality_elections,id',
+            'election_id'=>'required|integer|exists:elections,id',
             'candidate_id'=>'required|integer|exists:candidates,id'
         ]);
         if ($validation->fails()) {
@@ -261,7 +277,7 @@ class PluralityElectionController extends Controller
 
         $user_id=auth()->user()['id'];
         $user=User::where("id",$user_id)->first();
-        $is_voter =  $user->plurality_elections()->where('plurality_election_id', $election_id)->first();
+        $is_voter =  $user->elections()->where('election_id', $election_id)->first();
 
         if( $is_voter){
             $voted =   $is_voter->pivot->voted;
@@ -270,7 +286,7 @@ class PluralityElectionController extends Controller
               return response()->json($data, 422);
            }
         Candidate::where('id',$request->candidate_id)->update(['count'=> DB::raw('count+1'),]);
-        $user->plurality_elections()->updateExistingPivot($election_id, ['voted'=>true]);
+        $user->elections()->updateExistingPivot($election_id, ['voted'=>true]);
         $data = ['message' => 'vote casted successfully','code'=>201];
         return Response()->json($data,201);
         }else{
@@ -280,7 +296,7 @@ class PluralityElectionController extends Controller
 
     public function isOrganizer($election_id)
     {
-        $p=PluralityElection::where('id',$election_id)->first();
+        $p=Election::where('id',$election_id)->first();
         if(empty($p)){
             return false;
         }
@@ -291,26 +307,25 @@ class PluralityElectionController extends Controller
     }
     public function isStarted($election_id){
 
-        $p=PluralityElection::where('id',$election_id)->first();
-        if(empty($p)){
+        $election=Election::where('id',$election_id)->first();
+        if(empty($election)){
             return false;
         }
-        $start = Carbon::parse($p->start_date);
-        $b=Carbon::now()->isBefore($start);
-
-        if($b){
+        $start = Carbon::parse($election->start_date);
+        $before=Carbon::now()->isBefore($start);
+        if($before){
             return false;
         }
         return true;
     }
     public function isEnded($election_id){
-        $p=PluralityElection::where('id',$election_id)->first();
-        if(empty($p)){
+        $election=Election::where('id',$election_id)->first();
+        if(empty($election)){
             return false;
         }
-        $end = Carbon::parse($p->end_date);
-        $b=Carbon::now()->isAfter($end);
-        if($b){
+        $end = Carbon::parse($election->end_date);
+        $ended=Carbon::now()->isAfter($end);
+        if($ended){
             return true;
         }
         return false;
