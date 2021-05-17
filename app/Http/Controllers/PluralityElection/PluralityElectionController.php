@@ -278,15 +278,16 @@ class PluralityElectionController extends Controller
         $user_id=auth()->user()['id'];
         $user=User::where("id",$user_id)->first();
         $is_voter =  $user->elections()->where('election_id', $election_id)->first();
-
-        if( $is_voter){
+        $candidate=Candidate::where([['id',$request->candidate_id], ['election_id', $election_id],])->first();
+        if(!empty($candidate) &&$is_voter){
             $voted =   $is_voter->pivot->voted;
             if( $voted){
               $data = ['message' => 'vote already casted','code'=>422];
               return response()->json($data, 422);
            }
-        Candidate::where('id',$request->candidate_id)->update(['count'=> DB::raw('count+1'),]);
-        $user->elections()->updateExistingPivot($election_id, ['voted'=>true]);
+      $candidate->update(['count'=> DB::raw('count+1'),]);
+
+            $user->elections()->updateExistingPivot($election_id, ['voted'=>true]);
         $data = ['message' => 'vote casted successfully','code'=>201];
         return Response()->json($data,201);
         }else{
