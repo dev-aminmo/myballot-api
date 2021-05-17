@@ -46,5 +46,6 @@ Route::middleware('auth:api')->group(function (){
     });
     Route::middleware('role:voter')->group(function (){
         Route::post("/plurality-election/vote",[PluralityElectionController::class,"vote"]);
+        Route::get("/plurality-election/results/{id}",[PluralityElectionController::class,"results"]);
     });
 });

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\PluralityElection;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendMailsJob;
 use App\Mail\YouAreInvited;
 use App\Models\Candidate;
 use App\Models\Election;
@@ -201,12 +202,12 @@ class PluralityElectionController extends Controller
         if ($validation->fails()) {
             return response()->json($validation->errors(), 422);
         }
-        if ($this->isStarted($request->election_id) ||!$this->isOrganizer($request->election_id)) return  redirect('/');
+       $election_id= $request->election_id;
+        if ($this->isStarted($election_id) ||!$this->isOrganizer($election_id)) return  redirect('/');
 
         try {
             $organizers = User::whereRoleIs(['organizer'])->get();
             $intersection = $organizers->intersect(User::whereIn('email', $request->emails)->get());
-
             if (count($intersection)) {
                 $ad = [];
                 $intersection->each(function ($org) use (&$ad) {
@@ -223,15 +224,13 @@ class PluralityElectionController extends Controller
                 $u = User::where('email', $email)->first();
 
                 if (!empty($u)) {
-
-                    $u->elections()->syncWithoutDetaching($request->election_id);
-
-
-                    $details = [
-                        'link' => "https://www.google.com/",
-                    ];
+                    $hasBeenAdded = $u->elections()->where('election_id', $election_id)->exists();
+                    if(!$hasBeenAdded){
+                    $u->elections()->syncWithoutDetaching($election_id);
+                    $data=['type'=>2,"email"=>$email];
+                    $this->dispatch(new SendMailsJob($data));
                   //  Mail::to($email)->send(new YouAreInvited($details));
-
+                    }
                 } else {
                     $pass = Str::random(6);
                     $user = User::create([
@@ -245,7 +244,10 @@ class PluralityElectionController extends Controller
                         'password' => $pass
                     ];
 
-                    Mail::to($email)->send(new MyTestMail($details));
+                   // Mail::to($email)->send(new MyTestMail($details));
+
+                    $data=['type'=>1,"email"=>$email,'password' => $pass];
+                    $this->dispatch(new SendMailsJob($data));
 
                 }
                 $data = ['message' => 'voters added successfully','code'=>201];
@@ -267,14 +269,8 @@ class PluralityElectionController extends Controller
         if ($validation->fails()) {
             return response()->json($validation->errors(), 422);
         }
-
-
-
         $election_id= $request->election_id;
-
-
         if (!$this->isStarted($election_id)|| $this->isEnded($election_id)) return  redirect('/');
-
         $user_id=auth()->user()['id'];
         $user=User::where("id",$user_id)->first();
         $is_voter =  $user->elections()->where('election_id', $election_id)->first();
@@ -285,16 +281,26 @@ class PluralityElectionController extends Controller
               $data = ['message' => 'vote already casted','code'=>422];
               return response()->json($data, 422);
            }
-      $candidate->update(['count'=> DB::raw('count+1'),]);
-
-            $user->elections()->updateExistingPivot($election_id, ['voted'=>true]);
+        $candidate->update(['count'=> DB::raw('count+1'),]);
+        $user->elections()->updateExistingPivot($election_id, ['voted'=>true]);
         $data = ['message' => 'vote casted successfully','code'=>201];
         return Response()->json($data,201);
         }else{
             return  redirect('/');
         }
         }
-
+    function results(Request $request){
+      $request->merge(['id' => $request->route('id')]);
+      $validation =  Validator::make($request->all(), [
+            'id'=>'required|integer|exists:elections,id',
+        ]);
+        if ($validation->fails()) {
+            return response()->json($validation->errors(), 422);
+        }
+       $data= Candidate::where('election_id',$request->id)->orderBy('count',)->get();
+       // $data = ['message' => 'voters added successfully','code'=>201];
+        return Response()->json($data,201);
+    }
     public function isOrganizer($election_id)
     {
         $p=Election::where('id',$election_id)->first();
