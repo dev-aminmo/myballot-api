@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ElectionController;
 use App\Http\Controllers\ListsElection\ListsElectionController;
 use App\Http\Controllers\Poll\PollController;
 use App\Http\Controllers\UserController;
@@ -21,35 +22,61 @@ use App\Http\Controllers\PluralityElection\PluralityElectionController;
 
 
 
-
+/*
+* auth routes
+*/
 Route::post("/register",[UserController::class,"register"]);
 Route::post("/login",[UserController::class,"login"]);
-//Route::get("/login",[UserController::class,"login"])->name('login');
+Route::get("/login",[UserController::class,"login"])->name('login');
+
 Route::middleware('auth:api')->group(function (){
+    /*
+     * users routes
+     */
     Route::group(['prefix'=>'/user'],function(){
         Route::get("",[UserController::class,"index"]);
         Route::post("/avatar/update",[UserController::class,"updateAvatar"]);
         Route::post("/logout",[UserController::class,"logout"]);
         //Route::post("add",[ReviewController::class,"addReview"]);
-    });
+    });//end of users routes
+
+    /*
+     * Organizer's routes
+     */
     Route::middleware('role:organizer')->group(function (){
+    /*
+    * elections routes
+    */
     Route::post("/plurality-election/create",[PluralityElectionController::class,"create"]);
-    Route::post("/plurality-election/partisan_candidate/update",[PluralityElectionController::class,"update_candidate"]);
-    Route::post("/plurality-election/voters/add",[PluralityElectionController::class,"add_voters"]);
     Route::post("/lists-election/create",[ListsElectionController::class,"create"]);
+    Route::post("/poll/create",[PollController::class,"create"]);
+
+    /*
+     * party routes
+     */
     Route::post("/party/plurality/add",[PartyController::class,"add_to_plurality"]);
     Route::post("/party/update",[PartyController::class,"update"]);
     Route::delete("/party/delete",[PartyController::class,"delete"]);
-    //Route::post("/plurality-election/party/add",[PluralityElectionController::class,"add_party"]);
-    //Route::post("/plurality-election/party/update",[PluralityElectionController::class,"update_party"]);
-    //Route::delete("/plurality-election/party/delete",[PluralityElectionController::class,"delete_party"]);
 
-        Route::post("/candidate/create",[CandidateController::class,"create"]);
-    Route::post("/poll/create",[PollController::class,"create"]);
-    });
+    /*
+    *  voter managing routes
+    */
+    Route::post("/election/voter/add",[ElectionController::class,"add_voters"]);
+
+    /*
+    * candidate routes
+    */
+    Route::post("/candidate/partisan/update",[CandidateController::class,"update_partisan"]);
+  //  Route::post("/candidate/create",[CandidateController::class,"create"]);
+
+    }); //end of organizer's routes
+
     Route::middleware('role:voter')->group(function (){
-        Route::post("/plurality-election/vote",[PluralityElectionController::class,"vote"]);
-    });
+    /*
+    *  voter routes
+    */
+    Route::post("/plurality-election/vote",[PluralityElectionController::class,"vote"]);
+    });//end of voter's routes
 });
 
 
