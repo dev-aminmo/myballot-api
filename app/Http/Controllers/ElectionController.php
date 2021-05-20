@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\SendMailsJob;
+use App\Models\Election;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -77,6 +78,17 @@ class ElectionController extends Controller
                 "code" => "400"];
             return response()->json($exception->getTrace(), 400);
         }
+    }
+    function get_voters(Request $request){
+        $validation = Validator::make($request->all(), [
+            'election_id' => 'required|integer|exists:elections,id',
+        ]);
+        if ($validation->fails()) {
+            return response()->json($validation->errors(), 422);
+        }
+        $election_id= $request->election_id;
+        $election=Election::where('id',6)->first();
+        return $election->users()->where('election_id',6)->get();
     }
 
 }

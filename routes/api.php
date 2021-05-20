@@ -62,6 +62,7 @@ Route::middleware('auth:api')->group(function (){
     *  voter managing routes
     */
     Route::post("/election/voter/add",[ElectionController::class,"add_voters"]);
+    Route::get("/election/voter/get",[ElectionController::class,"get_voters"]);
 
     /*
     * candidate routes
