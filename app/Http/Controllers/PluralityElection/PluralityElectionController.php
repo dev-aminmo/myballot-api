@@ -297,8 +297,15 @@ class PluralityElectionController extends Controller
         if ($validation->fails()) {
             return response()->json($validation->errors(), 422);
         }
-       $data= Candidate::where('election_id',$request->id)->orderBy('count',)->get();
-       // $data = ['message' => 'voters added successfully','code'=>201];
+       $data["candidates"]= Candidate::where('election_id',$request->id)->orderBy('count', 'DESC')->limit(3)->get();
+       $election=Election::where('id',6)->first();
+        $data["added_voters"] =$election->users()->where('election_id',6)->count();
+       $data["vote_casted"] =$election->users()->where(['election_id'=>6,
+           'voted'=>true
+       ])->count();
+
+        $data["vote_ratio"] =  $data["vote_casted"]/    $data["added_voters"] ;
+        $data["vote_ratio"] = number_format((float) $data["vote_ratio"], 2, '.', '');
         return Response()->json($data,201);
     }
     public function isOrganizer($election_id)
@@ -338,3 +345,4 @@ class PluralityElectionController extends Controller
         return false;
     }
 }
+

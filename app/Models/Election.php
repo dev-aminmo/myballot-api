@@ -19,7 +19,8 @@ class Election extends Model
     ];
     public function users()
     {
-        return $this->belongsToMany(User::class, 'election_user', 'user_id', 'election_id')->withPivot('voted');
+        return $this->belongsToMany(User::class)->withPivot('voted');
 
+//, 'election_user', 'user_id', 'election_id')->withPivot('voted'
     }
 }
