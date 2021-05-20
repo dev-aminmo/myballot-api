@@ -20,10 +20,11 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use App\Mail\MyTestMail;
 use Illuminate\Validation\Rule;
+use App\Helpers\MyHelper;
 
 class PluralityElectionController extends Controller
 {
-
+use MyHelper;
     function create(Request $request){
         $validation =  Validator::make($request->all(), [
             'start_date'    => 'required|date|date_format:Y-m-d H:i|after_or_equal:now',
@@ -106,67 +107,12 @@ class PluralityElectionController extends Controller
             $data = ['message' => 'election created successfully','code'=>201];
             return Response()->json($data,201);
         }catch ( \Exception  $exception){
-            throw
+          //  throw
             $response['error']=$exception;
             return response()->json($exception->getTrace(), 400);
         }
     }
 
-
-    function add_party(Request $request){
-        $validation =  Validator::make($request->all(), [
-            'name'=>'required',
-            'candidates' => 'required|array|min:1|max:1',
-            'candidates.*.name' => 'required|string|min:4|max:255',
-            'candidates.*.description' => 'string|min:4|max:400',
-            'election_id'=>'required|integer|exists:plurality_elections,id'
-        ]);
-        if ($validation->fails()) {
-            return response()->json($validation->errors(), 422);
-        }
-        $election_id= $request->election_id;
-        if ($this->isStarted($election_id) || !$this->isOrganizer($election_id)) return  redirect('/');
-        $party_id=Party::create(['name'=> $request->name,
-            'election_id'=> $election_id])->id;
-        foreach( $request->candidates as $candidate){
-            PartisanCandidate::create([
-                'name'=> $candidate['name'],
-                'description'=>(!empty($candidate['description'])) ? $candidate['description'] : null,
-                'party_id'=>$party_id,
-            ]
-        );}
-        $data = ['message' => 'party added successfully','code'=>201];
-        return Response()->json($data,201);
-    }
-    function update_party(Request $request){
-        $validation =  Validator::make($request->all(), [
-            'id'=>'required|integer|exists:parties,id',
-            'name'=>'required|string|min:4|max:255',
-        ]);
-        if ($validation->fails()) {
-            return response()->json($validation->errors(), 422);
-        }
-        $id= $request->id;
-       $party=Party::where('id',$id)->first();
-        if ($this->isStarted($party->election_id) || !$this->isOrganizer($party->election_id)) return  redirect('/');
-        $party->name=$request->name;
-        $party->save();
-        $data = ['message' => 'party updated successfully','code'=>201];
-        return Response()->json($data,201);
-    }
-    function delete_party(Request $request){
-        $validation =  Validator::make($request->all(), [
-            'id'=>'required|integer|exists:parties,id']);
-        if ($validation->fails()){
-            return response()->json($validation->errors(), 422);
-        }
-        $id= $request->id;
-       $party=Party::where('id',$id)->first();
-        if ($this->isStarted($party->election_id) ||!$this->isOrganizer($party->election_id)) return  redirect('/');
-        $party->delete();
-        $data = ['message' => 'party deleted successfully','code'=>201];
-        return Response()->json($data,201);
-    }
     function update_candidate(Request $request){
         $validation =  Validator::make($request->all(), [
             'id'=>'required|integer|exists:partisan_candidates,id',
@@ -190,8 +136,6 @@ class PluralityElectionController extends Controller
             return response()->json($response, 400);
             }
     }
-
-
     function add_voters(Request $request)
     {
         $validation = Validator::make($request->all(), [
@@ -259,7 +203,6 @@ class PluralityElectionController extends Controller
             return response()->json($exception->getTrace(), 400);
         }
     }
-
     function vote(Request $request){
 
         $validation =  Validator::make($request->all(), [
@@ -290,6 +233,7 @@ class PluralityElectionController extends Controller
         }
         }
     function results(Request $request){
+        echo $this->hels();die;
       $request->merge(['id' => $request->route('id')]);
       $validation =  Validator::make($request->all(), [
             'id'=>'required|integer|exists:elections,id',
@@ -307,42 +251,6 @@ class PluralityElectionController extends Controller
         $data["vote_ratio"] =  $data["vote_casted"]/    $data["added_voters"] ;
         $data["vote_ratio"] = number_format((float) $data["vote_ratio"], 2, '.', '');
         return Response()->json($data,201);
-    }
-    public function isOrganizer($election_id)
-    {
-        $p=Election::where('id',$election_id)->first();
-        if(empty($p)){
-            return false;
-        }
-        if($p->organizer_id == auth()->user()['id']){
-            return true;
-        }
-        return false;
-    }
-    public function isStarted($election_id){
-
-        $election=Election::where('id',$election_id)->first();
-        if(empty($election)){
-            return false;
-        }
-        $start = Carbon::parse($election->start_date);
-        $before=Carbon::now()->isBefore($start);
-        if($before){
-            return false;
-        }
-        return true;
-    }
-    public function isEnded($election_id){
-        $election=Election::where('id',$election_id)->first();
-        if(empty($election)){
-            return false;
-        }
-        $end = Carbon::parse($election->end_date);
-        $ended=Carbon::now()->isAfter($end);
-        if($ended){
-            return true;
-        }
-        return false;
     }
 }
 

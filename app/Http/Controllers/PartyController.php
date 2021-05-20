@@ -2,62 +2,76 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Candidate;
+use App\Models\PartisanCandidate;
 use App\Models\Party;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Helpers\MyHelper;
 
 class PartyController extends Controller
 {
-    //
-
-    function create(Request $request)
-    {
+    use MyHelper;
+    function add_to_plurality(Request $request){
         $validation =  Validator::make($request->all(), [
-            "name"=>"required|string|min:2|max:191",
-            "description"=>"required|string",
-            "picture"=>"string|max:255",
-            "party_id"=>'integer|min:1'
+            'name'=>'required',
+            'candidates' => 'required|array|min:1|max:1',
+            'candidates.*.name' => 'required|string|min:4|max:255',
+            'candidates.*.description' => 'string|min:4|max:400',
+            'election_id'=>'required|integer|exists:plurality_elections,id'
         ]);
         if ($validation->fails()) {
             return response()->json($validation->errors(), 422);
         }
-        $allData = $request->all();
-      //  $allData['organizer_id']=$id;
-        Party::create($allData);
-    }
+        $election_id= $request->election_id;
+        if ($this->isStarted($election_id) || !$this->isOrganizer($election_id)) return  redirect('/');
+        $party_id=Party::create(['name'=> $request->name,
+            'election_id'=> $election_id])->id;
+        foreach( $request->candidates as $candidate){
 
-    public function update(Request $request){
-        try{
-            $validation = Validator::make(
-                $request->all(), [
-                'data'=>'required',
-                'file'=>'required',
-                'file.*' => 'required|mimes:jpg,jpeg,png,bmp|max:20000',
-            ],[
-                    'file.*.required' => 'Please upload an image',
-                    'file.*.mimes' => 'Only jpeg,png and bmp images are allowed',
-                    'file.*.max' => 'Sorry! Maximum allowed size for an image is 20MB',
+           $candidate_id=Candidate::create([
+                    'name'=> $candidate['name'],
+                    'description'=>(!empty($candidate['description'])) ? $candidate['description'] : null,
+                     'election_id'=>$election_id
+                ]
+            )->id;
+            PartisanCandidate::create([
+                    'id'=> $candidate_id,
+                    'party_id'=>$party_id,
                 ]
             );
-            if($validation->fails()) {
-                return response()->json($validation->errors(), 422);
-            }
-            $id= auth()->user()['id'];
-            $response = cloudinary()->upload($request->file('file')->getRealPath(),[
-                'folder'=> 'myballot/users/'.$id.'/',
-                'public_id'=>'avatar'.$id,
-                'overwrite'=>true,
-                'format'=>"webp"
-            ])->getSecurePath();
-            User::where('id',$id)->update(['avatar'=>$response]);
-            $data = ['message' => 'profile avatar updated successfully','data'=>$response,'response code'=>201];
-            return response()->json($data,201);
-        }catch (Exception $e){
-            $resArr["status code"] = 200;
-            return response()->json($resArr, 200);
-
         }
-
+        $data = ['message' => 'party added successfully','code'=>201];
+        return Response()->json($data,201);
+    }
+    function update(Request $request){
+        $validation =  Validator::make($request->all(), [
+            'id'=>'required|integer|exists:parties,id',
+            'name'=>'required|string|min:4|max:255',
+        ]);
+        if ($validation->fails()) {
+            return response()->json($validation->errors(), 422);
+        }
+        $id= $request->id;
+        $party=Party::where('id',$id)->first();
+        if ($this->isStarted($party->election_id) || !$this->isOrganizer($party->election_id)) return  redirect('/');
+        $party->name=$request->name;
+        $party->save();
+        $data = ['message' => 'party updated successfully','code'=>201];
+        return Response()->json($data,201);
+    }
+    function delete(Request $request){
+        $validation =  Validator::make($request->all(), [
+            'id'=>'required|integer|exists:parties,id']);
+        if ($validation->fails()){
+            return response()->json($validation->errors(), 422);
+        }
+        $id= $request->id;
+        $party=Party::where('id',$id)->first();
+        if ($this->isStarted($party->election_id) ||!$this->isOrganizer($party->election_id)) return  redirect('/');
+        $party->delete();
+        $data = ['message' => 'party deleted successfully','code'=>201];
+        return Response()->json($data,201);
     }
 
 }

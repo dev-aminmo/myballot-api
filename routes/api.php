@@ -34,18 +34,24 @@ Route::middleware('auth:api')->group(function (){
     });
     Route::middleware('role:organizer')->group(function (){
     Route::post("/plurality-election/create",[PluralityElectionController::class,"create"]);
-    Route::post("/plurality-election/party/add",[PluralityElectionController::class,"add_party"]);
-    Route::post("/plurality-election/party/update",[PluralityElectionController::class,"update_party"]);
-    Route::delete("/plurality-election/party/delete",[PluralityElectionController::class,"delete_party"]);
     Route::post("/plurality-election/partisan_candidate/update",[PluralityElectionController::class,"update_candidate"]);
     Route::post("/plurality-election/voters/add",[PluralityElectionController::class,"add_voters"]);
     Route::post("/lists-election/create",[ListsElectionController::class,"create"]);
-    Route::post("/party/create",[PartyController::class,"create"]);
-    Route::post("/candidate/create",[CandidateController::class,"create"]);
+    Route::post("/party/plurality/add",[PartyController::class,"add_to_plurality"]);
+    Route::post("/party/update",[PartyController::class,"update"]);
+    Route::delete("/party/delete",[PartyController::class,"delete"]);
+    //Route::post("/plurality-election/party/add",[PluralityElectionController::class,"add_party"]);
+    //Route::post("/plurality-election/party/update",[PluralityElectionController::class,"update_party"]);
+    //Route::delete("/plurality-election/party/delete",[PluralityElectionController::class,"delete_party"]);
+
+        Route::post("/candidate/create",[CandidateController::class,"create"]);
     Route::post("/poll/create",[PollController::class,"create"]);
     });
     Route::middleware('role:voter')->group(function (){
         Route::post("/plurality-election/vote",[PluralityElectionController::class,"vote"]);
-        Route::get("/plurality-election/results/{id}",[PluralityElectionController::class,"results"]);
     });
 });
+
+
+Route::get("/plurality-election/results/{id}",[PluralityElectionController::class,"results"]);
+
