@@ -15,6 +15,21 @@ class PartisanCandidate extends Model
     public $timestamps=false;
 
     public function party(){
-        return $this->belongsTo(PluralityElection::class,'election_id');
+        return $this->belongsTo(Party::class,'party_id');
+    }
+    public function candidate()
+    {
+        return $this->belongsTo(Candidate::class,'id');
+    }
+    public function carOwner()
+    {
+        return $this->hasOneThrough(
+            Owner::class,
+            Car::class,
+            'mechanic_id', // Foreign key on the cars table...
+            'car_id', // Foreign key on the owners table...
+            'id', // Local key on the mechanics table...
+            'id' // Local key on the cars table...
+        );
     }
 }

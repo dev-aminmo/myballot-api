@@ -141,7 +141,6 @@ use MyHelper;
         }
         }
     function results(Request $request){
-        echo $this->hels();die;
       $request->merge(['id' => $request->route('id')]);
       $validation =  Validator::make($request->all(), [
             'id'=>'required|integer|exists:elections,id',
@@ -149,14 +148,25 @@ use MyHelper;
         if ($validation->fails()) {
             return response()->json($validation->errors(), 422);
         }
-       $data["candidates"]= Candidate::where('election_id',$request->id)->orderBy('count', 'DESC')->limit(3)->get();
-       $election=Election::where('id',6)->first();
-        $data["added_voters"] =$election->users()->where('election_id',6)->count();
+        $data["candidates"]=Candidate::where('election_id',$request->id)->orderBy('count', 'DESC')->limit(3)->with(['partisan_candidate'=> function ($query) {
+              $query->with('party');
+        }])->get()->transform(function ($value){
+             $data=$value;
+             if (!empty($value->partisan_candidate)){
+                 $data-> party=$value->partisan_candidate->party;
+                 unset($data->party->list_id);
+             }else{
+                 $data-> party=null;
+             }
+             unset($data->partisan_candidate);
+             return $data;
+     });
+       $election=Election::where('id',$request->id)->first();
+       $data["added_voters"] =$election->users()->where('election_id',6)->count();
        $data["vote_casted"] =$election->users()->where(['election_id'=>6,
            'voted'=>true
        ])->count();
-
-        $data["vote_ratio"] =  $data["vote_casted"]/    $data["added_voters"] ;
+        $data["vote_ratio"] =  ( $data["added_voters"] == 0)?0: $data["vote_casted"]/  $data["added_voters"];
         $data["vote_ratio"] = number_format((float) $data["vote_ratio"], 2, '.', '');
         return Response()->json($data,201);
     }

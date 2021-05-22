@@ -21,4 +21,8 @@ class FreeCandidate extends Model
         return $this->belongsTo(FreeElectionList::class,'list_id');
     }
 
+    public function candidate(){
+        return $this->belongsTo(Candidate::class,'id');
+    }
+
 }
