@@ -45,20 +45,54 @@ class PartyController extends Controller
         return Response()->json($data,201);
     }
     function update(Request $request){
-        $validation =  Validator::make($request->all(), [
+/*        $validation =  Validator::make($request->all(), [
             'id'=>'required|integer|exists:parties,id',
             'name'=>'required|string|min:4|max:255',
+        ]);*/
+        $validation = Validator::make(
+            $request->all(), [
+            'body'=>'required',
+            //'file'=>'required',
+            'file.*' => 'required|mimes:jpg,jpeg,png,bmp|max:20000',
+        ],[
+                'file.*.required' => 'Please upload an image',
+                'file.*.mimes' => 'Only jpeg,png and bmp images are allowed',
+                'file.*.max' => 'Sorry! Maximum allowed size for an image is 20MB',
+            ]
+        );
+        if($validation->fails()) {
+            return response()->json($validation->errors(), 202);
+        }
+        $jsonData=$request->get("body");
+        if(!is_array($jsonData)) $jsonData= json_decode($request->get("body"),true);
+        $validation = Validator::make($jsonData, [
+            'id'=>'required|integer|exists:parties,id',
+            'name'=>'string|min:4|max:255',
         ]);
         if ($validation->fails()) {
-            return response()->json($validation->errors(), 422);
+            return response()->json($validation->errors(), 202);
         }
-        $id= $request->id;
+        try{
+        $id= $jsonData['id'];
         $party=Party::where('id',$id)->first();
         if ($this->isStarted($party->election_id) || !$this->isOrganizer($party->election_id)) return  redirect('/');
-        $party->name=$request->name;
-        $party->save();
+
+        if($request->hasFile('file')) {
+            $response = cloudinary()->upload($request->file('file')->getRealPath(),[
+                'folder'=> 'myballot/parties/',
+                'public_id'=>'picture'.$jsonData['id'],
+                'overwrite'=>true,
+                'format'=>"webp"
+            ])->getSecurePath();
+            $jsonData['picture']=$response;
+        }
+        unset($jsonData['list_id'],$jsonData['election_id']);
+        $party->update($jsonData);
         $data = ['message' => 'party updated successfully','code'=>201];
         return Response()->json($data,201);
+        }catch ( \Exception  $exception){
+            return response()->json(["error"=>"An error has occured","code"=>400], 400);
+        }
     }
     function delete(Request $request){
         $validation =  Validator::make($request->all(), [

@@ -107,8 +107,6 @@ class ElectionController extends Controller
         }
         $election_id= $request->election_id;
         if ($this->isStarted($election_id) ||!$this->isOrganizer($election_id)) return  redirect('/');
-
-     //   $election=Election::where('id',6)->first();
         $u = User::where('id',  $request->voter_id)->first();
         $election=$u->elections()->where('election_id', $election_id)->first();
        if ( !empty($election)){

@@ -29,7 +29,6 @@ class UserController extends Controller
             $resArr["status code"] = 201;
             return response()->json($resArr, 201);
         }catch (\Exception $e){
-
             return response()->json(["error"=>$e->getMessage()], 400);
 
         }
@@ -91,8 +90,8 @@ class UserController extends Controller
             $data = ['message' => 'profile avatar updated successfully','data'=>$response,'response code'=>201];
             return response()->json($data,201);
         }catch (Exception $e){
-            $resArr["status code"] = 200;
-            return response()->json($resArr, 200);
+            $resArr["status code"] = 400;
+            return response()->json($resArr, 400);
 
         }
 
