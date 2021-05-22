@@ -68,7 +68,7 @@ Route::middleware('auth:api')->group(function (){
     /*
     * candidate routes
     */
-    Route::post("/candidate/partisan/update",[CandidateController::class,"update_partisan"]);
+    Route::post("/candidate/update",[CandidateController::class,"update"]);
   //  Route::post("/candidate/create",[CandidateController::class,"create"]);
 
     }); //end of organizer's routes

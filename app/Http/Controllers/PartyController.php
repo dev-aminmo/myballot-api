@@ -45,19 +45,14 @@ class PartyController extends Controller
         return Response()->json($data,201);
     }
     function update(Request $request){
-/*        $validation =  Validator::make($request->all(), [
-            'id'=>'required|integer|exists:parties,id',
-            'name'=>'required|string|min:4|max:255',
-        ]);*/
         $validation = Validator::make(
             $request->all(), [
             'body'=>'required',
-            //'file'=>'required',
-            'file.*' => 'required|mimes:jpg,jpeg,png,bmp|max:20000',
+            'file.*' => 'required|mimes:jpg,jpeg,png,bmp|max:10000',
         ],[
                 'file.*.required' => 'Please upload an image',
                 'file.*.mimes' => 'Only jpeg,png and bmp images are allowed',
-                'file.*.max' => 'Sorry! Maximum allowed size for an image is 20MB',
+                'file.*.max' => 'Sorry! Maximum allowed size for an image is 10MB',
             ]
         );
         if($validation->fails()) {
