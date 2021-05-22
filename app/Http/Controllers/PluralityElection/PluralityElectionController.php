@@ -161,13 +161,14 @@ use MyHelper;
              unset($data->partisan_candidate);
              return $data;
      });
+        $election_id =  $request->id;
        $election=Election::where('id',$request->id)->first();
-       $data["added_voters"] =$election->users()->where('election_id',6)->count();
-       $data["vote_casted"] =$election->users()->where(['election_id'=>6,
+       $data["added_voters"] =$election->users()->where('election_id',$election_id )->count();
+       $data["vote_casted"] =$election->users()->where(['election_id'=>$election_id ,
            'voted'=>true
        ])->count();
         $data["vote_ratio"] =  ( $data["added_voters"] == 0)?0: $data["vote_casted"]/  $data["added_voters"];
-        $data["vote_ratio"] = number_format((float) $data["vote_ratio"], 2, '.', '');
+        $data["vote_ratio"] =(float) number_format((float) $data["vote_ratio"], 2, '.', '');
         return Response()->json($data,201);
     }
 }
