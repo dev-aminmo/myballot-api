@@ -87,8 +87,38 @@ class ElectionController extends Controller
             return response()->json($validation->errors(), 422);
         }
         $election_id= $request->election_id;
-        $election=Election::where('id',6)->first();
-        return $election->users()->where('election_id',6)->get();
+        if ($this->isStarted($election_id) ||!$this->isOrganizer($election_id)) return  redirect('/');
+
+        $election=Election::where('id',$election_id)->first();
+        $data["data"] =$election->users()->where('election_id',$election_id)->get()->each(function($value){
+          unset($value->pivot);
+            return $value;
+        });
+        $data['message']="success";
+        return response()->json($data,200);
     }
+    function delete_voter(Request $request){
+        $validation = Validator::make($request->all(), [
+            'election_id' => 'required|integer|exists:elections,id',
+            'voter_id' => 'required|integer|exists:users,id',
+        ]);
+        if ($validation->fails()) {
+            return response()->json($validation->errors(), 422);
+        }
+        $election_id= $request->election_id;
+        if ($this->isStarted($election_id) ||!$this->isOrganizer($election_id)) return  redirect('/');
+
+     //   $election=Election::where('id',6)->first();
+        $u = User::where('id',  $request->voter_id)->first();
+        $election=$u->elections()->where('election_id', $election_id)->first();
+       if ( !empty($election)){
+           $election->pivot->delete();
+       }
+
+        $data['message']="voter deleted successfully";
+        $data['code']="201";
+        return response()->json($data,201);
+    }
+
 
 }
