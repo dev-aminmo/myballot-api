@@ -141,7 +141,7 @@ use MyHelper;
         }
         }
     function results(Request $request){
-      $request->merge(['id' => $request->route('id')]);
+        $request->merge(['id' => $request->route('id')]);
       $validation =  Validator::make($request->all(), [
             'id'=>'required|integer|exists:elections,id',
         ]);

@@ -2,6 +2,8 @@
 
 namespace App\Jobs;
 
+use App\Mail\ElectionEnded;
+use App\Mail\ElectionStarted;
 use App\Mail\MyTestMail;
 use App\Mail\YouAreInvited;
 use Illuminate\Bus\Queueable;
@@ -36,21 +38,35 @@ class SendMailsJob implements ShouldQueue
     public function handle()
     {
         //
-        if($this->data['type'] ==1){
-            $details = [
-                'email' => $this->data['email'],
-                'password' => $this->data['password']
-            ];
 
-            Mail::to($details['email'])->send(new MyTestMail($details));
-        }else{
-            $details = [
-                'link' => "https://www.google.com/",
-            ];
-            Mail::to($this->data['email'])->send(new YouAreInvited($details));
+        switch ($this->data['type']) {
+            case 1:
+                $details = [
+                    'email' => $this->data['email'],
+                    'password' => $this->data['password']
+                ];
+
+                Mail::to($details['email'])->send(new MyTestMail($details));
+                break;
+            case 2:
+                $details = [
+                    'link' => "https://www.google.com/",
+                ];
+                Mail::to($this->data['email'])->send(new YouAreInvited($details));
+                break;
+            case 3:
+                $details = [
+                    'link' => "https://www.google.com/",
+                ];
+                Mail::to($this->data['email'])->send(new ElectionStarted($details));
+                break;
+            case 4:
+                $details = [
+                    'link' => "https://www.google.com/",
+                ];
+                Mail::to($this->data['email'])->send(new ElectionEnded($details));
+                break;
         }
-
-
 
     }
 }

@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         //
+        'App\Console\Commands\NotifyUsers',
     ];
 
     /**
@@ -24,8 +25,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-         $schedule->command('queue:work')->everyMinute();
-         $schedule->command('queue:restart')->everyFiveMinutes();
+        $schedule->command('queue:work')->withoutOverlapping();;
+
+        $schedule->command('notify:users')->everyMinute();
+
+
+
+        // $schedule->command('queue:restart')->everyFiveMinutes();
     }
 
     /**
