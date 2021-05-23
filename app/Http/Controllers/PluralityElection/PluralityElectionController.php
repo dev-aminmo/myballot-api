@@ -169,7 +169,8 @@ use MyHelper;
        ])->count();
         $data["vote_ratio"] =  ( $data["added_voters"] == 0)?0: $data["vote_casted"]/  $data["added_voters"];
         $data["vote_ratio"] =(float) number_format((float) $data["vote_ratio"], 2, '.', '');
-        return Response()->json($data,201);
+        $data["code"]=200;
+        return Response()->json($data,200);
     }
 }
 

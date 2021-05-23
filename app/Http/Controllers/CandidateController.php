@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Candidate;
+use App\Models\Election;
 use App\Models\PartisanCandidate;
 use App\Models\Party;
 use Illuminate\Http\Request;
@@ -59,6 +60,32 @@ class CandidateController extends Controller
             return response()->json(["error"=>"An error has occured","code"=>400], 400);
         }
     }
+    function plurality_candidates(Request $request){
+        $request->merge(['id' => $request->route('id')]);
+        $validation =  Validator::make($request->all(), [
+            'id'=>'required|integer|exists:elections,id',
+        ]);
+        if ($validation->fails()) {
+            return response()->json($validation->errors(), 422);
+        }
+        $data["data"]=Candidate::where('election_id',$request->id)->select('id','name','description','picture')->with(['partisan_candidate'=> function ($query) {
+
+            $query->with('party');
+        }])->get()->transform(function ($value){
+            $data=$value;
+            if (!empty($value->partisan_candidate)){
+                $data-> party=$value->partisan_candidate->party;
+                unset($data->party->list_id);
+            }else{
+                $data-> party=null;
+            }
+            unset($data->partisan_candidate);
+            return $data;
+        });
+        $data["code"]=200;
+        return Response()->json($data,200);
+    }
+
 
 
 }

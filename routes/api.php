@@ -51,6 +51,8 @@ Route::middleware('auth:api')->group(function (){
     Route::post("/lists-election/create",[ListsElectionController::class,"create"]);
     Route::post("/poll/create",[PollController::class,"create"]);
     Route::post("/election/update",[ElectionController::class,"update"]);
+    Route::get("/plurality-election/results/{id}",[PluralityElectionController::class,"results"]);
+    Route::get("/plurality-election/candidates/{id}",[CandidateController::class,"plurality_candidates"]);
 
     /*
      * party routes
@@ -81,7 +83,3 @@ Route::middleware('auth:api')->group(function (){
     Route::post("/plurality-election/vote",[PluralityElectionController::class,"vote"]);
     });//end of voter's routes
 });
-
-
-Route::get("/plurality-election/results/{id}",[PluralityElectionController::class,"results"]);
-
