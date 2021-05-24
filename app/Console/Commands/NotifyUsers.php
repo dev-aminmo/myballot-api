@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\SendMailsJob;
 use App\Models\Election;
+use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 
@@ -49,8 +50,23 @@ class NotifyUsers extends Command
         $elections_ends = Election::where("end_date", $now)->get();
         if (!$elections_starts->isEmpty()) {
             foreach ($elections_starts as $election) {
+                $data = ['type' => 3, "email" =>  User::where('id',$election->organizer_id)->first()->email];
+                dispatch(new SendMailsJob($data));
                 $election->users()->where('election_id', $election->id)->get()->each(function ($user) {
                     $data = ['type' => 3, "email" => $user->email];
+                    dispatch(new SendMailsJob($data));
+                    return $user;
+                });
+            }
+
+
+        }
+        if (!$elections_ends->isEmpty()) {
+            foreach ($elections_ends as $election) {
+                $data = ['type' => 4, "email" =>  User::where('id',$election->organizer_id)->first()->email];
+                dispatch(new SendMailsJob($data));
+                $election->users()->where('election_id', $election->id)->get()->each(function ($user) {
+                    $data = ['type' => 4, "email" => $user->email];
                     dispatch(new SendMailsJob($data));
                     return $user;
                 });

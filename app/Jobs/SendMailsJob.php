@@ -23,7 +23,9 @@ class SendMailsJob implements ShouldQueue
      *
      * @return void
      */
-  public  $data;
+  //  public $tries = 5;
+
+public  $data;
     public function __construct($data)
     {
         //

@@ -25,13 +25,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('queue:work')->withoutOverlapping();;
-
+        //$schedule->command('queue:work')->everyMinute();
         $schedule->command('notify:users')->everyMinute();
-
-
-
-        // $schedule->command('queue:restart')->everyFiveMinutes();
+        //$schedule->command('queue:work -max-time=50 --max-jobs=100 --sleep=10 --tries=3')->everyMinute();
+       // $schedule->command('queue:restart')->everyFiveMinutes();
     }
 
     /**
