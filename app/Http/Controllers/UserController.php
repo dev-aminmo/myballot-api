@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginPostRequest;
 use App\Http\Requests\RegisterPostRequest;
+use App\Http\Requests\UpdateUserAvatarRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -55,21 +56,8 @@ class UserController extends Controller
         }
         return response()->json(['data'=>$data,'message'=>'success'],200);
     }
-    public function updateAvatar(Request $request){
+    public function updateAvatar(UpdateUserAvatarRequest $request){
         try{
-            $validation = Validator::make(
-                $request->all(), [
-                'file'=>'required',
-                'file.*' => 'required|mimes:jpg,jpeg,png,bmp|max:20000',
-            ],[
-                    'file.*.required' => 'Please upload an image',
-                    'file.*.mimes' => 'Only jpeg,png and bmp images are allowed',
-                    'file.*.max' => 'Sorry! Maximum allowed size for an image is 20MB',
-                ]
-            );
-            if($validation->fails()) {
-                return response()->json($validation->errors(), 422);
-            }
             $id= auth()->user()['id'];
             $response = cloudinary()->upload($request->file('file')->getRealPath(),[
                 'folder'=> 'myballot/users/'.$id.'/',
@@ -78,10 +66,10 @@ class UserController extends Controller
                 'format'=>"webp"
             ])->getSecurePath();
             User::where('id',$id)->update(['avatar'=>$response]);
-            $data = ['message' => 'profile avatar updated successfully','data'=>$response,'response code'=>201];
+            $data = ['message' => 'profile avatar updated successfully','data'=>$response,'code'=>201];
             return response()->json($data,201);
         }catch (Exception $e){
-            $resArr["status code"] = 400;
+            $resArr["code"] = 400;
             return response()->json($resArr, 400);
 
         }
