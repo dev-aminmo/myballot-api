@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginPostRequest;
+use App\Http\Requests\RegisterPostRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -10,20 +11,10 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    public function register(Request $request)
+    public function register(RegisterPostRequest $request)
     {
-        $validation = Validator::make($request->all(), [
-            'name' => 'required|string',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:6',
-        ]);
-        if ($validation->fails()) {
-            return response()->json($validation->errors(), 422);
-        }
         try{
-            $allData = $request->all();
-            $allData['password'] = bcrypt($allData['password']);
-            $newUser = User::create($allData);
+            $newUser = User::create($request->getAttributes());
             $newUser->attachRole("organizer");
             $tokenStr = $newUser->createToken('api-application')->accessToken;
             $resArr["token"] = $tokenStr;
@@ -43,27 +34,26 @@ class UserController extends Controller
             'password' => $request->password,
         ])) {
             $user = Auth::user();
-            $resArr = [];
-            $resArr['token'] = $user->createToken('api-application')->accessToken;
-            $resArr['name'] = $user->username;
-            return response()->json($resArr, 200);
+            $data = [];
+            $data['token'] = $user->createToken('api-application')->accessToken;
+            $data['code'] = 200;
+            return response()->json($data, 200);
         } else {
-            return response()->json(['error' => 'Unauthorized access','status code'=>401], 401);
+            return response()->json(['error' => 'Unauthorized access','code'=>401], 401);
         }
     }
     public function index()
     {
-     // echo auth()->user()->with("roles");die;
-      $deatails=auth()->user();
-        if($deatails['avatar']==""){
-            $deatails['avatar']="place_holder.jpg" ;
+      $data=auth()->user();
+        if($data['avatar']==""){
+            $data['avatar']="place_holder.jpg" ;
         }
         if(auth()->user()->hasRole("organizer")){
-            $deatails['role']='organizer';
+            $data['role']='organizer';
         }else{
-            $deatails['role']='voter';
+            $data['role']='voter';
         }
-        return response()->json(['data'=>$deatails,'message'=>'success'],200);
+        return response()->json(['data'=>$data,'message'=>'success'],200);
     }
     public function updateAvatar(Request $request){
         try{
