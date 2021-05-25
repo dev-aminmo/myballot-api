@@ -15,8 +15,9 @@ class UserController extends Controller
     public function register(RegisterPostRequest $request)
     {
         try{
-            $newUser = User::create($request->getAttributes());
-            $newUser->attachRole("organizer");
+
+            $newUser = User::create($request->getAttributes())->SendEmailVerificationNotification();
+         //   $newUser->attachRole("organizer");
             $tokenStr = $newUser->createToken('api-application')->accessToken;
             $resArr["token"] = $tokenStr;
             $resArr["status code"] = 201;

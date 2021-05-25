@@ -48,6 +48,7 @@ class Handler extends ExceptionHandler
         if( $request->is('api/*')){
             if ($exception instanceof ModelNotFoundException) {
                 $model = strtolower(class_basename($exception->getModel()));
+                return parent::render($request, $exception);
 
                 return response()->json([
                     'error' => 'model not found',

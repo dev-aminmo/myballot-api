@@ -4,6 +4,7 @@ use App\Http\Controllers\ElectionController;
 use App\Http\Controllers\ListsElection\ListsElectionController;
 use App\Http\Controllers\Poll\PollController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VerificationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\PartyController;
@@ -27,12 +28,15 @@ use App\Http\Controllers\PluralityElection\PluralityElectionController;
 */
 Route::post("/register",[UserController::class,"register"]);
 Route::post("/login",[UserController::class,"login"]);
-Route::get("/login",[UserController::class,"login"])->name('login');
 
+Route::get("email/verify/{id}",[VerificationController::class,"verify"])->name("verification.verify");
+//Route::get("/login",[UserController::class,"login"])->name('login');
 Route::middleware('auth:api')->group(function (){
     /*
      * users routes
      */
+    Route::get("email/resend",[VerificationController::class,"resend"])->name("verification.resend");
+
     Route::group(['prefix'=>'/user'],function(){
         Route::get("",[UserController::class,"index"]);
         Route::post("/avatar/update",[UserController::class,"updateAvatar"]);

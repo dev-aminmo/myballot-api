@@ -19,4 +19,4 @@ return response()->json([
     'code' => 403
 ],403);
    // return view('welcome');
-});
+})->name("/");
