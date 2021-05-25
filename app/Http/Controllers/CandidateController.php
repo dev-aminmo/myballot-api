@@ -69,8 +69,7 @@ class CandidateController extends Controller
             return response()->json($validation->errors(), 422);
         }
         $data["data"]=Candidate::where('election_id',$request->id)->select('id','name','description','picture')->with(['partisan_candidate'=> function ($query) {
-
-            $query->with('party');
+        $query->with('party');
         }])->get()->transform(function ($value){
             $data=$value;
             if (!empty($value->partisan_candidate)){
