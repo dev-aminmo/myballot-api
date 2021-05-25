@@ -1,15 +1,12 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\User;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Contracts\Validation;
 
-//use Illuminate\Foundation\Http\FormRequest;
-
-class LoginPostRequest extends FormRequest
+class UpdateUserAvatarRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,23 +26,23 @@ class LoginPostRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'required|email|exists:users,email',
-            'password' => 'required|min:6',
+            'file' => 'required|mimes:jpg,jpeg,png,bmp|max:20000'
         ];
     }
     public function messages()
     {
         return [
-            'email.required' => 'Email is required!',
-            'password.required' => 'Password is required!'
+           'file.required' => 'Please upload an image',
+            'file.mimes' => 'Only jpeg,png and bmp images are allowed',
+            'file.max' => 'Sorry! Maximum allowed size for an image is 20MB',
         ];
     }
 
     protected function failedValidation(Validator $validator)
     {
-       $res= response()->json(["errors"=>$validator->errors(),
-           "code"=>422
-           ],422);
+        $res= response()->json(["errors"=>$validator->errors(),
+            "code"=>422
+        ],422);
         throw new HttpResponseException($res);
     }
 }

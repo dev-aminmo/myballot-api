@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\LoginPostRequest;
-use App\Http\Requests\RegisterPostRequest;
-use App\Http\Requests\UpdateUserAvatarRequest;
+use App\Http\Requests\User\LoginPostRequest;
+use App\Http\Requests\User\RegisterPostRequest;
+use App\Http\Requests\User\UpdateUserAvatarRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
