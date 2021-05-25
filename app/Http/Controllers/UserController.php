@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginPostRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,7 +24,7 @@ class UserController extends Controller
             $allData = $request->all();
             $allData['password'] = bcrypt($allData['password']);
             $newUser = User::create($allData);
-            $newUser->attachRole("voter");
+            $newUser->attachRole("organizer");
             $tokenStr = $newUser->createToken('api-application')->accessToken;
             $resArr["token"] = $tokenStr;
             $resArr["status code"] = 201;
@@ -35,7 +36,7 @@ class UserController extends Controller
 
     }
 
-    public function login(Request $request)
+    public function login(LoginPostRequest $request)
     {
         if (Auth::attempt([
             'email' => $request->email,
