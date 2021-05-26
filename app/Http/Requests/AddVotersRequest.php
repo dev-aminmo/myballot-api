@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Helpers\AuthorizesAfterValidation;
 use App\Helpers\MyHelper;
 use App\Helpers\MyResponse;
 use Illuminate\Contracts\Validation\Validator;
@@ -12,16 +13,22 @@ class AddVotersRequest extends FormRequest
 {
     use MyResponse;
     use MyHelper;
+    use AuthorizesAfterValidation;
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize()
+    public function authorizeValidated()
     {
-        if($this->election_id)  return !$this->isStarted($this->election_id) && $this->isOrganizer($this->election_id);
-    return true;
+        return !$this->isStarted($this->election_id) && $this->isOrganizer($this->election_id);
     }
+    /*public function authorize()
+    {
+        dd($this->validated);
+        if($this->validated)  return !$this->isStarted($this->election_id) && $this->isOrganizer($this->election_id);
+    return true;
+    }*/
 
     /**
      * Get the validation rules that apply to the request.
