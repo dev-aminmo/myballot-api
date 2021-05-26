@@ -1,19 +1,17 @@
 <?php
 
-namespace App\Http\Requests\PluralityElection;
+namespace App\Http\Requests;
 
+use App\Helpers\MyHelper;
+use App\Helpers\MyResponse;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use App\Helpers\MyResponse;
-use App\Helpers\MyHelper;
 
-
-class VotePluralityElectionRequest extends FormRequest
+class AddVotersRequest extends FormRequest
 {
     use MyResponse;
     use MyHelper;
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -21,8 +19,8 @@ class VotePluralityElectionRequest extends FormRequest
      */
     public function authorize()
     {
-        if($this->election_id)  return $this->isStarted($this->election_id)&& !$this->isEnded($this->election_id);
-        return true;
+        if($this->election_id)  return !$this->isStarted($this->election_id) && $this->isOrganizer($this->election_id);
+    return true;
     }
 
     /**
@@ -32,10 +30,10 @@ class VotePluralityElectionRequest extends FormRequest
      */
     public function rules()
     {
-
         return [
-            'election_id'=>'required|integer|exists:elections,id',
-            'candidate_id'=>'required|integer|exists:candidates,id'
+            'election_id' => 'required|integer|exists:elections,id',
+            'emails' => 'required|array|min:1|max:150',
+            'emails.*' => 'email',
         ];
     }
 

@@ -15,7 +15,7 @@ trait MyResponse {
     public static function returnErrorResponse($message="An error has occurred",$code=400){
         return response()->json(["message"=>$message,"code"=>$code], $code);
     }
-    public static function returnValidationResponse($errors,$code=422){
-        return response()->json(["errors"=>$errors,"code"=>$code], $code);
+    public static function returnValidationResponse($errors,$code=422,$message="validation error"){
+        return response()->json(["message"=>$message,"errors"=>$errors,"code"=>$code], $code);
     }
 }
