@@ -1,22 +1,19 @@
 <?php
 
-namespace App\Http\Requests\PluralityElection;
+namespace App\Http\Requests;
 
 use App\Helpers\AuthorizesAfterValidation;
+use App\Helpers\MyHelper;
+use App\Helpers\MyResponse;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use App\Helpers\MyResponse;
-use App\Helpers\MyHelper;
 
-
-class VotePluralityElectionRequest extends FormRequest
+class DeleteVoterRequest extends FormRequest
 {
     use MyResponse;
     use MyHelper;
     use AuthorizesAfterValidation;
-
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -24,9 +21,8 @@ class VotePluralityElectionRequest extends FormRequest
      */
     public function authorizeValidated()
     {
-      return $this->isStarted($this->election_id)&& !$this->isEnded($this->election_id);
+        return !$this->isStarted($this->election_id) && $this->isOrganizer($this->election_id);
     }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -34,10 +30,9 @@ class VotePluralityElectionRequest extends FormRequest
      */
     public function rules()
     {
-
         return [
-            'election_id'=>'required|integer|exists:elections,id',
-            'candidate_id'=>'required|integer|exists:candidates,id'
+            'election_id' => 'required|integer|exists:elections,id',
+            'voter_id' => 'required|integer|exists:users,id',
         ];
     }
 

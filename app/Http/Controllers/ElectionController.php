@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AddVotersRequest;
+use App\Http\Requests\DeleteVoterRequest;
 use App\Jobs\SendMailsJob;
 use App\Models\Candidate;
 use App\Models\Election;
@@ -80,25 +81,14 @@ class ElectionController extends Controller
         $data['message']="success";
         return response()->json($data,200);
     }
-    function delete_voter(Request $request){
-        $validation = Validator::make($request->all(), [
-            'election_id' => 'required|integer|exists:elections,id',
-            'voter_id' => 'required|integer|exists:users,id',
-        ]);
-        if ($validation->fails()) {
-            return response()->json($validation->errors(), 422);
-        }
+    function delete_voter(DeleteVoterRequest $request){
         $election_id= $request->election_id;
-        if ($this->isStarted($election_id) ||!$this->isOrganizer($election_id)) return  redirect('/');
         $u = User::where('id',  $request->voter_id)->first();
         $election=$u->elections()->where('election_id', $election_id)->first();
        if ( !empty($election)){
            $election->pivot->delete();
        }
-
-        $data['message']="voter deleted successfully";
-        $data['code']="201";
-        return response()->json($data,201);
+        return $this->returnSuccessResponse("voter deleted successfully");
     }
     function update(Request $request){
         $validation =  Validator::make($request->all(), [

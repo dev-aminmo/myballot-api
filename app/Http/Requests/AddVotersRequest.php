@@ -23,13 +23,6 @@ class AddVotersRequest extends FormRequest
     {
         return !$this->isStarted($this->election_id) && $this->isOrganizer($this->election_id);
     }
-    /*public function authorize()
-    {
-        dd($this->validated);
-        if($this->validated)  return !$this->isStarted($this->election_id) && $this->isOrganizer($this->election_id);
-    return true;
-    }*/
-
     /**
      * Get the validation rules that apply to the request.
      *
