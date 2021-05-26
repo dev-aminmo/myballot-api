@@ -23,7 +23,6 @@ class PluralityElectionController extends Controller
 use MyHelper;
 use MyResponse;
     function create(CreatePluralityElectionRequest $request){
-
         try{
             $id= auth()->user()['id'];
             $allData = $request->all();

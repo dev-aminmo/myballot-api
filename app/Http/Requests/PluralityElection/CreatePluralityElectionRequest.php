@@ -55,8 +55,15 @@ class CreatePluralityElectionRequest extends FormRequest
     {
         return $this->validator->validated();
     }
+
+    /**
+     * this method check that there is more than two candidates and the difference
+     * between start_date and end_date is more than 5 minutes
+     */
     public function is_valid()
-    { $candidates_count=0;
+    {
+
+        $candidates_count=0;
         if (!empty($this->free_candidates)) {
             $candidates_count +=count($this->free_candidates);
         }
@@ -66,14 +73,25 @@ class CreatePluralityElectionRequest extends FormRequest
             }
         }
         if ($candidates_count<2) {
-            return  $this->returnValidationResponse(["the minimum number of candidates is 2"]);
+            throw new HttpResponseException( $this->returnValidationResponse(["the minimum number of candidates is 2"]));
         }
 
         $start = Carbon::parse($this->start_date);
         $end = Carbon::parse($this->end_date);
         $diff_in_minutes = $end->diffInMinutes($start);
         if ($diff_in_minutes < 5)  {
-            return  $this->returnValidationResponse(["the difference between start_date and end_date should be more than 5 minutes"]);
+       throw new HttpResponseException( $this->returnValidationResponse(["the difference between start_date and end_date should be more than 5 minutes"]));
         }
+    }
+    /**
+     * calling is_valid() after request validation
+     */
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            if (! $validator->failed() ) {
+                $this->is_valid();
+            }
+        });
     }
 }
