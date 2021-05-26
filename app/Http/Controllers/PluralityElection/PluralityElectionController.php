@@ -23,9 +23,7 @@ class PluralityElectionController extends Controller
 use MyHelper;
 use MyResponse;
     function create(CreatePluralityElectionRequest $request){
-        if(!empty($request->is_valid())){
-            return $request->is_valid();
-        }
+
         try{
             $id= auth()->user()['id'];
             $allData = $request->all();
