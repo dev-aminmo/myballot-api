@@ -2,14 +2,18 @@
 
 namespace App\Http\Requests;
 
+use App\Helpers\MyHelper;
 use App\Helpers\MyResponse;
+use App\Models\Candidate;
+use App\Models\Party;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class UpdateCandidateRequest extends FormRequest
+class UpdateCandidatePartyRequest extends FormRequest
 {
     use MyResponse;
+    use MyHelper;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -47,7 +51,7 @@ class UpdateCandidateRequest extends FormRequest
         $res=   $this->returnValidationResponse($validator->errors());
         throw new HttpResponseException($res);
     }
-    public function is_valid($jsonData){
+    public function is_valid_candidate($jsonData){
         $validation = \Illuminate\Support\Facades\Validator::make($jsonData, [
             'id'=>'required|integer|exists:candidates,id',
             'name'=>'string|min:4|max:255',
@@ -56,7 +60,22 @@ class UpdateCandidateRequest extends FormRequest
         if ($validation->fails()) {
             return  $this->returnValidationResponse($validation->errors());
         }
-    return null;
+        $candidate=Candidate::where('id',$jsonData["id"])->first();
+        if ($this->isStarted($candidate->election_id) || !$this->isOrganizer($candidate->election_id)) $this->failedAuthorization();
+    }
+
+        public function is_valid_party($jsonData){
+        $validation = \Illuminate\Support\Facades\Validator::make($jsonData, [
+            'id'=>'required|integer|exists:parties,id',
+            'name'=>'string|min:4|max:255',
+        ]);
+        if ($validation->fails()) {
+            return  $this->returnValidationResponse($validation->errors());
+        }
+        $party=Party::where('id',$jsonData["id"])->first();
+        if ($this->isStarted($party->election_id) || !$this->isOrganizer($party->election_id))$this->failedAuthorization();
+
+        return null;
     }
 
 }

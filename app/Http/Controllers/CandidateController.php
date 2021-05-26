@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\MyResponse;
-use App\Http\Requests\UpdateCandidateRequest;
+use App\Http\Requests\UpdateCandidatePartyRequest;
 use App\Models\Candidate;
 use App\Models\Election;
 use App\Models\PartisanCandidate;
@@ -17,17 +17,16 @@ class CandidateController extends Controller
     use MyResponse;
 
 
-    function update(UpdateCandidateRequest $request){
-        $jsonData=$request->get("body");
+    function update(UpdateCandidatePartyRequest $request){
+        $jsonData= $request->get("body");
+
         if(!is_array($jsonData)) $jsonData= json_decode($request->get("body"),true);
-        $is_valid=$request->is_valid($jsonData);
+        $is_valid=$request->is_valid_candidate($jsonData);
         if (!empty($is_valid)){
             return $is_valid;
         }
         try{
-            $id= $jsonData['id'];
-            $candidate=Candidate::where('id',$id)->first(); //with child
-            if ($this->isStarted($candidate->election_id) || !$this->isOrganizer($candidate->election_id)) return  redirect('/');
+            $candidate=Candidate::where('id',$jsonData["id"])->first(); //with child
             if($request->hasFile('file')) {
                 $response = cloudinary()->upload($request->file('file')->getRealPath(),[
                     'folder'=> 'myballot/candidates/',
@@ -42,7 +41,6 @@ class CandidateController extends Controller
             return  $this->returnSuccessResponse('candidate updated successfully');
         }catch ( \Exception  $exception){
             return  $this->returnErrorResponse();
-
         }
     }
     function plurality_candidates(Request $request){

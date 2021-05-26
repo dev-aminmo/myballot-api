@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\MyResponse;
 use App\Http\Requests\AddPluralityPartyRequest;
+use App\Http\Requests\UpdateCandidatePartyRequest;
 use App\Models\Candidate;
 use App\Models\PartisanCandidate;
 use App\Models\Party;
@@ -35,34 +36,16 @@ class PartyController extends Controller
         return $this->returnSuccessResponse('party added successfully');
 
     }
-    function update(Request $request){
-        $validation = Validator::make(
-            $request->all(), [
-            'body'=>'required',
-            'file.*' => 'required|mimes:jpg,jpeg,png,bmp|max:10000',
-        ],[
-                'file.*.required' => 'Please upload an image',
-                'file.*.mimes' => 'Only jpeg,png and bmp images are allowed',
-                'file.*.max' => 'Sorry! Maximum allowed size for an image is 10MB',
-            ]
-        );
-        if($validation->fails()) {
-            return response()->json($validation->errors(), 202);
-        }
-        $jsonData=$request->get("body");
+    function update(UpdateCandidatePartyRequest $request){
+        $jsonData= $request->get("body");
         if(!is_array($jsonData)) $jsonData= json_decode($request->get("body"),true);
-        $validation = Validator::make($jsonData, [
-            'id'=>'required|integer|exists:parties,id',
-            'name'=>'string|min:4|max:255',
-        ]);
-        if ($validation->fails()) {
-            return response()->json($validation->errors(), 202);
+        $is_valid=$request->is_valid_party($jsonData);
+        if (!empty($is_valid)){
+            return $is_valid;
         }
         try{
         $id= $jsonData['id'];
         $party=Party::where('id',$id)->first();
-        if ($this->isStarted($party->election_id) || !$this->isOrganizer($party->election_id)) return  redirect('/');
-
         if($request->hasFile('file')) {
             $response = cloudinary()->upload($request->file('file')->getRealPath(),[
                 'folder'=> 'myballot/parties/',
@@ -74,10 +57,9 @@ class PartyController extends Controller
         }
         unset($jsonData['list_id'],$jsonData['election_id']);
         $party->update($jsonData);
-        $data = ['message' => 'party updated successfully','code'=>201];
-        return Response()->json($data,201);
+        return  $this->returnSuccessResponse('party updated successfully');
         }catch ( \Exception  $exception){
-            return response()->json(["error"=>"An error has occured","code"=>400], 400);
+            return  $this->returnErrorResponse();
         }
     }
     function delete(Request $request){
