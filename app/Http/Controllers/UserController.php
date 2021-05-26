@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\MyResponse;
 use App\Http\Requests\User\LoginPostRequest;
 use App\Http\Requests\User\RegisterPostRequest;
 use App\Http\Requests\User\UpdateUserAvatarRequest;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+    use MyResponse;
     public function register(RegisterPostRequest $request)
     {
         try{
@@ -22,10 +24,9 @@ class UserController extends Controller
             $tokenStr = $newUser->createToken('api-application')->accessToken;
             $resArr["token"] = $tokenStr;
             $resArr["status code"] = 201;
-            return response()->json($resArr, 201);
+            return $this->returnDataResponse($resArr,201);
         }catch (\Exception $e){
-            return response()->json(["error"=>$e->getMessage()], 400);
-
+            return  $this->returnErrorResponse();
         }
 
     }
@@ -40,9 +41,10 @@ class UserController extends Controller
             $data = [];
             $data['token'] = $user->createToken('api-application')->accessToken;
             $data['code'] = 200;
-            return response()->json($data, 200);
+            return $this->returnDataResponse($data,201);
+
         } else {
-            return response()->json(['error' => 'Unauthorized access','code'=>401], 401);
+            return   $this->returnErrorResponse("Incorrect email or password",401);
         }
     }
     public function index()
@@ -56,7 +58,8 @@ class UserController extends Controller
         }else{
             $data['role']='voter';
         }
-        return response()->json(['data'=>$data,'message'=>'success'],200);
+        return $this->returnDataResponse($data,200);
+
     }
     public function updateAvatar(UpdateUserAvatarRequest $request){
         try{
@@ -68,12 +71,9 @@ class UserController extends Controller
                 'format'=>"webp"
             ])->getSecurePath();
             User::where('id',$id)->update(['avatar'=>$response]);
-            $data = ['message' => 'profile avatar updated successfully','data'=>$response,'code'=>201];
-            return response()->json($data,201);
-        }catch (Exception $e){
-            $resArr["code"] = 400;
-            return response()->json($resArr, 400);
-
+            return $this->returnSuccessResponse('profile avatar updated successfully',201);
+          }catch (Exception $e){
+            return $this->returnErrorResponse();
         }
 
     }
@@ -86,8 +86,7 @@ class UserController extends Controller
     public function logout(Request $request)
     {
         $request->user()->token()->revoke();
-        return response()->json([
-            'message' => 'Successfully logged out'
-        ]);
+       return $this->returnSuccessResponse('Successfully logged out');
+
     }
 }
