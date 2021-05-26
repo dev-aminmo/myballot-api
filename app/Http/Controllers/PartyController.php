@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\MyResponse;
 use App\Http\Requests\AddPluralityPartyRequest;
+use App\Http\Requests\DeletePartyRequest;
 use App\Http\Requests\UpdateCandidatePartyRequest;
 use App\Models\Candidate;
 use App\Models\PartisanCandidate;
@@ -62,18 +63,10 @@ class PartyController extends Controller
             return  $this->returnErrorResponse();
         }
     }
-    function delete(Request $request){
-        $validation =  Validator::make($request->all(), [
-            'id'=>'required|integer|exists:parties,id']);
-        if ($validation->fails()){
-            return response()->json($validation->errors(), 422);
-        }
-        $id= $request->id;
-        $party=Party::where('id',$id)->first();
-        if ($this->isStarted($party->election_id) ||!$this->isOrganizer($party->election_id)) return  redirect('/');
+    function delete(DeletePartyRequest $request){
+        $party=Party::where('id',$request->id)->first();
         $party->delete();
-        $data = ['message' => 'party deleted successfully','code'=>201];
-        return Response()->json($data,201);
+        return  $this->returnSuccessResponse('party deleted successfully');
     }
 
 }
