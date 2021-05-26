@@ -4,6 +4,7 @@ namespace App\Http\Controllers\PluralityElection;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PluralityElection\CreatePluralityElectionRequest;
+use App\Http\Requests\PluralityElection\VotePluralityElectionRequest;
 use App\Models\Candidate;
 use App\Models\Election;
 use App\Models\FreeCandidate;
@@ -85,30 +86,19 @@ use MyResponse;
             return $this->returnErrorResponse();
         }
     }
-    function vote(Request $request){
-        $validation =  Validator::make($request->all(), [
-            'election_id'=>'required|integer|exists:elections,id',
-            'candidate_id'=>'required|integer|exists:candidates,id'
-        ]);
-        if ($validation->fails()) {
-            return response()->json($validation->errors(), 422);
-        }
+    function vote(VotePluralityElectionRequest $request){
         $election_id= $request->election_id;
-        if (!$this->isStarted($election_id)|| $this->isEnded($election_id)) return  redirect('/');
-        $user_id=auth()->user()['id'];
-        $user=User::where("id",$user_id)->first();
+        $user=auth()->user();
         $is_voter =  $user->elections()->where('election_id', $election_id)->first();
         $candidate=Candidate::where([['id',$request->candidate_id], ['election_id', $election_id],])->first();
         if(!empty($candidate) &&$is_voter){
             $voted =   $is_voter->pivot->voted;
             if( $voted){
-              $data = ['message' => 'vote already casted','code'=>422];
-              return response()->json($data, 422);
+                return  $this->returnErrorResponse('vote already casted');
            }
         $candidate->update(['count'=> DB::raw('count+1'),]);
         $user->elections()->updateExistingPivot($election_id, ['voted'=>true]);
-        $data = ['message' => 'vote casted successfully','code'=>201];
-        return Response()->json($data,201);
+            return  $this->returnSuccessResponse('vote casted successfully');
         }else{
             return  redirect('/');
         }
