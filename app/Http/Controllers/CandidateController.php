@@ -53,7 +53,7 @@ class CandidateController extends Controller
         if ($validation->fails()) {
             return response()->json($validation->errors(), 422);
         }
-        $data["data"]=Candidate::where('election_id',$request->id)->select('id','name','description','picture')->with(['partisan_candidate'=> function ($query) {
+        $data=Candidate::where('election_id',$request->id)->select('id','name','description','picture')->with(['partisan_candidate'=> function ($query) {
         $query->with('party');
         }])->get()->transform(function ($value){
             $data=$value;
@@ -66,8 +66,8 @@ class CandidateController extends Controller
             unset($data->partisan_candidate);
             return $data;
         });
-        $data["code"]=200;
-        return Response()->json($data,200);
+        return  $this->returnDataResponse($data);
+
     }
 
 

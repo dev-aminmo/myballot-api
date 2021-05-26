@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\MyResponse;
+use App\Http\Requests\AddPluralityPartyRequest;
 use App\Models\Candidate;
 use App\Models\PartisanCandidate;
 use App\Models\Party;
@@ -12,23 +14,12 @@ use App\Helpers\MyHelper;
 class PartyController extends Controller
 {
     use MyHelper;
-    function add_to_plurality(Request $request){
-        $validation =  Validator::make($request->all(), [
-            'name'=>'required',
-            'candidates' => 'required|array|min:1|max:1',
-            'candidates.*.name' => 'required|string|min:4|max:255',
-            'candidates.*.description' => 'string|min:4|max:400',
-            'election_id'=>'required|integer|exists:plurality_elections,id'
-        ]);
-        if ($validation->fails()) {
-            return response()->json($validation->errors(), 422);
-        }
-        $election_id= $request->election_id;
-        if ($this->isStarted($election_id) || !$this->isOrganizer($election_id)) return  redirect('/');
-        $party_id=Party::create(['name'=> $request->name,
-            'election_id'=> $election_id])->id;
-        foreach( $request->candidates as $candidate){
+    use MyResponse;
 
+    function add_to_plurality(AddPluralityPartyRequest $request){
+        $election_id= $request->election_id;
+        $party_id=Party::create(['name'=> $request->name, 'election_id'=> $election_id])->id;
+        foreach( $request->candidates as $candidate){
            $candidate_id=Candidate::create([
                     'name'=> $candidate['name'],
                     'description'=>(!empty($candidate['description'])) ? $candidate['description'] : null,
@@ -41,8 +32,8 @@ class PartyController extends Controller
                 ]
             );
         }
-        $data = ['message' => 'party added successfully','code'=>201];
-        return Response()->json($data,201);
+        return $this->returnSuccessResponse('party added successfully');
+
     }
     function update(Request $request){
         $validation = Validator::make(
