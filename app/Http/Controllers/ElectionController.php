@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AddVotersRequest;
 use App\Http\Requests\DeleteVoterRequest;
+use App\Http\Requests\UpdateElectionRequest;
 use App\Jobs\SendMailsJob;
 use App\Models\Candidate;
 use App\Models\Election;
@@ -90,36 +91,15 @@ class ElectionController extends Controller
        }
         return $this->returnSuccessResponse("voter deleted successfully");
     }
-    function update(Request $request){
-        $validation =  Validator::make($request->all(), [
-            'election_id'=>'required|integer|exists:elections,id',
-            'start_date'    => 'required|date|date_format:Y-m-d H:i|after_or_equal:now',
-            'end_date'    => 'required|date|date_format:Y-m-d H:i|after:start_date',
-            'title'=> 'string|min:2|max:255',
-            'description'=> 'string|min:10|max:400'
-        ]);
-        if ($validation->fails()) {
-            return response()->json($validation->errors(), 422);
-        }
-        $election_id=$request->election_id;
-        if ($this->isStarted($election_id) ||!$this->isOrganizer($election_id)) return  redirect('/');
-        $start = Carbon::parse($request->start_date);
-        $end = Carbon::parse($request->end_date);
-        $diff_in_minutes = $end->diffInMinutes($start);
-        if ($diff_in_minutes < 5)  {
-            return response()->json([
-                "message"=>"the difference between start_date and end_date should be more than 5 minutes",
-                "code"=>"202"
-            ], 422);
-        }
+    function update(UpdateElectionRequest $request){
         try{
-            Election::where('id',$election_id)->update($request->only(['start_date','end_date','title','description']));
-            $data = ['message' => 'election updated successfully','code'=>201];
-            return Response()->json($data,201);
+
+            Election::where('id',$$request->election_id)->update($request->only(['start_date','end_date','title','description']));
+            return $this->returnSuccessResponse("election updated successfully");
+
         }catch ( \Exception  $exception){
-            $response['error']='an error has occurred';
-            $response['code']=400;
-            return response()->json($response, 400);
+
+            return $this->returnErrorResponse();
         }
     }
 
