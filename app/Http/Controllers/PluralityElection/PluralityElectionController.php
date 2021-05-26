@@ -11,7 +11,6 @@ use App\Models\FreeCandidate;
 use App\Models\PartisanCandidate;
 use App\Models\Party;
 use App\Models\PluralityElection\PluralityElection;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -24,24 +23,8 @@ class PluralityElectionController extends Controller
 use MyHelper;
 use MyResponse;
     function create(CreatePluralityElectionRequest $request){
-        $candidates_count=0;
-        if (!empty($request->free_candidates)) {
-            $candidates_count +=count($request->free_candidates);
-        }
-        if (!empty($request->parties)) {
-            foreach($request->parties as $party){
-                $candidates_count += count(  $party['candidates']);
-            }
-        }
-        if ($candidates_count<2) {
-            return  $this->returnValidationResponse(["the minimum number of candidates is 2"]);
-        }
-
-        $start = Carbon::parse($request->start_date);
-        $end = Carbon::parse($request->end_date);
-        $diff_in_minutes = $end->diffInMinutes($start);
-        if ($diff_in_minutes < 5)  {
-            return  $this->returnValidationResponse(["the difference between start_date and end_date should be more than 5 minutes"]);
+        if(!empty($request->is_valid())){
+            return $request->is_valid();
         }
         try{
             $id= auth()->user()['id'];

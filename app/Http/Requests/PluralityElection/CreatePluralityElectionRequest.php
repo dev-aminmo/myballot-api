@@ -6,6 +6,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Helpers\MyResponse;
+use Illuminate\Support\Carbon;
 
 
 class CreatePluralityElectionRequest extends FormRequest
@@ -53,5 +54,26 @@ class CreatePluralityElectionRequest extends FormRequest
     public function validated()
     {
         return $this->validator->validated();
+    }
+    public function is_valid()
+    { $candidates_count=0;
+        if (!empty($this->free_candidates)) {
+            $candidates_count +=count($this->free_candidates);
+        }
+        if (!empty($this->parties)) {
+            foreach($this->parties as $party){
+                $candidates_count += count(  $party['candidates']);
+            }
+        }
+        if ($candidates_count<2) {
+            return  $this->returnValidationResponse(["the minimum number of candidates is 2"]);
+        }
+
+        $start = Carbon::parse($this->start_date);
+        $end = Carbon::parse($this->end_date);
+        $diff_in_minutes = $end->diffInMinutes($start);
+        if ($diff_in_minutes < 5)  {
+            return  $this->returnValidationResponse(["the difference between start_date and end_date should be more than 5 minutes"]);
+        }
     }
 }

@@ -2,12 +2,14 @@
 
 namespace App\Http\Requests\User;
 
+use App\Helpers\MyResponse;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 class RegisterPostRequest extends FormRequest
 {
+    use MyResponse;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -43,8 +45,7 @@ class RegisterPostRequest extends FormRequest
 
     protected function failedValidation(Validator $validator)
     {
-        $res= response()->json(["errors"=>$validator->errors(),
-         "code"=>422],422);
+        $res=   $this->returnValidationResponse($validator->errors());
         throw new HttpResponseException($res);
     }
     public function getAttributes(){
