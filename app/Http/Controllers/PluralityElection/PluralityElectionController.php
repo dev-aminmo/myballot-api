@@ -91,6 +91,8 @@ use MyResponse;
         if ($validation->fails()) {
             return response()->json($validation->errors(), 422);
         }
+       $election= Election::where('id',$request->id)->first();
+        if(json_decode($election->result,true ) == null){
         $data["candidates"]=Candidate::where('election_id',$request->id)->orderBy('count', 'DESC')->limit(3)->with(['partisan_candidate'=> function ($query) {
               $query->with('party');
         }])->get()->transform(function ($value){
@@ -105,7 +107,6 @@ use MyResponse;
              return $data;
      });
         $election_id =  $request->id;
-       $election=Election::where('id',$request->id)->first();
        $data["added_voters"] =$election->users()->where('election_id',$election_id )->count();
        $data["vote_casted"] =$election->users()->where(['election_id'=>$election_id ,
            'voted'=>true
@@ -113,7 +114,13 @@ use MyResponse;
         $data["vote_ratio"] =  ( $data["added_voters"] == 0)?0: $data["vote_casted"]/  $data["added_voters"];
         $data["vote_ratio"] =(float) number_format((float) $data["vote_ratio"], 2, '.', '');
         $data["code"]=200;
-        return Response()->json($data,200);
+        $election->result=$data;
+        $election->save();
+        return Response()->json($data,200);}
+       else{
+          $data=  json_decode($election->result,true );
+           return Response()->json( $data,200);
+       }
     }
 }
 
