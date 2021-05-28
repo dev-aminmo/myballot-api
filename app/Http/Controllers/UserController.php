@@ -9,7 +9,6 @@ use App\Http\Requests\User\UpdateUserAvatarRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -20,17 +19,15 @@ class UserController extends Controller
 
             //$newUser = User::create($request->getAttributes())->SendEmailVerificationNotification();
             $newUser = User::create($request->getAttributes());
-            $newUser->attachRole("voter");
+            $newUser->attachRole("organizer");
             $tokenStr = $newUser->createToken('api-application')->accessToken;
             $resArr["token"] = $tokenStr;
-            $resArr["status code"] = 201;
-            return response()->json($resArr, 201);
+            return $this->returnDataResponse($resArr,201);
         }catch (\Exception $e){
+            return  $this->returnErrorResponse();
+        }
 
-            return response()->json(["error"=>$e->getMessage()], 400);
-
-
-        }}
+    }
 
     public function login(LoginPostRequest $request)
     {
@@ -40,35 +37,15 @@ class UserController extends Controller
         ])) {
             $user = Auth::user();
             $data = [];
-            $tokenStr= $user->createToken('api-application')->accessToken;
-          //  $data['code'] = 200;
-
-            $resArr["token"] = $tokenStr;
-            $resArr["status code"] = 201;
-            return response()->json($resArr, 201);
-        //}catch (\Exception $e){
-
-       // return $this->returnDataResponse($data,201);
+            $data['token'] = $user->createToken('api-application')->accessToken;
+            return $this->returnDataResponse($data,201);
 
         } else {
-            return   $this->returnErrorResponse("Incorrect email or password",401);
+            $this->returnValidationResponse(["Incorrect email or password"],422);
+            return response()->json(['error' => 'Unauthorized access','code'=>401], 401);
         }
     }
     public function index()
-    {
-        // echo auth()->user()->with("roles");die;
-        $deatails=auth()->user();
-        if($deatails['avatar']==""){
-            $deatails['avatar']="place_holder.jpg" ;
-        }
-        if(auth()->user()->hasRole("organizer")){
-            $deatails['role']='organizer';
-        }else{
-            $deatails['role']='voter';
-        }
-        return response()->json(['data'=>$deatails,'message'=>'success'],200);
-    }
-    /*public function index()
     {
       $data=auth()->user();
         if($data['avatar']==""){
@@ -79,22 +56,20 @@ class UserController extends Controller
         }else{
             $data['role']='voter';
         }
+        return $this->returnDataResponse($data,200);
 
-       // return response()->json(['data'=>$deatails,'message'=>'success'],200);
-
-    return $this->returnDataResponse($data,200);
-
-    }*/
+    }
     public function updateAvatar(UpdateUserAvatarRequest $request){
         try{
-            $id= auth()->user()['id'];
+            $user= auth()->user();
             $response = cloudinary()->upload($request->file('file')->getRealPath(),[
-                'folder'=> 'myballot/users/'.$id.'/',
-                'public_id'=>'avatar'.$id,
+                'folder'=> 'myballot/users/'.$user->id.'/',
+                'public_id'=>'avatar'.$user->id,
                 'overwrite'=>true,
                 'format'=>"webp"
             ])->getSecurePath();
-            User::where('id',$id)->update(['avatar'=>$response]);
+            $user->update(['avatar'=>$response]);
+            dd($user->id);
             return $this->returnSuccessResponse('profile avatar updated successfully',201);
           }catch (Exception $e){
             return $this->returnErrorResponse();
