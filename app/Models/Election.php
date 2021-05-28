@@ -17,15 +17,14 @@ class Election extends Model
         'description',
         'organizer_id',
     ];
+    protected $hidden = [
+        'result',
+    ];
 
     public function users()
     {
         return $this->belongsToMany(User::class)->withPivot('voted');
 
-//, 'election_user', 'user_id', 'election_id')->withPivot('voted'
     }
-    /*protected $dateFormat = 'Y-m-d H:i';
-    protected $casts = [
-        'start_date' => 'datetime:Y-m-d H:i',
-    ];*/
+
 }

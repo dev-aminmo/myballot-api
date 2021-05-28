@@ -103,8 +103,18 @@ class ElectionController extends Controller
         }
     }
     function elections(Request $request){
-        $data =Election::where('organizer_id',auth()->user()->id)->get();
-        return $this->returnDataResponse($data);
+        $user=auth()->user();
+        if($user->hasRole("organizer")){
+            $data =Election::where('organizer_id',$user->id)->get();
+            return $this->returnDataResponse($data);
+        }else{
+            $data =  $user->elections()->where('user_id',$user->id)->get()->each(function($value){
+                unset($value->pivot);
+                return $value;
+            });
+            return $this->returnDataResponse($data);
+        }
+
     }
 
 

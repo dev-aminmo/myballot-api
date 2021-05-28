@@ -31,10 +31,13 @@ Route::post("/login",[UserController::class,"login"]);
 
 Route::get("email/verify/{id}",[VerificationController::class,"verify"])->name("verification.verify");
 //Route::get("/login",[UserController::class,"login"])->name('login');
+
 Route::middleware('auth:api')->group(function (){
     /*
      * users routes
      */
+    Route::get("/election/all",[ElectionController::class,"elections"]);
+
     Route::get("email/resend",[VerificationController::class,"resend"])->name("verification.resend");
 
     Route::group(['prefix'=>'/user'],function(){
@@ -58,7 +61,6 @@ Route::middleware('auth:api')->group(function (){
     Route::post("/lists-election/create",[ListsElectionController::class,"create"]);
     Route::post("/poll/create",[PollController::class,"create"]);
     Route::post("/election/update",[ElectionController::class,"update"]);
-    Route::get("/election/all",[ElectionController::class,"elections"]);
    // Route::get("/plurality-election/results/{id}",[PluralityElectionController::class,"results"]);
 
     /*
