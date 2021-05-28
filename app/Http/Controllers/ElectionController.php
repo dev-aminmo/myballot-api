@@ -102,5 +102,10 @@ class ElectionController extends Controller
             return $this->returnErrorResponse();
         }
     }
+    function elections(Request $request){
+        $data =Election::where('organizer_id',auth()->user()->id)->get();
+        return $this->returnDataResponse($data);
+    }
+
 
 }
