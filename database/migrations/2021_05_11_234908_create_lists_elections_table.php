@@ -14,14 +14,9 @@ class CreateListsElectionsTable extends Migration
     public function up()
     {
         Schema::create('lists_elections', function (Blueprint $table) {
-            $table->id();
-            $table->dateTime('start_date');
-            $table->dateTime('end_date');
-            $table->string('title',255);
-            $table->integer("count")->default(0);
-            $table->string('description',400)->nullable();
-            $table->bigInteger('organizer_id')->unsigned();
-            $table->foreign("organizer_id")->references('id')->on("users")->onDelete('cascade');
+            $table->bigInteger('id')->unsigned();
+            $table->integer("seats_number");
+            $table->foreign("id")->references('id')->on("elections")->onDelete('cascade');
         });
     }
 

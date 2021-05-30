@@ -16,7 +16,10 @@ class CreatePluralityElectionsTable extends Migration
         Schema::create('plurality_elections', function (Blueprint $table) {
 
             $table->bigInteger('id')->unsigned();
+            $table->integer("seats_number")->default(1);
+
             $table->foreign("id")->references('id')->on("elections")->onDelete('cascade');
+
         });
     }
 

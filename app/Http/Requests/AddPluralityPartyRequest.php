@@ -21,7 +21,7 @@ class AddPluralityPartyRequest extends FormRequest
      */
     public function authorizeValidated()
     {
-        return !$this->isStarted($this->election_id) && $this->isOrganizer($this->election_id);
+        return !$this->isStarted($this->election_id) && $this->isOrganizer($this->election_id) && $this->typeIsOne($this->election_id);
     }
     /**
      * Get the validation rules that apply to the request.

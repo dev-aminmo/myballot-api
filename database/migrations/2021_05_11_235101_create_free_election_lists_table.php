@@ -18,7 +18,7 @@ class CreateFreeElectionListsTable extends Migration
             $table->string('name',255);
             $table->string('picture',255)->nullable();
             $table->string('program',400)->nullable();
-            $table->integer("count")->default(0);
+           $table->integer("count")->default(0);
             $table->bigInteger('election_id')->unsigned();
             $table->foreign("election_id")->references('id')->on("lists_elections");
         });

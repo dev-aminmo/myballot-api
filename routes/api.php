@@ -49,6 +49,7 @@ Route::middleware('auth:api')->group(function (){
 
     Route::get("/plurality-election/candidates/{id}",[CandidateController::class,"plurality_candidates"]);
     Route::get("/plurality-election/results/{id}",[PluralityElectionController::class,"results"]);
+    Route::get("/lists-election/results/{id}",[ListsElectionController::class,"results"]);
 
     /*
      * Organizer's routes
@@ -57,7 +58,8 @@ Route::middleware('auth:api')->group(function (){
     /*
     * elections routes
     */
-    Route::post("/plurality-election/create",[PluralityElectionController::class,"create"]);
+
+        Route::post("/plurality-election/create",[PluralityElectionController::class,"create"]);
     Route::post("/lists-election/create",[ListsElectionController::class,"create"]);
     Route::post("/poll/create",[PollController::class,"create"]);
     Route::post("/election/update",[ElectionController::class,"update"]);
@@ -81,7 +83,7 @@ Route::middleware('auth:api')->group(function (){
     * candidate routes
     */
     Route::post("/candidate/update",[CandidateController::class,"update"]);
-  //  Route::post("/candidate/create",[CandidateController::class,"create"]);
+    Route::post("/candidate/plurality/free/add",[CandidateController::class,"add_free_plurality"]);
 
     }); //end of organizer's routes
 

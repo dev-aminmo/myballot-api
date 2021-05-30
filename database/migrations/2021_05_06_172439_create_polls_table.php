@@ -14,13 +14,8 @@ class CreatePollsTable extends Migration
     public function up()
     {
         Schema::create('polls', function (Blueprint $table) {
-            $table->id();
-            $table->dateTime('start_date');
-            $table->dateTime('end_date');
-            $table->string('title');
-            $table->string('description')->nullable();
-            $table->bigInteger('organizer_id')->unsigned();
-            $table->foreign("organizer_id")->references('id')->on("users");
+            $table->bigInteger('id')->unsigned();
+            $table->foreign("id")->references('id')->on("elections")->onDelete('cascade');
         });
     }
 

@@ -12,8 +12,11 @@ class PartisanElectionList extends Model
     protected $fillable=['name'	,'picture'	,'program',	'count'	,'election_id'];
     protected $hidden=['count'];
     public $timestamps=false;
-    public function partisan_lists(){
-        return $this->hasMany(Party::class,'election_id');
+    public function parties(){
+        return $this->hasMany(Party::class,'list_id');
+    }
+    public function party(){
+        return $this->hasOne(Party::class,'list_id');
     }
     public function election(){
         return $this->belongsTo(ListsElection::class,'election_id');

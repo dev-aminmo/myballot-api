@@ -38,13 +38,12 @@ class ElectionController extends Controller
             }
             foreach ($request->emails as $email) {
                 $u = User::where('email', $email)->first();
-
                 if (!empty($u)) {
                     $hasBeenAdded = $u->elections()->where('election_id', $election_id)->exists();
                     if(!$hasBeenAdded){
                         $u->elections()->syncWithoutDetaching($election_id);
                         $data=['type'=>2,"email"=>$email];
-                        $this->dispatch(new SendMailsJob($data));
+                       // $this->dispatch(new SendMailsJob($data));
                     }
                 } else {
                     $pass = Str::random(6);
@@ -55,10 +54,10 @@ class ElectionController extends Controller
                     $user->attachRole('voter');
                     $user->elections()->attach($request->election_id);
                     $data=['type'=>1,"email"=>$email,'password' => $pass];
-                    $this->dispatch(new SendMailsJob($data));
-                }
+                  //  $this->dispatch(new SendMailsJob($data));
+                } }
                 return $this->returnSuccessResponse('voters added successfully');
-            }
+
         } catch (\Exception  $exception) {
             return $this->returnErrorResponse();
         }

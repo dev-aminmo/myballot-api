@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\MyResponse;
+use App\Http\Requests\AddFreeCandidatesPlurality;
 use App\Http\Requests\UpdateCandidatePartyRequest;
 use App\Models\Candidate;
 use App\Models\Election;
+use App\Models\FreeCandidate;
 use App\Models\PartisanCandidate;
 use App\Models\Party;
 use Illuminate\Http\Request;
@@ -65,6 +67,23 @@ class CandidateController extends Controller
             return $data;
         });
         return  $this->returnDataResponse($data);
+
+    }
+    function add_free_plurality(AddFreeCandidatesPlurality $request){
+        $election_id= $request->election_id;
+        foreach( $request->candidates as $candidate){
+            $candidate_id=Candidate::create([
+                    'name'=> $candidate['name'],
+                    'description'=>(!empty($candidate['description'])) ? $candidate['description'] : null,
+                    'election_id'=>$election_id
+                ]
+            )->id;
+            FreeCandidate::create([
+                    'id'=> $candidate_id,
+                ]
+            );
+        }
+        return $this->returnSuccessResponse('party added successfully');
 
     }
 

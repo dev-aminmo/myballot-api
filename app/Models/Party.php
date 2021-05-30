@@ -15,7 +15,10 @@ public $timestamps=false;
     protected $fillable=['name','picture','election_id','list_id'];
     public function candidates()
     {
-        return $this->hasMany(PartisanCandidate::class,'party_id');
+       // return $this->hasMany(PartisanCandidate::class,'party_id');
+     //   public function candidates(){
+        return $this->hasManyThrough(Candidate::class,PartisanCandidate::class,'party_id','id');
+   // }
     }
     public function plurality_election()
     {

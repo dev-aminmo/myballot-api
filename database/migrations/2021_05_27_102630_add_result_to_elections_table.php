@@ -14,7 +14,7 @@ class AddResultToElectionsTable extends Migration
     public function up()
     {
         Schema::table('elections', function (Blueprint $table) {
-            $table->json('result');
+            $table->json('result')->nullable();
         });
     }
 

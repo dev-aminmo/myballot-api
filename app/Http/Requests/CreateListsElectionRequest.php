@@ -34,6 +34,8 @@ class CreateListsElectionRequest extends FormRequest
             'end_date'      => 'required|date|date_format:Y-m-d H:i|after:start_date',
             'title'=> 'required|string|min:2|max:255',
             'description'=> 'string|min:10|max:400',
+            'type'=>'required|integer|min:0|max:1',
+            'seats_number'=>'required|integer|min:1',
             'partisan_lists' => 'array|min:1|max:30',
             'partisan_lists.*.name'=>'required',
             'partisan_lists.*.program'=>'string|string|min:2|max:400',

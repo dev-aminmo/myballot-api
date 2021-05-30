@@ -9,8 +9,9 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class AddVotersRequest extends FormRequest
+class AddFreeCandidatesPlurality extends FormRequest
 {
+
     use MyResponse;
     use MyHelper;
     use AuthorizesAfterValidation;
@@ -21,7 +22,6 @@ class AddVotersRequest extends FormRequest
      */
     public function authorizeValidated()
     {
-        //TODO Correct to authorize after validation
         return !$this->isStarted($this->election_id) && $this->isOrganizer($this->election_id);
     }
     /**
@@ -32,9 +32,10 @@ class AddVotersRequest extends FormRequest
     public function rules()
     {
         return [
-            'election_id' => 'required|integer|exists:elections,id',
-            'emails' => 'required|array|min:1|max:150',
-            'emails.*' => 'email',
+            'candidates' => 'required|array|min:1',
+            'candidates.*.name' => 'required|string|min:4|max:255',
+            'candidates.*.description' => 'string|min:4|max:400',
+            'election_id'=>'required|integer|exists:plurality_elections,id'
         ];
     }
 

@@ -14,6 +14,7 @@ class Election extends Model
         'start_date',
         'end_date',
         'title',
+        "type",
         'description',
         'organizer_id',
     ];

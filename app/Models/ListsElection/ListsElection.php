@@ -10,14 +10,15 @@ class ListsElection extends Model
     use HasFactory;
     protected $table="lists_elections";
     protected $fillable=[
-        'start_date',
+        "id"
+        /*'start_date',
         'end_date',
         'title',
         'description',
         'organizer_id',
-        'count'
+        'count'*/
     ];
-    protected $hidden=['count'];
+  //  protected $hidden=['count'];
     public $timestamps=false;
 
     public function partisan_lists(){

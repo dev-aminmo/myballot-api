@@ -29,9 +29,10 @@ use MyResponse;
             $allData['organizer_id']=$id;
             $election_id=Election::create($allData)->id;
             PluralityElection::create([
-                'id'=>$election_id
+                'id'=>$election_id,
+                'seats_number'=>(!empty($request->seats_number)) ? $request->seats_number : 1,
             ]);
-            if (!empty($request->parties)) {
+            if (!empty($request->parties)&& !empty($request->type) == 1) {
                 foreach($request->parties as $party){
                     $party_id = Party::create(['name'=> $party['name'],
                         'election_id'=>$election_id])->id;
@@ -60,8 +61,7 @@ use MyResponse;
                     );
                 }
             }
-            $data = ['message' => 'election created successfully','code'=>201];
-            return Response()->json($data,201);
+            return $this->returnSuccessResponse('election created successfully');
         }catch ( \Exception  $exception){
             return $this->returnErrorResponse();
         }

@@ -40,4 +40,14 @@ trait MyHelper {
         }
         return false;
     }
+    public static function typeIsOne($election_id){
+        $election=Election::where('id',$election_id)->first();
+        if(empty($election)){
+            return false;
+        }
+        if($election->type==1){
+            return true;
+        }
+        return false;
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models\ListsElection;
 
+use App\Models\Candidate;
 use App\Models\FreeCandidate;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,5 +16,8 @@ class FreeElectionList extends Model
 
     public function free_candidates(){
         return $this->hasMany(FreeCandidate::class,'list_id');
+    }
+    public function candidates(){
+        return $this->hasManyThrough(Candidate::class,FreeCandidate::class,'list_id','id');
     }
 }
