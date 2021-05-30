@@ -93,7 +93,8 @@ use MyResponse;
         }
        $election= Election::where('id',$request->id)->first();
         if(json_decode($election->result,true ) == null){
-        $data["candidates"]=Candidate::where('election_id',$request->id)->orderBy('count', 'DESC')->limit(3)->with(['partisan_candidate'=> function ($query) {
+      if($election->type == 1){
+          $data["candidates"]= Candidate::where('election_id',$request->id)->orderBy('count', 'DESC')->with(['partisan_candidate'=> function ($query) {
               $query->with('party');
         }])->get()->transform(function ($value){
              $data=$value;
@@ -106,7 +107,24 @@ use MyResponse;
              unset($data->partisan_candidate);
              return $data;
      });
-        $election_id =  $request->id;
+      }else{
+          $data["candidates"]=Candidate::where('election_id',$request->id)->orderBy('count', 'DESC')->get();
+
+      }
+            $election_id =  $election->id;
+
+         $seats_number= PluralityElection::find($election_id)->seats_number;
+            $data["candidates"]->each(function($candidate)use (&$seats_number){
+                if($seats_number>0){
+                    $candidate->selected=true;
+                    $seats_number--;
+                }else{
+                    $candidate->selected=false;
+                }
+                return $candidate;
+
+            });
+
        $data["added_voters"] =$election->users()->where('election_id',$election_id )->count();
        $data["vote_casted"] =$election->users()->where(['election_id'=>$election_id ,
            'voted'=>true

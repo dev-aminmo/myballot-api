@@ -19,6 +19,7 @@ class CreateElectionsTable extends Migration
             $table->dateTime('end_date');
             $table->string('title',255);
             $table->string('description',400)->nullable();
+            $table->boolean('type')->default(0);
             $table->bigInteger('organizer_id')->unsigned();
             $table->foreign("organizer_id")->references('id')->on("users")->onDelete('cascade');
 
