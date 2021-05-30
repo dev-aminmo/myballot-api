@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\ListsElection;
 
+use App\Helpers\MyResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateListsElectionRequest;
+use App\Http\Requests\PluralityElection\VotePluralityElectionRequest;
 use App\Models\Candidate;
 use App\Models\Election;
 use App\Models\FreeCandidate;
@@ -15,10 +17,13 @@ use App\Models\Party;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ListsElectionController extends Controller
 {
+    use MyResponse;
+
     /**
      * Display a listing of the resource.
      *
@@ -35,10 +40,13 @@ class ListsElectionController extends Controller
             $allData = $request->all();
             $allData['organizer_id']=$id;
             $election_id=Election::create($allData)->id;
+
             ListsElection::create([
-                'id'=>$election_id
+                'id'=>$election_id,
+                'seats_number'=>(!empty($request->seats_number)) ? $request->seats_number : 1,
             ]);
-            if (!empty($request->partisan_lists)) {
+
+            if (!empty($request->partisan_lists)  && !empty($this->type) == 1) {
                 foreach($request->partisan_lists as $partisan_list){
                    $name=$partisan_list["name"];
                    $program=$partisan_list["program"];
@@ -90,14 +98,38 @@ class ListsElectionController extends Controller
                 }
                 }
             }
-            $data = ['message' => 'election created successfully','code'=>201];
-            return Response()->json($data,201);
+
+            return $this->returnSuccessResponse('election created successfully');
         }catch ( \Exception  $exception){
-            throw
-            $response['error']=$exception;
-            return response()->json($exception->getTrace(), 400);
+           return $this->returnErrorResponse($exception->getTrace());
         }
     }
+    function vote(VotePluralityElectionRequest $request){
+        $election_id= $request->election_id;
+        $election= Election::where('id', $election_id)->first();
+
+        $user=auth()->user();
+        $is_voter =  $user->elections()->where('election_id', $election_id)->first();
+        //TODO check that the candidate is in that election
+        $candidate=Candidate::where('id',$request->candidate_id)->first();
+        $list =Candidate::where('id',$request->candidate_id)->with('free_candidate')->first();
+
+        if(!empty($candidate) &&$is_voter){
+            $voted =   $is_voter->pivot->voted;
+            if( $voted){
+                return  $this->returnErrorResponse('vote already casted');
+            }
+            if($election->type==0){
+              $free_list=  FreeElectionList::find($list->free_candidate->list_id);
+                $free_list->update(['count'=> DB::raw('count+1'),]);
+            $user->elections()->updateExistingPivot($election_id, ['voted'=>true]);
+            return  $this->returnSuccessResponse('vote casted successfully');
+           }
+        }else{
+            return  redirect('/');
+        }
+    }
+
     function results(Request $request){
         $request->merge(['id' => $request->route('id')]);
         $validation =  Validator::make($request->all(), [
@@ -106,15 +138,31 @@ class ListsElectionController extends Controller
         if ($validation->fails()) {
             return response()->json($validation->errors(), 422);
         }
-        //TODO number of chairs
         $election= Election::where('id',$request->id)->first();
+        //TODO implement if type is 1
+        if($election->type==0){
         $data["added_voters"] =$election->users()->where('election_id',$election->id )->count();
-        $initial_vote_casted =$election->users()->where(['election_id'=>$election->id ,
+        $data["vote_casted"] =$election->users()->where(['election_id'=>$election->id ,
             'voted'=>true
         ])->count();
         $data["vote_ratio"] =  ( $data["added_voters"] == 0)?0: $data["vote_casted"]/  $data["added_voters"];
         $data["vote_ratio"] =(float) number_format((float) $data["vote_ratio"], 2, '.', '');
-
+         $list_election  =  ListsElection::where("id",$election->id)->with(["free_lists"=>function($query){
+             $query->orderBy("count","DESC");
+                $query->with("candidates");
+                },
+            ])->first();
+         $chairs_number=1;
+            $data["free_lists"]=$list_election->free_lists->each(function($list)use(&$chairs_number){
+                if($chairs_number>0){
+                    $list->selected=true;
+                    $chairs_number--;
+                }else{
+                    $list->selected=false;
+                }
+            });
+     return $this->returnDataResponse($data);
+        }
         return "hello";
 
     }

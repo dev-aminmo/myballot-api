@@ -35,7 +35,7 @@ class CreateListsElectionRequest extends FormRequest
             'title'=> 'required|string|min:2|max:255',
             'description'=> 'string|min:10|max:400',
             'type'=>'required|integer|min:0|max:1',
-            'seats_number'=>'required|integer|min:1',
+            'seats_number'=>'integer|min:2',
             'partisan_lists' => 'array|min:1|max:30',
             'partisan_lists.*.name'=>'required',
             'partisan_lists.*.program'=>'string|string|min:2|max:400',
@@ -67,12 +67,15 @@ class CreateListsElectionRequest extends FormRequest
      */
     public function is_valid()
     {
+        if ($this->type==1 && empty($this->free_lists) ){
+            throw new HttpResponseException( $this->returnValidationResponse(["seats_number is required if the type is 1"]));
 
+        }
         $lists_count=0;
         if (!empty($this->free_lists)) {
             $lists_count +=count($this->free_lists);
         }
-        if (!empty($this->partisan_lists)) {
+        if (!empty($this->partisan_lists) && !empty($this->type) == 1) {
             $lists_count +=count($this->partisan_lists);
         }
         if ($lists_count<2) {

@@ -14,12 +14,12 @@ class PluralityElection extends Model
     public $timestamps=false;
     protected $table="plurality_elections";
     protected $fillable = [
-        'id'
+        'id',
         /*'start_date',
         'end_date',
         'title',
-        'description',
-        'organizer_id',*/
+        'description',*/
+        'seats_number',
     ];
 
     public function partisan_candidates()

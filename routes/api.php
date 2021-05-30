@@ -36,6 +36,7 @@ Route::middleware('auth:api')->group(function (){
     /*
      * users routes
      */
+
     Route::get("/election/all",[ElectionController::class,"elections"]);
 
     Route::get("email/resend",[VerificationController::class,"resend"])->name("verification.resend");
@@ -92,5 +93,7 @@ Route::middleware('auth:api')->group(function (){
     *  voter routes
     */
     Route::post("/plurality-election/vote",[PluralityElectionController::class,"vote"]);
+    Route::post("/lists-election/vote",[ListsElectionController::class,"vote"]);
+
     });//end of voter's routes
 });

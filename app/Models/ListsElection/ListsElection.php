@@ -10,13 +10,13 @@ class ListsElection extends Model
     use HasFactory;
     protected $table="lists_elections";
     protected $fillable=[
-        "id"
+        "id",
         /*'start_date',
         'end_date',
         'title',
         'description',
-        'organizer_id',
-        'count'*/
+        'organizer_id',*/
+        'seats_number'
     ];
   //  protected $hidden=['count'];
     public $timestamps=false;

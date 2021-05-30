@@ -11,7 +11,7 @@ class FreeElectionList extends Model
 {
     use HasFactory;
     protected $fillable=['name'	,'picture'	,'program',	'count'	,'election_id'];
-    protected $hidden=['count'];
+   // protected $hidden=['count'];
     public $timestamps=false;
 
     public function free_candidates(){
