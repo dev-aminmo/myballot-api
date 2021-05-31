@@ -167,6 +167,35 @@ class ListsElectionController extends Controller
 
     }
 
-
+    function lists(Request $request){
+        $request->merge(['id' => $request->route('id')]);
+        $validation =  Validator::make($request->all(), [
+            'id'=>'required|integer|exists:elections,id',
+        ]);
+        if ($validation->fails()) {
+            return response()->json($validation->errors(), 422);
+        }
+       $election= Election::find($request->id);
+        if ($election->type == 0){
+        $list_election  =  ListsElection::where("id",$request->id)->with(["free_lists"=>function($query){
+          //  $query->orderBy("count","DESC");
+            $query->with("candidates");
+        },
+        ])->first();
+        $data["free_lists"]=$list_election->free_lists->each(
+            function($list){
+                unset(  $list ->count);
+                $list->candidates->each(function($candidate){
+                    unset($candidate->count);
+                    return $candidate;
+                });
+                return $list;
+            }
+        );
+        return  $this->returnDataResponse($data);
+        }else{
+            $this->returnDataResponse("mock response if type is one");
+        }
+    }
 
 }
