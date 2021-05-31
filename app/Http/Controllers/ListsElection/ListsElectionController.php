@@ -6,6 +6,7 @@ use App\Helpers\MyResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateListsElectionRequest;
 use App\Http\Requests\PluralityElection\VotePluralityElectionRequest;
+use App\Http\Requests\UpdateElectionList;
 use App\Models\Candidate;
 use App\Models\Election;
 use App\Models\FreeCandidate;
@@ -196,6 +197,34 @@ class ListsElectionController extends Controller
         }else{
             $this->returnDataResponse("mock response if type is one");
         }
+    }
+    function update(UpdateElectionList $request){
+        $jsonData= $request->get("body");
+        if(!is_array($jsonData)) $jsonData= json_decode($request->get("body"),true);
+        $is_valid=$request->is_valid($jsonData);
+        if (!empty($is_valid)){
+            return $is_valid;
+        }
+        try{
+        $id= $jsonData['id'];
+        $list=FreeElectionList::find($jsonData["id"]);
+            if(!$list){
+                $list=   PartisanElectionList::find($jsonData["id"]);}
+        if($request->hasFile('file')) {
+            $response = cloudinary()->upload($request->file('file')->getRealPath(),[
+                'folder'=> 'myballot/lists/',
+                //'public_id'=>'picture'.$jsonData['id'],
+               // 'overwrite'=>true,
+                'format'=>"webp"
+            ])->getSecurePath();
+            $jsonData['picture']=$response;
+        }
+        unset($jsonData['list_id'],$jsonData['election_id']);
+            $list->update($jsonData);
+        return  $this->returnSuccessResponse('party updated successfully');
+         }catch ( \Exception  $exception){
+        return  $this->returnErrorResponse();
+         }
     }
 
 }

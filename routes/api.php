@@ -63,7 +63,9 @@ Route::middleware('auth:api')->group(function (){
 
         Route::post("/plurality-election/create",[PluralityElectionController::class,"create"]);
     Route::post("/lists-election/create",[ListsElectionController::class,"create"]);
-    Route::post("/poll/create",[PollController::class,"create"]);
+        Route::post("/lists-election/list/update",[ListsElectionController::class,"update"]);
+
+        Route::post("/poll/create",[PollController::class,"create"]);
     Route::post("/election/update",[ElectionController::class,"update"]);
    // Route::get("/plurality-election/results/{id}",[PluralityElectionController::class,"results"]);
 
