@@ -88,6 +88,7 @@ Route::middleware('auth:api')->group(function (){
     */
     Route::post("/candidate/update",[CandidateController::class,"update"]);
     Route::post("/candidate/plurality/free/add",[CandidateController::class,"add_free_plurality"]);
+    Route::post("/candidate/lists/free/add",[CandidateController::class,"add_free_list"]);
 
     }); //end of organizer's routes
 
