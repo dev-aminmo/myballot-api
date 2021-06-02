@@ -23,8 +23,7 @@ class PluralityElectionController extends Controller
 use MyHelper;
 use MyResponse;
     function create(CreatePluralityElectionRequest $request){
-        try{
-            $id= auth()->user()['id'];
+        $id= auth()->user()['id'];
             $allData = $request->all();
             $allData['organizer_id']=$id;
             $election_id=Election::create($allData)->id;
@@ -62,9 +61,6 @@ use MyResponse;
                 }
             }
             return $this->returnSuccessResponse('election created successfully');
-        }catch ( \Exception  $exception){
-            return $this->returnErrorResponse();
-        }
     }
     function vote(VotePluralityElectionRequest $request){
         $election_id= $request->election_id;
