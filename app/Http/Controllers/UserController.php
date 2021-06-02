@@ -41,8 +41,7 @@ class UserController extends Controller
             return $this->returnDataResponse($data,201);
 
         } else {
-            $this->returnValidationResponse(["Incorrect email or password"],422);
-            return response()->json(['error' => 'Unauthorized access','code'=>401], 401);
+            return $this->returnValidationResponse(["Incorrect email or password"],401);
         }
     }
     public function index()

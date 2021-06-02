@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\MyHelper;
 use App\Http\Requests\AddVotersRequest;
 use App\Http\Requests\DeleteVoterRequest;
 use App\Http\Requests\UpdateElectionRequest;
@@ -21,6 +22,7 @@ use App\Helpers\MyResponse;
 class ElectionController extends Controller
 {
     use MyResponse;
+    use MyHelper;
 
     function add_voters(AddVotersRequest $request)
     {
@@ -64,12 +66,15 @@ class ElectionController extends Controller
     }
 
     function get_voters(Request $request){
+        $request->merge(['election_id' => $request->route('id')]);
+
         $validation = Validator::make($request->all(), [
             'election_id' => 'required|integer|exists:elections,id',
         ]);
         if ($validation->fails()) {
             return response()->json($validation->errors(), 422);
         }
+
         $election_id= $request->election_id;
         if ($this->isStarted($election_id) ||!$this->isOrganizer($election_id)) return  redirect('/');
 
