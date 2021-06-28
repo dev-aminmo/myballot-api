@@ -33,8 +33,9 @@ class AddVotersRequest extends FormRequest
     {
         return [
             'election_id' => 'required|integer|exists:elections,id',
-            'emails' => 'required|array|min:1|max:150',
-            'emails.*' => 'email',
+            'voters' => 'required|array|min:1|max:150',
+            'voters.*.email' => 'required|email',
+            'voters.*.name' => 'string|min:3|max:150',
         ];
     }
 

@@ -27,9 +27,15 @@ class ElectionController extends Controller
     function add_voters(AddVotersRequest $request)
     {
         $election_id= $request->election_id;
+
         try {
+            $emails=[];
+            foreach ($request->voters as $voter){
+                $emails[]=$voter["email"];
+            }
+
             $organizers = User::whereRoleIs(['organizer'])->get();
-            $intersection = $organizers->intersect(User::whereIn('email', $request->emails)->get());
+            $intersection = $organizers->intersect(User::whereIn('email', $emails)->get());
             if (count($intersection)) {
                 $ad = [];
                 $intersection->each(function ($org) use (&$ad) {
@@ -38,7 +44,10 @@ class ElectionController extends Controller
                 });
                 return $this->returnValidationResponse($ad,422, "organizers cannot vote");
             }
-            foreach ($request->emails as $email) {
+            foreach ($request->voters as $voter) {
+                $email=$voter["email"];
+                $name=(isset($voter["name"]))?$voter["name"]:false;
+
                 $u = User::where('email', $email)->first();
                 if (!empty($u)) {
                     $hasBeenAdded = $u->elections()->where('election_id', $election_id)->exists();
@@ -51,7 +60,9 @@ class ElectionController extends Controller
                     $pass = Str::random(6);
                     $user = User::create([
                             'email' => $email,
-                            'password' => bcrypt($pass),]
+                            'password' => bcrypt($pass),
+                            'name'=>($name)?$name:NULL
+                            ]
                     );
                     $user->attachRole('voter');
                     $user->elections()->attach($request->election_id);
@@ -61,7 +72,8 @@ class ElectionController extends Controller
                 return $this->returnSuccessResponse('voters added successfully');
 
         } catch (\Exception  $exception) {
-            return $this->returnErrorResponse();
+            throw $exception;
+            //return $this->returnErrorResponse();
         }
     }
 
