@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Poll;
 
+use App\Helpers\MyResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Election;
 use App\Models\Poll\Answer;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Validator;
 
 class PollController extends Controller
 {
+    use MyResponse;
     //
     function create(Request $request)
     {
@@ -61,12 +63,11 @@ class PollController extends Controller
             }
 
 
-            $data = ['message' => 'poll created successfully', 'code' => 201];
-            return Response()->json($data, 201);
-        } catch (\Exception  $exception) {
-            throw $exception;
-            $response['error'] = $exception;
-            return response()->json($exception->getTrace(), 400);
+
+            return $this->returnSuccessResponse('poll created  successfully',201);
+
+        }catch ( \Exception  $exception){
+            return $this->returnErrorResponse();
         }
 
     }

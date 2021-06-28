@@ -5,15 +5,8 @@ use Illuminate\Support\Carbon;
 
 trait MyResponse {
 
-    public static function returnSuccessResponse($message,$code=201,$id=null){
-        if($id){
-            $data = [
-                "id"=>$id,
-                'message' => $message,'code'=>$code];
-
-        }else{
+    public static function returnSuccessResponse($message,$code=201){
         $data = ['message' => $message,'code'=>$code];
-        }
         return Response()->json($data,$code);
     }
     public static function returnDataResponse($data,$code=200){
