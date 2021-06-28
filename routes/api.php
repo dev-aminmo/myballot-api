@@ -71,6 +71,7 @@ Route::middleware('auth:api')->group(function (){
         Route::post("/poll/question/add",[QuestionController::class,"add"]);
         Route::post("/poll/answer/add",[AnswerController::class,"add"]);
         Route::post("/poll/answer/update",[AnswerController::class,"update"]);
+        Route::delete("/poll/answer/delete",[AnswerController::class,"delete"]);
 
         Route::post("/election/update",[ElectionController::class,"update"]);
    // Route::get("/plurality-election/results/{id}",[PluralityElectionController::class,"results"]);
