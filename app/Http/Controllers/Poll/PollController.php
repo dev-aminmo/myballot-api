@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Poll;
 
 use App\Helpers\MyResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\VotePollRequest;
 use App\Models\Election;
 use App\Models\Poll\Answer;
 use App\Models\Poll\Poll;
@@ -83,6 +84,9 @@ class PollController extends Controller
         $election=Election::find($id);
         $data=Question::where("poll_id",$id)->with("answers")->get();
         return $this->returnDataResponse($data);
+
+    }
+    function vote(VotePollRequest $request){
 
     }
 }

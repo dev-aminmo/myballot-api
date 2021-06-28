@@ -110,6 +110,7 @@ Route::middleware('auth:api')->group(function (){
     */
     Route::post("/plurality-election/vote",[PluralityElectionController::class,"vote"]);
     Route::post("/lists-election/vote",[ListsElectionController::class,"vote"]);
+    Route::post("/poll/vote",[PollController::class,"vote"]);
 
     });//end of voter's routes
 });
