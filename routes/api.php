@@ -87,6 +87,7 @@ Route::middleware('auth:api')->group(function (){
     * candidate routes
     */
     Route::post("/candidate/update",[CandidateController::class,"update"]);
+    Route::delete("/candidate/delete",[CandidateController::class,"delete"]);
     Route::post("/candidate/plurality/free/add",[CandidateController::class,"add_free_plurality"]);
     Route::post("/candidate/lists/free/add",[CandidateController::class,"add_free_list"]);
 
