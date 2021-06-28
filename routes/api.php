@@ -46,6 +46,7 @@ Route::middleware('auth:api')->group(function (){
     Route::group(['prefix'=>'/user'],function(){
         Route::get("",[UserController::class,"index"]);
         Route::post("/avatar/update",[UserController::class,"updateAvatar"]);
+        Route::post("/profile/update",[UserController::class,"updateProfile"]);
         Route::post("/logout",[UserController::class,"logout"]);
         //Route::post("add",[ReviewController::class,"addReview"]);
     });//end of users routes
