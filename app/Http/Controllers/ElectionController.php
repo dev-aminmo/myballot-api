@@ -72,8 +72,8 @@ class ElectionController extends Controller
                 return $this->returnSuccessResponse('voters added successfully');
 
         } catch (\Exception  $exception) {
-            throw $exception;
-            //return $this->returnErrorResponse();
+
+            return $this->returnErrorResponse();
         }
     }
 

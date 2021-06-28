@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Poll\AnswerController;
 use App\Http\Controllers\ElectionController;
 use App\Http\Controllers\ListsElection\ListsElectionController;
 use App\Http\Controllers\Poll\PollController;
@@ -68,6 +69,7 @@ Route::middleware('auth:api')->group(function (){
 
         Route::post("/poll/create",[PollController::class,"create"]);
         Route::post("/poll/question/add",[QuestionController::class,"add"]);
+        Route::post("/poll/answer/add",[AnswerController::class,"add"]);
 
         Route::post("/election/update",[ElectionController::class,"update"]);
    // Route::get("/plurality-election/results/{id}",[PluralityElectionController::class,"results"]);
