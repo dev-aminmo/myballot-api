@@ -70,6 +70,7 @@ Route::middleware('auth:api')->group(function (){
         Route::post("/poll/create",[PollController::class,"create"]);
         Route::post("/poll/question/add",[QuestionController::class,"add"]);
         Route::post("/poll/question/update",[QuestionController::class,"update"]);
+        Route::delete("/poll/question/delete",[QuestionController::class,"delete"]);
         Route::post("/poll/answer/add",[AnswerController::class,"add"]);
         Route::post("/poll/answer/update",[AnswerController::class,"update"]);
         Route::delete("/poll/answer/delete",[AnswerController::class,"delete"]);

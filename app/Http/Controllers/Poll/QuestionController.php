@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Poll;
 use App\Helpers\MyResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddQuestionRequest;
+use App\Http\Requests\DeleteQuestionRequest;
 use App\Http\Requests\UpdateQuestionRequest;
 use App\Models\Election;
 use App\Models\Poll\Answer;
@@ -40,7 +41,7 @@ public function add(AddQuestionRequest $request){
         return response()->json($exception->getTrace(), 400);
     }
 }
-    public function  update(UpdateQuestionRequest $request){
+public function  update(UpdateQuestionRequest $request){
         try{
            $question= Question::find($request->question_id);
            if(!empty($request->value)){
@@ -56,4 +57,14 @@ public function add(AddQuestionRequest $request){
             return $this->returnErrorResponse();
         }
     }
+    public function  delete(DeleteQuestionRequest $request){
+        try{
+            Question::find($request->question_id)->delete();
+
+            return $this->returnSuccessResponse('question deleted successfully');
+        }catch ( \Exception  $exception){
+            return $this->returnErrorResponse();
+        }
+
+}
 }
