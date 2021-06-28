@@ -71,4 +71,18 @@ class PollController extends Controller
         }
 
     }
+    function get(Request $request){
+        $request->merge(['election_id' => $request->route('id')]);
+        $validation = Validator::make($request->all(), [
+            'election_id'=>'required|integer|exists:polls,id'
+            ,]);
+        if ($validation->fails()) {
+            return response()->json($validation->errors(), 422);
+        }
+       $id= $request->election_id;
+        $election=Election::find($id);
+        $data=Question::where("poll_id",$id)->with("answers")->get();
+        return $this->returnDataResponse($data);
+
+    }
 }

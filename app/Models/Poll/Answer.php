@@ -11,4 +11,7 @@ class Answer extends Model
     protected $fillable=['value','question_id'];
     public $timestamps=false;
 
+    public function question(){
+        return $this->belongsTo(Question::class,'question_id');
+    }
 }
