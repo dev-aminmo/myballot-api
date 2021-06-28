@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Poll;
 
 use App\Http\Controllers\Controller;
+use App\Models\Election;
 use App\Models\Poll\Answer;
 use App\Models\Poll\Poll;
 use App\Models\Poll\Question;
@@ -42,7 +43,8 @@ class PollController extends Controller
             $id = auth()->user()['id'];
             $allData = $request->all();
             $allData['organizer_id'] = $id;
-            $poll_id = Poll::create($allData)->id;
+            $poll_id=Election::create($allData)->id;
+             Poll::create(["id" =>$poll_id]);
 
             foreach ($request->questions as $question) {
                 $question_id = Question::create([
@@ -62,6 +64,7 @@ class PollController extends Controller
             $data = ['message' => 'poll created successfully', 'code' => 201];
             return Response()->json($data, 201);
         } catch (\Exception  $exception) {
+            throw $exception;
             $response['error'] = $exception;
             return response()->json($exception->getTrace(), 400);
         }

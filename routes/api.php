@@ -3,6 +3,7 @@
 use App\Http\Controllers\ElectionController;
 use App\Http\Controllers\ListsElection\ListsElectionController;
 use App\Http\Controllers\Poll\PollController;
+use App\Http\Controllers\Poll\QuestionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerificationController;
 use Illuminate\Http\Request;
@@ -66,7 +67,9 @@ Route::middleware('auth:api')->group(function (){
         Route::post("/lists-election/list/update",[ListsElectionController::class,"update"]);
 
         Route::post("/poll/create",[PollController::class,"create"]);
-    Route::post("/election/update",[ElectionController::class,"update"]);
+        Route::post("/poll/question/add",[QuestionController::class,"add"]);
+
+        Route::post("/election/update",[ElectionController::class,"update"]);
    // Route::get("/plurality-election/results/{id}",[PluralityElectionController::class,"results"]);
 
     /*
