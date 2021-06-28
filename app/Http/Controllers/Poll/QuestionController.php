@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Poll;
 
+use App\Helpers\MyResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AddQuestionRequest;
+use App\Http\Requests\UpdateQuestionRequest;
 use App\Models\Election;
 use App\Models\Poll\Answer;
 use App\Models\Poll\Poll;
@@ -12,6 +14,7 @@ use Illuminate\Http\Request;
 
 class QuestionController extends Controller
 {
+    use MyResponse;
 
 public function add(AddQuestionRequest $request){
     try {
@@ -37,4 +40,20 @@ public function add(AddQuestionRequest $request){
         return response()->json($exception->getTrace(), 400);
     }
 }
+    public function  update(UpdateQuestionRequest $request){
+        try{
+           $question= Question::find($request->question_id);
+           if(!empty($request->value)){
+               $question->value=$request->value;
+           }
+           if(!empty($request->type)){
+               $question->type_id=$request->type;
+
+           }
+           $question->save();
+            return $this->returnSuccessResponse('question updated successfully');
+        }catch ( \Exception  $exception){
+            return $this->returnErrorResponse();
+        }
+    }
 }
