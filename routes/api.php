@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\Poll\AnswerController;
 use App\Http\Controllers\ElectionController;
 use App\Http\Controllers\ListsElection\ListsElectionController;
 use App\Http\Controllers\Poll\PollController;
+use App\Http\Controllers\Poll\QuestionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerificationController;
 use Illuminate\Http\Request;
@@ -44,6 +46,7 @@ Route::middleware('auth:api')->group(function (){
     Route::group(['prefix'=>'/user'],function(){
         Route::get("",[UserController::class,"index"]);
         Route::post("/avatar/update",[UserController::class,"updateAvatar"]);
+        Route::post("/profile/update",[UserController::class,"updateProfile"]);
         Route::post("/logout",[UserController::class,"logout"]);
         //Route::post("add",[ReviewController::class,"addReview"]);
     });//end of users routes
@@ -52,6 +55,8 @@ Route::middleware('auth:api')->group(function (){
     Route::get("/plurality-election/results/{id}",[PluralityElectionController::class,"results"]);
     Route::get("/lists-election/results/{id}",[ListsElectionController::class,"results"]);
     Route::get("/lists-election/lists/{id}",[ListsElectionController::class,"lists"]);
+    Route::get("/poll/all/{id}",[PollController::class,"get"]);
+
 
     /*
      * Organizer's routes
@@ -66,7 +71,14 @@ Route::middleware('auth:api')->group(function (){
         Route::post("/lists-election/list/update",[ListsElectionController::class,"update"]);
 
         Route::post("/poll/create",[PollController::class,"create"]);
-    Route::post("/election/update",[ElectionController::class,"update"]);
+        Route::post("/poll/question/add",[QuestionController::class,"add"]);
+        Route::post("/poll/question/update",[QuestionController::class,"update"]);
+        Route::delete("/poll/question/delete",[QuestionController::class,"delete"]);
+        Route::post("/poll/answer/add",[AnswerController::class,"add"]);
+        Route::post("/poll/answer/update",[AnswerController::class,"update"]);
+        Route::delete("/poll/answer/delete",[AnswerController::class,"delete"]);
+
+        Route::post("/election/update",[ElectionController::class,"update"]);
    // Route::get("/plurality-election/results/{id}",[PluralityElectionController::class,"results"]);
 
     /*
@@ -87,6 +99,7 @@ Route::middleware('auth:api')->group(function (){
     * candidate routes
     */
     Route::post("/candidate/update",[CandidateController::class,"update"]);
+    Route::delete("/candidate/delete",[CandidateController::class,"delete"]);
     Route::post("/candidate/plurality/free/add",[CandidateController::class,"add_free_plurality"]);
     Route::post("/candidate/lists/free/add",[CandidateController::class,"add_free_list"]);
 
@@ -98,6 +111,7 @@ Route::middleware('auth:api')->group(function (){
     */
     Route::post("/plurality-election/vote",[PluralityElectionController::class,"vote"]);
     Route::post("/lists-election/vote",[ListsElectionController::class,"vote"]);
+    Route::post("/poll/vote",[PollController::class,"vote"]);
 
     });//end of voter's routes
 });

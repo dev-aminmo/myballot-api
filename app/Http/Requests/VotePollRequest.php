@@ -9,11 +9,13 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class AddVotersRequest extends FormRequest
+class VotePollRequest extends FormRequest
 {
     use MyResponse;
     use MyHelper;
     use AuthorizesAfterValidation;
+
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -21,9 +23,9 @@ class AddVotersRequest extends FormRequest
      */
     public function authorizeValidated()
     {
-        //TODO Correct to authorize after validation
-        return !$this->isStarted($this->election_id) && $this->isOrganizer($this->election_id);
+        return $this->isStarted($this->election_id)&& !$this->isEnded($this->election_id);
     }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -31,11 +33,14 @@ class AddVotersRequest extends FormRequest
      */
     public function rules()
     {
+
         return [
-            'election_id' => 'required|integer|exists:elections,id',
-            'voters' => 'required|array|min:1|max:150',
-            'voters.*.email' => 'required|email',
-            'voters.*.name' => 'string|min:3|max:150',
+            'election_id'=>'required|integer|exists:polls,id',
+           // 'candidate_id'=>'required|integer|exists:candidates,id'
+            "votes"=>'required|array',
+            "votes.*.questions_id"=>'required|integer|exists:questions,id',
+            "votes.*.answers"=>"array",
+            "votes.*.answers.*"=>'required|integer|exists:answers,id'
         ];
     }
 

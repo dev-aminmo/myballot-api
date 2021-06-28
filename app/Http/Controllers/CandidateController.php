@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\MyResponse;
 use App\Http\Requests\AddFreeCandidateLists;
 use App\Http\Requests\AddFreeCandidatesPlurality;
+use App\Http\Requests\DeleteCandidateRequest;
 use App\Http\Requests\UpdateCandidatePartyRequest;
 use App\Models\Candidate;
 use App\Models\Election;
@@ -19,7 +20,14 @@ class CandidateController extends Controller
     use MyHelper;
     use MyResponse;
 
-
+    function delete(DeleteCandidateRequest $request){
+        try{
+        Candidate::find($request->candidate_id)->delete();
+        return $this->returnSuccessResponse('Candidate deleted successfully');
+        }catch ( \Exception  $e){
+            return  $this->returnErrorResponse("An error has occured");
+        }
+        }
     function update(UpdateCandidatePartyRequest $request){
         $jsonData= $request->get("body");
 

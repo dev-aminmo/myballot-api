@@ -9,7 +9,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class AddVotersRequest extends FormRequest
+class DeleteCandidateRequest extends FormRequest
 {
     use MyResponse;
     use MyHelper;
@@ -21,7 +21,6 @@ class AddVotersRequest extends FormRequest
      */
     public function authorizeValidated()
     {
-        //TODO Correct to authorize after validation
         return !$this->isStarted($this->election_id) && $this->isOrganizer($this->election_id);
     }
     /**
@@ -33,9 +32,7 @@ class AddVotersRequest extends FormRequest
     {
         return [
             'election_id' => 'required|integer|exists:elections,id',
-            'voters' => 'required|array|min:1|max:150',
-            'voters.*.email' => 'required|email',
-            'voters.*.name' => 'string|min:3|max:150',
+            'candidate_id' => 'required|integer|exists:candidates,id',
         ];
     }
 

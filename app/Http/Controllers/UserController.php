@@ -7,6 +7,7 @@ use App\Http\Requests\User\LoginPostRequest;
 use App\Http\Requests\User\RegisterPostRequest;
 use App\Http\Requests\User\UpdateUserAvatarRequest;
 use App\Models\User;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -58,6 +59,26 @@ class UserController extends Controller
         return $this->returnDataResponse($data,200);
 
     }
+    public function updateProfile(Request $request){
+     $user=   auth()->user();
+        $validation = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'email' => 'unique:users,email',
+            'name' => 'string|min:4|max:400',
+        ]);
+        if ($validation->fails()) {
+            return $this->returnValidationResponse ( $validation->errors(),422,'Validation error');
+
+        }
+        if(isset($request->email)){
+            $user->email=$request->email;
+        }
+        if(isset($request->name)){
+            $user->name=$request->name;
+        }
+        $user->save();
+        return $this->returnSuccessResponse('profile updated successfully',201);
+
+    }
     public function updateAvatar(UpdateUserAvatarRequest $request){
         try{
             $user= auth()->user();
@@ -68,10 +89,10 @@ class UserController extends Controller
                 'format'=>"webp"
             ])->getSecurePath();
             $user->update(['avatar'=>$response]);
-            dd($user->id);
             return $this->returnSuccessResponse('profile avatar updated successfully',201);
           }catch (Exception $e){
             return $this->returnErrorResponse();
+
         }
 
     }

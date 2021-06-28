@@ -8,6 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Poll extends Model
 {
     use HasFactory;
-    protected $fillable=['start_date','end_date','title','description','organizer_id'];
+    protected $fillable=['id'];
     public $timestamps=false;
 }

@@ -46,6 +46,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    public function getAvatarAttribute($value)
+    {
+        if($value == null){
+            return "https://images.pexels.com/photos/2528118/pexels-photo-2528118.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260";
+
+        }
+        return $value;
+    }
     public function elections()
     {
         return $this->belongsToMany(Election::class, 'election_user', 'user_id', 'election_id')

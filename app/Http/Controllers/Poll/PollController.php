@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Poll;
 
+use App\Helpers\MyResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\VotePollRequest;
+use App\Models\Election;
 use App\Models\Poll\Answer;
 use App\Models\Poll\Poll;
 use App\Models\Poll\Question;
@@ -12,6 +15,7 @@ use Illuminate\Support\Facades\Validator;
 
 class PollController extends Controller
 {
+    use MyResponse;
     //
     function create(Request $request)
     {
@@ -42,7 +46,8 @@ class PollController extends Controller
             $id = auth()->user()['id'];
             $allData = $request->all();
             $allData['organizer_id'] = $id;
-            $poll_id = Poll::create($allData)->id;
+            $poll_id=Election::create($allData)->id;
+             Poll::create(["id" =>$poll_id]);
 
             foreach ($request->questions as $question) {
                 $question_id = Question::create([
@@ -59,12 +64,29 @@ class PollController extends Controller
             }
 
 
-            $data = ['message' => 'poll created successfully', 'code' => 201];
-            return Response()->json($data, 201);
-        } catch (\Exception  $exception) {
-            $response['error'] = $exception;
-            return response()->json($exception->getTrace(), 400);
+
+            return $this->returnSuccessResponse('poll created  successfully',201);
+
+        }catch ( \Exception  $exception){
+            return $this->returnErrorResponse();
         }
+
+    }
+    function get(Request $request){
+        $request->merge(['election_id' => $request->route('id')]);
+        $validation = Validator::make($request->all(), [
+            'election_id'=>'required|integer|exists:polls,id'
+            ,]);
+        if ($validation->fails()) {
+            return response()->json($validation->errors(), 422);
+        }
+       $id= $request->election_id;
+        $election=Election::find($id);
+        $data=Question::where("poll_id",$id)->with("answers")->get();
+        return $this->returnDataResponse($data);
+
+    }
+    function vote(VotePollRequest $request){
 
     }
 }
