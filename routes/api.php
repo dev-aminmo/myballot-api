@@ -73,10 +73,10 @@ Route::middleware('auth:api')->group(function (){
         Route::post("/poll/create",[PollController::class,"create"]);
         Route::post("/poll/question/add",[QuestionController::class,"add"]);
         Route::post("/poll/question/update",[QuestionController::class,"update"]);
-        Route::delete("/poll/question/delete",[QuestionController::class,"delete"]);
+        Route::post("/poll/question/delete",[QuestionController::class,"delete"]);
         Route::post("/poll/answer/add",[AnswerController::class,"add"]);
         Route::post("/poll/answer/update",[AnswerController::class,"update"]);
-        Route::delete("/poll/answer/delete",[AnswerController::class,"delete"]);
+        Route::post("/poll/answer/delete",[AnswerController::class,"delete"]);
 
         Route::post("/election/update",[ElectionController::class,"update"]);
    // Route::get("/plurality-election/results/{id}",[PluralityElectionController::class,"results"]);
@@ -86,20 +86,20 @@ Route::middleware('auth:api')->group(function (){
      */
     Route::post("/party/plurality/add",[PartyController::class,"add_to_plurality"]);
     Route::post("/party/update",[PartyController::class,"update"]);
-    Route::delete("/party/delete",[PartyController::class,"delete"]);
+    Route::post("/party/delete",[PartyController::class,"delete"]);
 
     /*
     *  voter managing routes
     */
     Route::post("/election/voter/add",[ElectionController::class,"add_voters"]);
     Route::get("/election/voter/get/{id}",[ElectionController::class,"get_voters"]);
-    Route::delete("/election/voter/delete",[ElectionController::class,"delete_voter"]);
+    Route::post("/election/voter/delete",[ElectionController::class,"delete_voter"]);
 
     /*
     * candidate routes
     */
     Route::post("/candidate/update",[CandidateController::class,"update"]);
-    Route::delete("/candidate/delete",[CandidateController::class,"delete"]);
+    Route::post("/candidate/delete",[CandidateController::class,"delete"]);
     Route::post("/candidate/plurality/free/add",[CandidateController::class,"add_free_plurality"]);
     Route::post("/candidate/lists/free/add",[CandidateController::class,"add_free_list"]);
 
