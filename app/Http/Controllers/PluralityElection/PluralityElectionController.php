@@ -26,12 +26,14 @@ use MyResponse;
         $id= auth()->user()['id'];
             $allData = $request->all();
             $allData['organizer_id']=$id;
+            $allData['type']="plurality";
+
             $election_id=Election::create($allData)->id;
             PluralityElection::create([
                 'id'=>$election_id,
                 'seats_number'=>(!empty($request->seats_number)) ? $request->seats_number : 1,
             ]);
-            if (!empty($request->parties)&& !empty($request->type) == 1) {
+            if (!empty($request->parties)&& !empty($request->candidate_type) == 1) {
                 foreach($request->parties as $party){
                     $party_id = Party::create(['name'=> $party['name'],
                         'election_id'=>$election_id])->id;
@@ -89,7 +91,7 @@ use MyResponse;
         }
        $election= Election::where('id',$request->id)->first();
         if(json_decode($election->result,true ) == null){
-      if($election->type == 1){
+      if($election->candidate_type == 1){
           $data["candidates"]= Candidate::where('election_id',$request->id)->orderBy('count', 'DESC')->with(['partisan_candidate'=> function ($query) {
               $query->with('party');
         }])->get()->transform(function ($value){

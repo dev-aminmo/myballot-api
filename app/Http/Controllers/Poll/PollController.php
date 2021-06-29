@@ -46,6 +46,8 @@ class PollController extends Controller
             $id = auth()->user()['id'];
             $allData = $request->all();
             $allData['organizer_id'] = $id;
+            $allData['type']="poll";
+
             $poll_id=Election::create($allData)->id;
              Poll::create(["id" =>$poll_id]);
 

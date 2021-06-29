@@ -40,14 +40,16 @@ class ListsElectionController extends Controller
             $id= auth()->user()['id'];
             $allData = $request->all();
             $allData['organizer_id']=$id;
+            $allData['type']="lists";
             $election_id=Election::create($allData)->id;
+
 
             ListsElection::create([
                 'id'=>$election_id,
                 'seats_number'=>(!empty($request->seats_number)) ? $request->seats_number : 1,
             ]);
 
-            if (!empty($request->partisan_lists)  && !empty($this->type) == 1) {
+            if (!empty($request->partisan_lists)  && !empty($this->candidate_type) == 1) {
                 foreach($request->partisan_lists as $partisan_list){
                    $name=$partisan_list["name"];
                    $program=$partisan_list["program"];
@@ -120,7 +122,7 @@ class ListsElectionController extends Controller
             if( $voted){
                 return  $this->returnErrorResponse('vote already casted');
             }
-            if($election->type==0){
+            if($election->candidate_type==0){
               $free_list=  FreeElectionList::find($list->free_candidate->list_id);
                 $free_list->update(['count'=> DB::raw('count+1'),]);
             $user->elections()->updateExistingPivot($election_id, ['voted'=>true]);
@@ -141,7 +143,7 @@ class ListsElectionController extends Controller
         }
         $election= Election::where('id',$request->id)->first();
         //TODO implement if type is 1
-        if($election->type==0){
+        if($election->candidate_type==0){
         $data["added_voters"] =$election->users()->where('election_id',$election->id )->count();
         $data["vote_casted"] =$election->users()->where(['election_id'=>$election->id ,
             'voted'=>true
@@ -177,7 +179,7 @@ class ListsElectionController extends Controller
             return response()->json($validation->errors(), 422);
         }
        $election= Election::find($request->id);
-        if ($election->type == 0){
+        if ($election->candidate_type == 0){
         $list_election  =  ListsElection::where("id",$request->id)->with(["free_lists"=>function($query){
           //  $query->orderBy("count","DESC");
             $query->with("candidates");

@@ -67,7 +67,7 @@ class CreateListsElectionRequest extends FormRequest
      */
     public function is_valid()
     {
-        if ($this->type==1 && empty($this->free_lists) ){
+        if ($this->candidate_type==1 && empty($this->free_lists) ){
             throw new HttpResponseException( $this->returnValidationResponse(["seats_number is required if the type is 1"]));
 
         }
@@ -75,7 +75,7 @@ class CreateListsElectionRequest extends FormRequest
         if (!empty($this->free_lists)) {
             $lists_count +=count($this->free_lists);
         }
-        if (!empty($this->partisan_lists) && !empty($this->type) == 1) {
+        if (!empty($this->partisan_lists) && !empty($this->candidate_type) == 1) {
             $lists_count +=count($this->partisan_lists);
         }
         if ($lists_count<2) {

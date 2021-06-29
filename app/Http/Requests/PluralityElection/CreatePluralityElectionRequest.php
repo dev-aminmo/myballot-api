@@ -35,7 +35,7 @@ class CreatePluralityElectionRequest extends FormRequest
             'end_date'      => 'required|date|date_format:Y-m-d H:i|after:start_date',
             'title'=> 'required|string|min:2|max:255',
             'description'=> 'string|min:10|max:400',
-            'type'=>'required|integer|min:0|max:1',
+            'candidate_type'=>'required|integer|min:0|max:1',
             'seats_number'=>'integer|min:1',
             'parties' => 'array|min:1|max:30',
             'parties.*.name'=>'required',

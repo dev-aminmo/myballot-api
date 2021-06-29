@@ -45,7 +45,7 @@ trait MyHelper {
         if(empty($election)){
             return false;
         }
-        if($election->type==1){
+        if($election->candidate_type==1){
             return true;
         }
         return false;
