@@ -35,9 +35,15 @@ Route::get("email/verify/{id}",[VerificationController::class,"verify"])->name("
 //Route::get("/login",[UserController::class,"login"])->name('login');
 
 Route::middleware('auth:api')->group(function (){
-    /*
-     * users routes
-     */
+    Route::middleware('voter')->group(function () {
+        Route::get("/papa",function(){
+            return "Hello paapa";
+        });
+
+    });
+        /*
+         * users routes
+         */
 
     Route::get("/election/all",[ElectionController::class,"elections"]);
 
@@ -61,7 +67,7 @@ Route::middleware('auth:api')->group(function (){
     /*
      * Organizer's routes
      */
-    Route::middleware('role:organizer')->group(function (){
+    Route::middleware('organizer')->group(function (){
     /*
     * elections routes
     */
@@ -105,7 +111,7 @@ Route::middleware('auth:api')->group(function (){
 
     }); //end of organizer's routes
 
-    Route::middleware('role:voter')->group(function (){
+    Route::middleware('voter')->group(function (){
     /*
     *  voter routes
     */

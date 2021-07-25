@@ -19,8 +19,10 @@ class UserController extends Controller
         try{
 
             //$newUser = User::create($request->getAttributes())->SendEmailVerificationNotification();
-            $newUser = User::create($request->getAttributes());
-            $newUser->attachRole("organizer");
+            $data=$request->getAttributes();
+            $data['is_organizer']=true;
+            $newUser = User::create($data);
+            //$newUser->attachRole("organizer");
             $tokenStr = $newUser->createToken('api-application')->accessToken;
             $resArr["token"] = $tokenStr;
             return $this->returnDataResponse($resArr,201);
