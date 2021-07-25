@@ -16,7 +16,7 @@ class CreateListsElectionsTable extends Migration
         Schema::create('lists_elections', function (Blueprint $table) {
             $table->bigInteger('id')->unsigned();
             $table->integer("seats_number");
-            $table->foreign("id")->references('id')->on("elections")->onDelete('cascade');
+            $table->foreign("id")->references('id')->on("ballots")->onDelete('cascade');
         });
     }
 

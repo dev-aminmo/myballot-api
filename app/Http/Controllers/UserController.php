@@ -50,16 +50,7 @@ class UserController extends Controller
     public function index()
     {
       $data=auth()->user();
-        if($data['avatar']==""){
-            $data['avatar']="place_holder.jpg" ;
-        }
-        if(auth()->user()->hasRole("organizer")){
-            $data['role']='organizer';
-        }else{
-            $data['role']='voter';
-        }
-        return $this->returnDataResponse($data,200);
-
+      return $this->returnDataResponse($data,200);
     }
     public function updateProfile(Request $request){
      $user=   auth()->user();

@@ -13,7 +13,7 @@ class AddResultToElectionsTable extends Migration
      */
     public function up()
     {
-        Schema::table('elections', function (Blueprint $table) {
+        Schema::table('ballots', function (Blueprint $table) {
             $table->json('result')->nullable();
         });
     }
@@ -25,7 +25,7 @@ class AddResultToElectionsTable extends Migration
      */
     public function down()
     {
-        Schema::table('elections', function (Blueprint $table) {
+        Schema::table('ballots', function (Blueprint $table) {
             $table->dropColumn('result');
         });
     }

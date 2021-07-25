@@ -18,7 +18,7 @@ class CreatePluralityElectionsTable extends Migration
             $table->bigInteger('id')->unsigned();
             $table->integer("seats_number")->default(1);
 
-            $table->foreign("id")->references('id')->on("elections")->onDelete('cascade');
+            $table->foreign("id")->references('id')->on("ballots")->onDelete('cascade');
 
         });
     }

@@ -55,6 +55,13 @@ class User extends Authenticatable
         }
         return $value;
     }
+    public function getisOrganizerAttribute($value)
+    {
+        if($value){
+         return true;
+        }
+        return false;
+    }
     public function elections()
     {
         return $this->belongsToMany(Election::class, 'election_user', 'user_id', 'election_id')

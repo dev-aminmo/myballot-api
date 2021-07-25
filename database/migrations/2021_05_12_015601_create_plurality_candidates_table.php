@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateFreeCandidatesTable extends Migration
+class CreatePluralityCandidatesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,12 @@ class CreateFreeCandidatesTable extends Migration
      */
     public function up()
     {
-        Schema::create('free_candidates', function (Blueprint $table) {
+        Schema::create('plurality_candidates', function (Blueprint $table) {
             $table->bigInteger('id')->unsigned();
             $table->foreign("id")->references('id')->on("candidates")->onDelete('cascade');
-            $table->bigInteger('list_id')->unsigned()->nullable();
-            $table->foreign("list_id")->references('id')->on("free_election_lists")->onDelete('cascade');
+
+            $table->bigInteger('election_id')->unsigned();
+           $table->foreign("election_id")->references('id')->on("plurality_elections")->onDelete('cascade');
         });
     }
 
@@ -28,6 +29,6 @@ class CreateFreeCandidatesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('free_candidates');
+        Schema::dropIfExists('plurality_candidates');
     }
 }

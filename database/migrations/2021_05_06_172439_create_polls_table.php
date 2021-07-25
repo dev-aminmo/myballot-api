@@ -15,7 +15,7 @@ class CreatePollsTable extends Migration
     {
         Schema::create('polls', function (Blueprint $table) {
             $table->bigInteger('id')->unsigned();
-            $table->foreign("id")->references('id')->on("elections")->onDelete('cascade');
+            $table->foreign("id")->references('id')->on("ballots")->onDelete('cascade');
         });
     }
 
