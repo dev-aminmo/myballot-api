@@ -21,7 +21,7 @@ class CreateElectionsTable extends Migration
             $table->string('description',400)->nullable();
             //$table->boolean('type')->default(0);
             $table->enum('type',["plurality","lists","poll"]);
-            $table->boolean('candidate_type')->default(0);
+           // $table->boolean('candidate_type')->default(0);
             $table->bigInteger('organizer_id')->unsigned();
             $table->foreign("organizer_id")->references('id')->on("users")->onDelete('cascade');
 
