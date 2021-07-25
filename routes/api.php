@@ -37,7 +37,7 @@ Route::get("email/verify/{id}",[VerificationController::class,"verify"])->name("
 Route::middleware('auth:api')->group(function (){
     Route::middleware('voter')->group(function () {
         Route::get("/papa",function(){
-            return "Hello paapa";
+            return "Hello paapa test";
         });
 
     });
