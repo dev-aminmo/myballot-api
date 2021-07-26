@@ -34,20 +34,13 @@ class CreateListsElectionRequest extends FormRequest
             'end_date'      => 'required|date|date_format:Y-m-d H:i|after:start_date',
             'title'=> 'required|string|min:2|max:255',
             'description'=> 'string|min:10|max:400',
-            'type'=>'required|integer|min:0|max:1',
             'seats_number'=>'integer|min:2',
-            'partisan_lists' => 'array|min:1|max:30',
-            'partisan_lists.*.name'=>'required',
-            'partisan_lists.*.program'=>'string|string|min:2|max:400',
-            'partisan_lists.*.parties' => 'required|array|max:1',
-            'partisan_lists.*.parties.*.candidates.*.name' => 'required|string|min:4|max:255',
-            'partisan_lists.*.parties.*.candidates.*.description' => 'string|min:4|max:400',
-            'free_lists' => 'array|min:1|max:30',
-            'free_lists.*.name'=>'required|string|min:2|max:255',
-            'free_lists.*.program'=>'string|string|min:2|max:400',
-            'free_lists.*.candidates' => 'required|array|max:30',
-            'free_lists.*.candidates.*.name' => 'required|string|min:4|max:255',
-            'free_lists.*.candidates.*.description' => 'string|min:4|max:400',
+            'lists' => 'required|array|min:2|max:30',
+            'lists.*.name'=>'required|string|min:2|max:255',
+            'lists.*.program'=>'string|string|min:2|max:400',
+            'lists.*.candidates' => 'required|array|max:30',
+            'lists.*.candidates.*.name' => 'required|string|min:4|max:255',
+            'lists.*.candidates.*.description' => 'string|min:4|max:400',
         ];
     }
 
@@ -67,20 +60,6 @@ class CreateListsElectionRequest extends FormRequest
      */
     public function is_valid()
     {
-        if ($this->candidate_type==1 && empty($this->free_lists) ){
-            throw new HttpResponseException( $this->returnValidationResponse(["seats_number is required if the type is 1"]));
-
-        }
-        $lists_count=0;
-        if (!empty($this->free_lists)) {
-            $lists_count +=count($this->free_lists);
-        }
-        if (!empty($this->partisan_lists) && !empty($this->candidate_type) == 1) {
-            $lists_count +=count($this->partisan_lists);
-        }
-        if ($lists_count<2) {
-            throw new HttpResponseException( $this->returnValidationResponse(["the minimum number of lists is 2"]));
-        }
         $start = Carbon::parse($this->start_date);
         $end = Carbon::parse($this->end_date);
         $diff_in_minutes = $end->diffInMinutes($start);

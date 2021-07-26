@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Helpers\AuthorizesAfterValidation;
 use App\Helpers\MyHelper;
 use App\Helpers\MyResponse;
-use App\Models\ListsElection\FreeElectionList;
+use App\Models\ListsElection\ElectionList;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -23,7 +23,7 @@ class AddFreeCandidateLists extends FormRequest
      */
     public function authorizeValidated()
     {
-      $list=  FreeElectionList::find($this->list_id);
+      $list=  ElectionList::find($this->list_id);
         return !$this->isStarted($list->election_id) && $this->isOrganizer($list->election_id);
     }
     /**

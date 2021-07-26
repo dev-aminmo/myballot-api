@@ -10,8 +10,8 @@ use Illuminate\Database\Eloquent\Model;
 class ListCandidate extends Model
 {
     use HasFactory;
-    protected $table="partisan_candidates";
-    protected $fillable=['id'/*,'name','description','picture',*/,'party_id'];
+    protected $table="lists_candidates";
+    protected $fillable=['id'/*,'name','description','picture',*/,'list_id'];
     public $timestamps=false;
 
     public function party(){

@@ -25,6 +25,6 @@ class ListsElection extends Model
         return $this->hasMany(PartisanElectionList::class,'election_id');
     }
     public function free_lists(){
-        return $this->hasMany(FreeElectionList::class,'election_id');
+        return $this->hasMany(ElectionList::class,'election_id');
     }
 }

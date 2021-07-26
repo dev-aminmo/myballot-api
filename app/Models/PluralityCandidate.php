@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\ListsElection\FreeElectionList;
+use App\Models\ListsElection\ElectionList;
 use App\Models\PluralityElection\PluralityElection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
