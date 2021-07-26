@@ -59,8 +59,8 @@ class CreatePluralityElectionRequest extends FormRequest
     {
 
         $candidates_count=0;
-        if (!empty($this->free_candidates)) {
-            $candidates_count +=count($this->free_candidates);
+        if (!empty($this->candidates)) {
+            $candidates_count +=count($this->candidates);
         }
         if ($candidates_count<2) {
             throw new HttpResponseException( $this->returnValidationResponse(["the minimum number of candidates is 2"]));

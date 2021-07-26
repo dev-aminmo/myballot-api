@@ -10,8 +10,8 @@ use Illuminate\Database\Eloquent\Model;
 class PluralityCandidate extends Model
 {
     use HasFactory;
-    protected $table="free_candidates";
-    protected $fillable=["id",/*'name','description','picture','election_id',*/'list_id'];
+    protected $table="plurality_candidates";
+    protected $fillable=["id",/*'name','description','picture','election_id',*/'election_id'];
     public $timestamps=false;
 
     public function election(){

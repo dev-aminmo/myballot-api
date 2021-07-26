@@ -9,7 +9,7 @@ class Ballot extends Model
 {
     use HasFactory;
     public $timestamps=false;
-    protected $table="elections";
+    protected $table="ballots";
     protected $fillable = [
         'start_date',
         'end_date',

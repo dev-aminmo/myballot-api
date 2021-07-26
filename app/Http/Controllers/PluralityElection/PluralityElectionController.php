@@ -24,44 +24,27 @@ use MyHelper;
 use MyResponse;
     function create(CreatePluralityElectionRequest $request){
         $id= auth()->user()['id'];
-        $allData['organizer_id']=$id;
         $allData = $request->all();
-        $allData['type']="plurality";
-
-            $election_id=Ballot::create($allData)->id;
-            PluralityElection::create([
-                'id'=>$election_id,
+        $allData['organizer_id']=$id;
+        $allData['type']=1;
+        $ballot_id=Ballot::create($allData)->id;
+        PluralityElection::create([
+                'id'=>$ballot_id,
                 'seats_number'=>(!empty($request->seats_number)) ? $request->seats_number : 1,
             ]);
-            if (!empty($request->parties)&& !empty($request->candidate_type) == 1) {
-                foreach($request->parties as $party){
-                    $party_id = Party::create(['name'=> $party['name'],
-                        'election_id'=>$election_id])->id;
-                    foreach($party['candidates']as $candidate){
-                       $candidate_id= Candidate::create([ 'name'=> $candidate['name'],
-                           'description'=>(!empty($candidate['description'])) ? $candidate['description'] : null,
-                           "election_id"=>$election_id
-                       ])->id;
-                        ListCandidate::create([
-                                 'id'=>$candidate_id,
-                                'party_id'=>$party_id,
-                            ]
-                        );
-                    }
-                }
-            }
-            if (!empty($request->free_candidates)) {
-                foreach($request->free_candidates as $candidate){
+
+                foreach($request->candidates as $candidate){
                     $candidate_id= Candidate::create([ 'name'=> $candidate['name'],
                         'description'=>(!empty($candidate['description'])) ? $candidate['description'] : null,
-                        "election_id"=>$election_id
+                        "type"=>1
                     ])->id;
                     PluralityCandidate::create([
-                          "id"=>$candidate_id
+                          "id"=>$candidate_id,
+                            "election_id"=>$ballot_id
                         ]
                     );
                 }
-            }
+
             return $this->returnSuccessResponse('election created successfully');
     }
     function vote(VotePluralityElectionRequest $request){

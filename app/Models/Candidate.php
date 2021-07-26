@@ -10,7 +10,7 @@ class Candidate extends Model
 {
     use HasFactory;
     protected $table="candidates";
-    protected $fillable=['name','description','picture',"count",'election_id'];
+    protected $fillable=['name','description','picture',"count",'election_id',"type"];
     public $timestamps=false;
 
     public function election(){
