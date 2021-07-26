@@ -15,13 +15,13 @@ class CreateQuestionsTable extends Migration
     {
         Schema::create('question_types', function (Blueprint $table) {
             $table->id();
-            $table->string('description');
+            $table->string('name');
         });
         DB::table('question_types')->insert([
-            'description'=>"question with multiple choice",
+            'name'=>"question with multiple choice",
         ]);
         DB::table('question_types')->insert([
-            'description'=>"question with single choice",
+            'name'=>"question with single choice",
         ]);
         Schema::create('questions', function (Blueprint $table) {
             $table->id();

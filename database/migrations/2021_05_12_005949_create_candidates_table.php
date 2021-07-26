@@ -19,8 +19,9 @@ class CreateCandidatesTable extends Migration
             $table->string('description',400)->nullable();
             $table->string('picture',255)->nullable();
             $table->integer('count')->default(0);
-           // $table->bigInteger('election_id')->unsigned()->nullable();
-          //  $table->foreign("election_id")->references('id')->on("elections")->onDelete('cascade');
+           // $table->enum('election_type',["plurality","lists"])->default("plurality");
+            $table->bigInteger('type')->unsigned()->nullable();
+            $table->foreign("type")->references('id')->on("candidate_types")->onDelete('cascade');
 
         });
     }
