@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PluralityElection\CreatePluralityElectionRequest;
 use App\Http\Requests\PluralityElection\VotePluralityElectionRequest;
 use App\Models\Candidate;
-use App\Models\Election;
-use App\Models\FreeCandidate;
-use App\Models\PartisanCandidate;
+use App\Models\Ballot;
+use App\Models\PluralityCandidate;
+use App\Models\ListCandidate;
 use App\Models\Party;
 use App\Models\PluralityElection\PluralityElection;
 use Illuminate\Http\Request;
@@ -24,11 +24,11 @@ use MyHelper;
 use MyResponse;
     function create(CreatePluralityElectionRequest $request){
         $id= auth()->user()['id'];
-            $allData = $request->all();
-            $allData['organizer_id']=$id;
-            $allData['type']="plurality";
+        $allData['organizer_id']=$id;
+        $allData = $request->all();
+        $allData['type']="plurality";
 
-            $election_id=Election::create($allData)->id;
+            $election_id=Ballot::create($allData)->id;
             PluralityElection::create([
                 'id'=>$election_id,
                 'seats_number'=>(!empty($request->seats_number)) ? $request->seats_number : 1,
@@ -42,7 +42,7 @@ use MyResponse;
                            'description'=>(!empty($candidate['description'])) ? $candidate['description'] : null,
                            "election_id"=>$election_id
                        ])->id;
-                        PartisanCandidate::create([
+                        ListCandidate::create([
                                  'id'=>$candidate_id,
                                 'party_id'=>$party_id,
                             ]
@@ -56,7 +56,7 @@ use MyResponse;
                         'description'=>(!empty($candidate['description'])) ? $candidate['description'] : null,
                         "election_id"=>$election_id
                     ])->id;
-                    FreeCandidate::create([
+                    PluralityCandidate::create([
                           "id"=>$candidate_id
                         ]
                     );
@@ -89,7 +89,7 @@ use MyResponse;
         if ($validation->fails()) {
             return response()->json($validation->errors(), 422);
         }
-       $election= Election::where('id',$request->id)->first();
+       $election= Ballot::where('id',$request->id)->first();
         if(json_decode($election->result,true ) == null){
       if($election->candidate_type == 1){
           $data["candidates"]= Candidate::where('election_id',$request->id)->orderBy('count', 'DESC')->with(['partisan_candidate'=> function ($query) {

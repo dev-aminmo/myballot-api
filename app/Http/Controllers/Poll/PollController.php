@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Poll;
 use App\Helpers\MyResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\VotePollRequest;
-use App\Models\Election;
+use App\Models\Ballot;
 use App\Models\Poll\Answer;
 use App\Models\Poll\Poll;
 use App\Models\Poll\Question;
@@ -48,7 +48,7 @@ class PollController extends Controller
             $allData['organizer_id'] = $id;
             $allData['type']="poll";
 
-            $poll_id=Election::create($allData)->id;
+            $poll_id=Ballot::create($allData)->id;
              Poll::create(["id" =>$poll_id]);
 
             foreach ($request->questions as $question) {
@@ -83,7 +83,7 @@ class PollController extends Controller
             return response()->json($validation->errors(), 422);
         }
        $id= $request->election_id;
-        $election=Election::find($id);
+        $election=Ballot::find($id);
         $data=Question::where("poll_id",$id)->with("answers")->get();
         return $this->returnDataResponse($data);
 

@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\SendMailsJob;
-use App\Models\Election;
+use App\Models\Ballot;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
@@ -46,8 +46,8 @@ class NotifyUsers extends Command
         $now = date("Y-m-d H:i:00", strtotime(Carbon::now()));
         logger($now);
 
-        $elections_starts = Election::where("start_date", $now)->get();
-        $elections_ends = Election::where("end_date", $now)->get();
+        $elections_starts = Ballot::where("start_date", $now)->get();
+        $elections_ends = Ballot::where("end_date", $now)->get();
         if (!$elections_starts->isEmpty()) {
             foreach ($elections_starts as $election) {
                 $data = ['type' => 3, "email" =>  User::where('id',$election->organizer_id)->first()->email];

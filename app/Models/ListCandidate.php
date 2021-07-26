@@ -7,7 +7,7 @@ use App\Models\PluralityElection\PluralityElection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PartisanCandidate extends Model
+class ListCandidate extends Model
 {
     use HasFactory;
     protected $table="partisan_candidates";

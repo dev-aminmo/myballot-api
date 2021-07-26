@@ -1,12 +1,12 @@
 <?php
 namespace App\Helpers;
-use App\Models\Election;
+use App\Models\Ballot;
 use Illuminate\Support\Carbon;
 
 trait MyHelper {
     public static function isOrganizer($election_id)
     {
-        $p=Election::where('id',$election_id)->first();
+        $p=Ballot::where('id',$election_id)->first();
         if(empty($p)){
             return false;
         }
@@ -17,7 +17,7 @@ trait MyHelper {
     }
     public static function isStarted($election_id){
 
-        $election=Election::where('id',$election_id)->first();
+        $election=Ballot::where('id',$election_id)->first();
         if(empty($election)){
             return false;
         }
@@ -29,7 +29,7 @@ trait MyHelper {
         return true;
     }
     public static function isEnded($election_id){
-        $election=Election::where('id',$election_id)->first();
+        $election=Ballot::where('id',$election_id)->first();
         if(empty($election)){
             return false;
         }
@@ -41,7 +41,7 @@ trait MyHelper {
         return false;
     }
     public static function typeIsOne($election_id){
-        $election=Election::where('id',$election_id)->first();
+        $election=Ballot::where('id',$election_id)->first();
         if(empty($election)){
             return false;
         }

@@ -8,9 +8,9 @@ use App\Http\Requests\AddFreeCandidatesPlurality;
 use App\Http\Requests\DeleteCandidateRequest;
 use App\Http\Requests\UpdateCandidatePartyRequest;
 use App\Models\Candidate;
-use App\Models\Election;
-use App\Models\FreeCandidate;
-use App\Models\PartisanCandidate;
+use App\Models\Ballot;
+use App\Models\PluralityCandidate;
+use App\Models\ListCandidate;
 use App\Models\Party;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -86,7 +86,7 @@ class CandidateController extends Controller
                     'description'=>(!empty($candidate['description'])) ? $candidate['description'] : null,
                 ]
             )->id;
-            FreeCandidate::create([
+            PluralityCandidate::create([
                     'id'=> $candidate_id,
                     "list_id"=>$list_id
                 ]
@@ -104,7 +104,7 @@ class CandidateController extends Controller
                     'election_id'=>$election_id
                 ]
             )->id;
-            FreeCandidate::create([
+            PluralityCandidate::create([
                     'id'=> $candidate_id,
                 ]
             );

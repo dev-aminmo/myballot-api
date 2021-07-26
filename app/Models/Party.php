@@ -17,7 +17,7 @@ public $timestamps=false;
     {
        // return $this->hasMany(PartisanCandidate::class,'party_id');
      //   public function candidates(){
-        return $this->hasManyThrough(Candidate::class,PartisanCandidate::class,'party_id','id');
+        return $this->hasManyThrough(Candidate::class,ListCandidate::class,'party_id','id');
    // }
     }
     public function plurality_election()

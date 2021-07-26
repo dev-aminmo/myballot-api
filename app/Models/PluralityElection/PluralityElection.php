@@ -2,8 +2,8 @@
 
 namespace App\Models\PluralityElection;
 
-use App\Models\FreeCandidate;
-use App\Models\PartisanCandidate;
+use App\Models\PluralityCandidate;
+use App\Models\ListCandidate;
 use App\Models\Party;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,7 +28,7 @@ class PluralityElection extends Model
     }
     public function free_candidates()
     {
-        return $this->hasMany(FreeCandidate::class,'election_id');
+        return $this->hasMany(PluralityCandidate::class,'election_id');
     }
 
 }

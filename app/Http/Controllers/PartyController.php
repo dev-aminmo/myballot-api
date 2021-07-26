@@ -7,7 +7,7 @@ use App\Http\Requests\AddPluralityPartyRequest;
 use App\Http\Requests\DeletePartyRequest;
 use App\Http\Requests\UpdateCandidatePartyRequest;
 use App\Models\Candidate;
-use App\Models\PartisanCandidate;
+use App\Models\ListCandidate;
 use App\Models\Party;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -28,7 +28,7 @@ class PartyController extends Controller
                      'election_id'=>$election_id
                 ]
             )->id;
-            PartisanCandidate::create([
+            ListCandidate::create([
                     'id'=> $candidate_id,
                     'party_id'=>$party_id,
                 ]

@@ -18,12 +18,12 @@ class Candidate extends Model
     }
     public function partisan_candidate()
     {
-        return $this->hasOne(PartisanCandidate::class,'id');
+        return $this->hasOne(ListCandidate::class,'id');
     }
 
     public function free_candidate()
     {
-        return $this->hasOne(FreeCandidate::class,'id');
+        return $this->hasOne(PluralityCandidate::class,'id');
     }
 
 

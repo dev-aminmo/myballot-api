@@ -8,9 +8,9 @@ use App\Http\Requests\DeleteVoterRequest;
 use App\Http\Requests\UpdateElectionRequest;
 use App\Jobs\SendMailsJob;
 use App\Models\Candidate;
-use App\Models\Election;
-use App\Models\FreeCandidate;
-use App\Models\PartisanCandidate;
+use App\Models\Ballot;
+use App\Models\PluralityCandidate;
+use App\Models\ListCandidate;
 use App\Models\Party;
 use App\Models\PluralityElection\PluralityElection;
 use App\Models\User;
@@ -90,7 +90,7 @@ class ElectionController extends Controller
         $election_id= $request->election_id;
         if ($this->isStarted($election_id) ||!$this->isOrganizer($election_id)) return  redirect('/');
 
-        $election=Election::where('id',$election_id)->first();
+        $election=Ballot::where('id',$election_id)->first();
         $data["data"] =$election->users()->where('election_id',$election_id)->get()->each(function($value){
           unset($value->pivot);
             return $value;
@@ -110,7 +110,7 @@ class ElectionController extends Controller
     function update(UpdateElectionRequest $request){
         try{
 
-            Election::where('id',$$request->election_id)->update($request->only(['start_date','end_date','title','description']));
+            Ballot::where('id',$$request->election_id)->update($request->only(['start_date','end_date','title','description']));
             return $this->returnSuccessResponse("election updated successfully");
 
         }catch ( \Exception  $exception){
@@ -121,7 +121,7 @@ class ElectionController extends Controller
     function elections(Request $request){
         $user=auth()->user();
         if($user->hasRole("organizer")){
-            $data =Election::where('organizer_id',$user->id)->get();
+            $data =Ballot::where('organizer_id',$user->id)->get();
             return $this->returnDataResponse($data);
         }else{
             $data =  $user->elections()->where('user_id',$user->id)->get()->each(function($value){

@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Election extends Model
+class Ballot extends Model
 {
     use HasFactory;
     public $timestamps=false;

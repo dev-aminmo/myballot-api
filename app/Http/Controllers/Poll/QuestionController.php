@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\AddQuestionRequest;
 use App\Http\Requests\DeleteQuestionRequest;
 use App\Http\Requests\UpdateQuestionRequest;
-use App\Models\Election;
+use App\Models\Ballot;
 use App\Models\Poll\Answer;
 use App\Models\Poll\Poll;
 use App\Models\Poll\Question;

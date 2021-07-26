@@ -8,12 +8,12 @@ use App\Http\Requests\CreateListsElectionRequest;
 use App\Http\Requests\PluralityElection\VotePluralityElectionRequest;
 use App\Http\Requests\UpdateElectionList;
 use App\Models\Candidate;
-use App\Models\Election;
-use App\Models\FreeCandidate;
+use App\Models\Ballot;
+use App\Models\PluralityCandidate;
 use App\Models\ListsElection\FreeElectionList;
 use App\Models\ListsElection\ListsElection;
 use App\Models\ListsElection\PartisanElectionList;
-use App\Models\PartisanCandidate;
+use App\Models\ListCandidate;
 use App\Models\Party;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -41,7 +41,7 @@ class ListsElectionController extends Controller
             $allData = $request->all();
             $allData['organizer_id']=$id;
             $allData['type']="lists";
-            $election_id=Election::create($allData)->id;
+            $election_id=Ballot::create($allData)->id;
 
 
             ListsElection::create([
@@ -73,7 +73,7 @@ class ListsElectionController extends Controller
                                'description'=>(!empty($candidate['description'])) ? $candidate['description'] : null,
                            //    'election_id'=>$election_id,
                            ])->id;
-                        PartisanCandidate::create([
+                        ListCandidate::create([
                                 'id'=>$candidate_id,
                                 'party_id'=>$party_id,
                             ]);
@@ -93,7 +93,7 @@ class ListsElectionController extends Controller
                         'description'=>(!empty($candidate['description'])) ? $candidate['description'] : null,
                         //'election_id'=>$election_id,
                     ])->id;
-                    FreeCandidate::create([
+                    PluralityCandidate::create([
                         'id'=>$candidate_id,
                             'list_id'=>$list_id
                         ]
@@ -109,7 +109,7 @@ class ListsElectionController extends Controller
     }
     function vote(VotePluralityElectionRequest $request){
         $election_id= $request->election_id;
-        $election= Election::where('id', $election_id)->first();
+        $election= Ballot::where('id', $election_id)->first();
 
         $user=auth()->user();
         $is_voter =  $user->elections()->where('election_id', $election_id)->first();
@@ -141,7 +141,7 @@ class ListsElectionController extends Controller
         if ($validation->fails()) {
             return response()->json($validation->errors(), 422);
         }
-        $election= Election::where('id',$request->id)->first();
+        $election= Ballot::where('id',$request->id)->first();
         //TODO implement if type is 1
         if($election->candidate_type==0){
         $data["added_voters"] =$election->users()->where('election_id',$election->id )->count();
@@ -178,7 +178,7 @@ class ListsElectionController extends Controller
         if ($validation->fails()) {
             return response()->json($validation->errors(), 422);
         }
-       $election= Election::find($request->id);
+       $election= Ballot::find($request->id);
         if ($election->candidate_type == 0){
         $list_election  =  ListsElection::where("id",$request->id)->with(["free_lists"=>function($query){
           //  $query->orderBy("count","DESC");

@@ -1,6 +1,6 @@
 <?php
 namespace App\Helpers;
-use App\Models\Election;
+use App\Models\Ballot;
 use Illuminate\Support\Carbon;
 
 trait MyResponse {
