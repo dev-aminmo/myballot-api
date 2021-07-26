@@ -14,12 +14,12 @@ class PluralityCandidate extends Model
     protected $fillable=["id",/*'name','description','picture','election_id',*/'election_id'];
     public $timestamps=false;
 
-    public function election(){
+    /*public function election(){
         return $this->belongsTo(PluralityElection::class,'election_id');
     }
     public function free_list(){
         return $this->belongsTo(FreeElectionList::class,'list_id');
-    }
+    }*/
 
     public function candidate(){
         return $this->belongsTo(Candidate::class,'id');

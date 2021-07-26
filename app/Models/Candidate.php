@@ -10,7 +10,8 @@ class Candidate extends Model
 {
     use HasFactory;
     protected $table="candidates";
-    protected $fillable=['name','description','picture',"count",'election_id',"type"];
+    protected $fillable=['name','description','picture',"count","type"];
+    protected $hidden=['count','type'];
     public $timestamps=false;
 
     public function election(){
@@ -22,6 +23,10 @@ class Candidate extends Model
     }
 
     public function free_candidate()
+    {
+        return $this->hasOne(PluralityCandidate::class,'id');
+    }
+  public function plurality_candidate()
     {
         return $this->hasOne(PluralityCandidate::class,'id');
     }

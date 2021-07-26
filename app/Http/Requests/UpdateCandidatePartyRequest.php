@@ -14,7 +14,6 @@ class UpdateCandidatePartyRequest extends FormRequest
 {
     use MyResponse;
     use MyHelper;
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -34,7 +33,7 @@ class UpdateCandidatePartyRequest extends FormRequest
     {
         return [
             'file' => 'mimes:jpg,jpeg,png,bmp|max:20000',
-            'body'=>'required',
+            'body'=>'required|json',
         ];
     }
     public function messages()
@@ -61,7 +60,15 @@ class UpdateCandidatePartyRequest extends FormRequest
             return  $this->returnValidationResponse($validation->errors());
         }
         $candidate=Candidate::where('id',$jsonData["id"])->first();
-        if ($this->isStarted($candidate->election_id) || !$this->isOrganizer($candidate->election_id)) $this->failedAuthorization();
+
+        switch($candidate->type){
+            case 1:
+                $election_id=$candidate->plurality_candidate->election_id;
+                ;break;
+                //TODO ListCandidate
+            case 2:;break;
+        }
+        if ($this->isStarted($election_id) || !$this->isOrganizer($election_id)) $this->failedAuthorization();
     }
         public function is_valid_party($jsonData){
         $validation = \Illuminate\Support\Facades\Validator::make($jsonData, [

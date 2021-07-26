@@ -56,7 +56,7 @@ Route::middleware('auth:api')->group(function (){
         Route::post("/logout",[UserController::class,"logout"]);
         //Route::post("add",[ReviewController::class,"addReview"]);
     });//end of users routes
-
+// TODO need to be grouped
     Route::get("/plurality-election/candidates/{id}",[CandidateController::class,"plurality_candidates"]);
     Route::get("/plurality-election/results/{id}",[PluralityElectionController::class,"results"]);
     Route::get("/lists-election/results/{id}",[ListsElectionController::class,"results"]);
@@ -105,8 +105,8 @@ Route::middleware('auth:api')->group(function (){
     * candidate routes
     */
     Route::post("/candidate/update",[CandidateController::class,"update"]);
-    Route::post("/candidate/delete",[CandidateController::class,"delete"]);
-    Route::post("/candidate/plurality/free/add",[CandidateController::class,"add_free_plurality"]);
+    Route::delete("/candidate/delete/{id}",[CandidateController::class,"delete"]);
+    Route::post("/candidate/plurality/add",[CandidateController::class,"add_free_plurality"]);
     Route::post("/candidate/lists/free/add",[CandidateController::class,"add_free_list"]);
 
     }); //end of organizer's routes

@@ -20,9 +20,10 @@ class CandidateController extends Controller
     use MyHelper;
     use MyResponse;
 
-    function delete(DeleteCandidateRequest $request){
+    function delete(DeleteCandidateRequest $request,$id){
         try{
-        Candidate::find($request->candidate_id)->delete();
+            $request->candidate->delete();
+    //    Candidate::find($request->candidate_id)->delete();
         return $this->returnSuccessResponse('Candidate deleted successfully');
         }catch ( \Exception  $e){
             return  $this->returnErrorResponse("An error has occured");
@@ -54,27 +55,36 @@ class CandidateController extends Controller
             return  $this->returnErrorResponse();
         }
     }
+    //group
     function plurality_candidates(Request $request){
         $request->merge(['id' => $request->route('id')]);
         $validation =  Validator::make($request->all(), [
-            'id'=>'required|integer|exists:elections,id',
+            'id'=>'required|integer|exists:ballots,id',
         ]);
         if ($validation->fails()) {
             return response()->json($validation->errors(), 422);
         }
-        $data=Candidate::where('election_id',$request->id)->select('id','name','description','picture')->with(['partisan_candidate'=> function ($query) {
-        $query->with('party');
-        }])->get()->transform(function ($value){
-            $data=$value;
-            if (!empty($value->partisan_candidate)){
-                $data-> party=$value->partisan_candidate->party;
-                unset($data->party->list_id);
-            }else{
-                $data-> party=null;
-            }
-            unset($data->partisan_candidate);
-            return $data;
-        });
+     $type=Ballot::find($request->id)->type;
+        switch ($type) {
+            case 1:
+                $data= PluralityCandidate::where('election_id',$request->id)->with("candidate")->get()->pluck("candidate");
+                break;
+            case 2:$data=Candidate::where('election_id',$request->id)->select('id','name','description','picture')->with(['partisan_candidate'=> function ($query) {
+                    $query->with('party');
+                }])->get()->transform(function ($value){
+                    $data=$value;
+                    if (!empty($value->partisan_candidate)){
+                        $data-> party=$value->partisan_candidate->party;
+                        unset($data->party->list_id);
+                    }else{
+                        $data-> party=null;
+                    }
+                    unset($data->partisan_candidate);
+                    return $data;
+                });
+                break;
+                default:$data=null;break;
+        }
         return  $this->returnDataResponse($data);
 
     }
@@ -101,15 +111,16 @@ class CandidateController extends Controller
             $candidate_id=Candidate::create([
                     'name'=> $candidate['name'],
                     'description'=>(!empty($candidate['description'])) ? $candidate['description'] : null,
-                    'election_id'=>$election_id
+                    'type'=>1
                 ]
             )->id;
             PluralityCandidate::create([
                     'id'=> $candidate_id,
+                    'election_id'=>$election_id
                 ]
             );
         }
-        return $this->returnSuccessResponse('party added successfully');
+        return $this->returnSuccessResponse('candidates added successfully');
 
     }
 
