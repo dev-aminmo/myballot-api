@@ -21,7 +21,7 @@ class DeleteVoterRequest extends FormRequest
      */
     public function authorizeValidated()
     {
-        return !$this->isStarted($this->election_id) && $this->isOrganizer($this->election_id);
+        return !$this->isStarted($this->ballot_id) && $this->isOrganizer($this->ballot_id);
     }
     /**
      * Get the validation rules that apply to the request.
@@ -31,7 +31,7 @@ class DeleteVoterRequest extends FormRequest
     public function rules()
     {
         return [
-            'election_id' => 'required|integer|exists:elections,id',
+            'ballot_id' => 'required|integer|exists:ballots,id',
             'voter_id' => 'required|integer|exists:users,id',
         ];
     }

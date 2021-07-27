@@ -26,7 +26,7 @@ class BallotController extends Controller
 
     function add_voters(AddVotersRequest $request)
     {
-        $election_id= $request->election_id;
+        $ballot_id= $request->ballot_id;
 
         try {
             $emails=[];
@@ -34,8 +34,9 @@ class BallotController extends Controller
                 $emails[]=$voter["email"];
             }
 
-            $organizers = User::whereRoleIs(['organizer'])->get();
+            $organizers = User::where("is_organizer",1)->get();
             $intersection = $organizers->intersect(User::whereIn('email', $emails)->get());
+
             if (count($intersection)) {
                 $ad = [];
                 $intersection->each(function ($org) use (&$ad) {
@@ -44,15 +45,17 @@ class BallotController extends Controller
                 });
                 return $this->returnValidationResponse($ad,422, "organizers cannot vote");
             }
+
             foreach ($request->voters as $voter) {
+
                 $email=$voter["email"];
                 $name=(isset($voter["name"]))?$voter["name"]:false;
 
                 $u = User::where('email', $email)->first();
                 if (!empty($u)) {
-                    $hasBeenAdded = $u->elections()->where('election_id', $election_id)->exists();
+                    $hasBeenAdded = $u->ballots()->where('ballot_id', $ballot_id)->exists();
                     if(!$hasBeenAdded){
-                        $u->elections()->syncWithoutDetaching($election_id);
+                        $u->ballots()->syncWithoutDetaching($ballot_id);
                         $data=['type'=>2,"email"=>$email];
                         $this->dispatch(new SendMailsJob($data));
                     }
@@ -61,11 +64,12 @@ class BallotController extends Controller
                     $user = User::create([
                             'email' => $email,
                             'password' => bcrypt($pass),
-                            'name'=>($name)?$name:NULL
+                            'name'=>($name)?$name:NULL,
+                            'is_organizer' =>0
                             ]
                     );
-                    $user->attachRole('voter');
-                    $user->elections()->attach($request->election_id);
+
+                    $user->ballots()->attach($request->ballot_id);
                     $data=['type'=>1,"email"=>$email,'password' => $pass];
                     $this->dispatch(new SendMailsJob($data));
                 } }
@@ -78,20 +82,20 @@ class BallotController extends Controller
     }
 
     function get_voters(Request $request){
-        $request->merge(['election_id' => $request->route('id')]);
+        $request->merge(['ballot_id' => $request->route('id')]);
 
         $validation = Validator::make($request->all(), [
-            'election_id' => 'required|integer|exists:elections,id',
+            'ballot_id' => 'required|integer|exists:ballots,id',
         ]);
         if ($validation->fails()) {
             return response()->json($validation->errors(), 422);
         }
 
-        $election_id= $request->election_id;
-        if ($this->isStarted($election_id) ||!$this->isOrganizer($election_id)) return  redirect('/');
+        $ballot_id= $request->ballot_id;
+        if ($this->isStarted($ballot_id) ||!$this->isOrganizer($ballot_id)) return  redirect('/');
 
-        $election=Ballot::where('id',$election_id)->first();
-        $data["data"] =$election->users()->where('election_id',$election_id)->get()->each(function($value){
+        $ballot=Ballot::where('id',$ballot_id)->first();
+        $data["data"] =$ballot->users()->where('ballot_id',$ballot_id)->get()->each(function($value){
           unset($value->pivot);
             return $value;
         });
@@ -99,11 +103,11 @@ class BallotController extends Controller
         return response()->json($data,200);
     }
     function delete_voter(DeleteVoterRequest $request){
-        $election_id= $request->election_id;
-        $u = User::where('id',  $request->voter_id)->first();
-        $election=$u->elections()->where('election_id', $election_id)->first();
-       if ( !empty($election)){
-           $election->pivot->delete();
+        $ballot_id= $request->ballot_id;
+        $u = User::find( $request->voter_id);
+        $ballot=$u->ballots()->where('ballot_id', $ballot_id)->first();
+       if ( !empty($ballot)){
+           $ballot->pivot->delete();
        }
         return $this->returnSuccessResponse("voter deleted successfully");
     }

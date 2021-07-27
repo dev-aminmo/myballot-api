@@ -22,7 +22,7 @@ class AddVotersRequest extends FormRequest
     public function authorizeValidated()
     {
         //TODO Correct to authorize after validation
-        return !$this->isStarted($this->election_id) && $this->isOrganizer($this->election_id);
+        return !$this->isStarted($this->ballot_id) && $this->isOrganizer($this->ballot_id);
     }
     /**
      * Get the validation rules that apply to the request.
@@ -32,7 +32,7 @@ class AddVotersRequest extends FormRequest
     public function rules()
     {
         return [
-            'election_id' => 'required|integer|exists:elections,id',
+            'ballot_id' => 'required|integer|exists:ballots,id',
             'voters' => 'required|array|min:1|max:150',
             'voters.*.email' => 'required|email',
             'voters.*.name' => 'string|min:3|max:150',

@@ -48,17 +48,18 @@ use MyResponse;
             return $this->returnSuccessResponse('election created successfully');
     }
     function vote(VotePluralityElectionRequest $request){
-        $election_id= $request->election_id;
+        $ballot_id= $request->ballot_id;
         $user=auth()->user();
-        $is_voter =  $user->elections()->where('election_id', $election_id)->first();
-        $candidate=Candidate::where([['id',$request->candidate_id], ['election_id', $election_id],])->first();
+        $is_voter =  $user->ballots()->where('ballot_id', $ballot_id)->first();
+        $candidate=PluralityCandidate::find($request->candidate_id);
+        $candidate=$candidate->candidate;
         if(!empty($candidate) &&$is_voter){
             $voted =   $is_voter->pivot->voted;
             if( $voted){
                 return  $this->returnErrorResponse('vote already casted');
            }
         $candidate->update(['count'=> DB::raw('count+1'),]);
-        $user->elections()->updateExistingPivot($election_id, ['voted'=>true]);
+        $user->ballots()->updateExistingPivot($ballot_id, ['voted'=>true]);
             return  $this->returnSuccessResponse('vote casted successfully');
         }else{
             return  redirect('/');

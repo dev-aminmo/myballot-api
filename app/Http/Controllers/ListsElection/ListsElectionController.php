@@ -75,29 +75,20 @@ class ListsElectionController extends Controller
         }
     }
     function vote(VotePluralityElectionRequest $request){
-        $election_id= $request->election_id;
-        $election= Ballot::where('id', $election_id)->first();
-
+        $ballot_id= $request->ballot_id;
         $user=auth()->user();
-        $is_voter =  $user->elections()->where('election_id', $election_id)->first();
-        //TODO check that the candidate is in that election
-        $candidate=Candidate::where('id',$request->candidate_id)->first();
-        $list =Candidate::where('id',$request->candidate_id)->with('free_candidate')->first();
-
-        if(!empty($candidate) &&$is_voter){
+        $is_voter =  $user->ballots()->where('ballot_id', $ballot_id)->first();
+        $list =ListsElection::find($request->list_id);
+        if(!empty($list) &&$is_voter){
             $voted =   $is_voter->pivot->voted;
             if( $voted){
                 return  $this->returnErrorResponse('vote already casted');
             }
-            if($election->candidate_type==0){
-              $free_list=  ElectionList::find($list->free_candidate->list_id);
-                $free_list->update(['count'=> DB::raw('count+1'),]);
-            $user->elections()->updateExistingPivot($election_id, ['voted'=>true]);
+            $list->update(['count'=> DB::raw('count+1'),]);
+            $user->ballots()->updateExistingPivot($ballot_id, ['voted'=>true]);
             return  $this->returnSuccessResponse('vote casted successfully');
            }
-        }else{
-            return  redirect('/');
-        }
+
     }
 
     function results(Request $request){

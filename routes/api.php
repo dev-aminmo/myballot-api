@@ -90,9 +90,9 @@ Route::middleware('auth:api')->group(function (){
     /*
     *  voter managing routes
     */
-    Route::post("/election/voter/add",[BallotController::class,"add_voters"]);
-    Route::get("/election/voter/get/{id}",[BallotController::class,"get_voters"]);
-    Route::post("/election/voter/delete",[BallotController::class,"delete_voter"]);
+    Route::post("/voter/add",[BallotController::class,"add_voters"]);
+    Route::get("/voters/{id}",[BallotController::class,"get_voters"]);
+    Route::post("/voter/delete",[BallotController::class,"delete_voter"]);
 
     /*
     * candidate routes

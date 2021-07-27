@@ -24,7 +24,7 @@ class VotePluralityElectionRequest extends FormRequest
      */
     public function authorizeValidated()
     {
-      return $this->isStarted($this->election_id)&& !$this->isEnded($this->election_id);
+      return $this->isStarted($this->ballot_id)&& !$this->isEnded($this->ballot_id);
     }
 
     /**
@@ -36,8 +36,9 @@ class VotePluralityElectionRequest extends FormRequest
     {
 
         return [
-            'election_id'=>'required|integer|exists:elections,id',
-            'candidate_id'=>'required|integer|exists:candidates,id'
+            'ballot_id'=>'required|integer|exists:ballots,id',
+         //   'candidate_id'=>'required|integer|exists:candidates,id'
+            'list_id'=>'required|integer|exists:lists_elections,id'
         ];
     }
 
