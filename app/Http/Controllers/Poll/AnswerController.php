@@ -38,7 +38,9 @@ class AnswerController extends Controller
       }
   public function  delete(DeleteAnswerRequest $request){
       try{
-          Answer::find($request->answer_id)->delete();
+          $request->answer->delete();
+
+        //  Answer::find($request->answer_id)->delete();
 
       return $this->returnSuccessResponse('answer deleted successfully');
       }catch ( \Exception  $exception){

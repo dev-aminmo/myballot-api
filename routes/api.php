@@ -45,7 +45,7 @@ Route::middleware('auth:api')->group(function (){
          * users routes
          */
 
-    Route::get("/election/all",[BallotController::class,"elections"]);
+    Route::get("/ballot/all",[BallotController::class, "ballots"]);
 
     Route::get("email/resend",[VerificationController::class,"resend"])->name("verification.resend");
 
@@ -77,12 +77,12 @@ Route::middleware('auth:api')->group(function (){
         Route::post("/lists-election/list/update",[ListsElectionController::class,"update"]);
 
         Route::post("/poll/create",[PollController::class,"create"]);
-        Route::post("/poll/question/add",[QuestionController::class,"add"]);
-        Route::post("/poll/question/update",[QuestionController::class,"update"]);
-        Route::post("/poll/question/delete",[QuestionController::class,"delete"]);
-        Route::post("/poll/answer/add",[AnswerController::class,"add"]);
-        Route::post("/poll/answer/update",[AnswerController::class,"update"]);
-        Route::post("/poll/answer/delete",[AnswerController::class,"delete"]);
+        Route::post("/question/add",[QuestionController::class,"add"]);
+        Route::post("/question/update",[QuestionController::class,"update"]);
+        Route::delete("/question/delete/{id}",[QuestionController::class,"delete"]);
+        Route::post("/answer/add",[AnswerController::class,"add"]);
+        Route::post("/answer/update",[AnswerController::class,"update"]);
+        Route::delete("/answer/delete/{id}",[AnswerController::class,"delete"]);
 
         Route::post("/ballot/update",[BallotController::class,"update"]);
    // Route::get("/plurality-election/results/{id}",[PluralityElectionController::class,"results"]);

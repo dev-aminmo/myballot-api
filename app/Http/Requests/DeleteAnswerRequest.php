@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Helpers\AuthorizesAfterValidation;
 use App\Helpers\MyHelper;
 use App\Helpers\MyResponse;
+use App\Models\Poll\Answer;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -14,6 +15,8 @@ class DeleteAnswerRequest extends FormRequest
     use MyResponse;
     use MyHelper;
     use AuthorizesAfterValidation;
+    public $answer;
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -21,8 +24,14 @@ class DeleteAnswerRequest extends FormRequest
      */
     public function authorizeValidated()
     {
-        return !$this->isStarted($this->election_id) && $this->isOrganizer($this->election_id);
-
+        $answer_id=$this->route('id');
+        $this->answer=Answer::find($answer_id);
+        if($this->answer){
+            $poll_id= $this->answer->question->poll_id;
+        return !$this->isStarted($poll_id) && $this->isOrganizer($poll_id);
+            }else{
+            return false;
+        }
     }
     /**
      * Get the validation rules that apply to the request.
@@ -32,8 +41,6 @@ class DeleteAnswerRequest extends FormRequest
     public function rules()
     {
         return [
-            "answer_id"=>'required|integer|exists:answers,id',
-            'election_id'=>'required|integer|exists:polls,id'
         ];
     }
 

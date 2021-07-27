@@ -19,7 +19,7 @@ class QuestionController extends Controller
 
 public function add(AddQuestionRequest $request){
     try {
-        $poll_id=$request->election_id;
+        $poll_id=$request->ballot_id;
         foreach ($request->questions as $question) {
             $question_id = Question::create([
                 'value' => $question['value'],
@@ -59,7 +59,8 @@ public function  update(UpdateQuestionRequest $request){
     }
     public function  delete(DeleteQuestionRequest $request){
         try{
-            Question::find($request->question_id)->delete();
+            $request->question->delete();
+
 
             return $this->returnSuccessResponse('question deleted successfully');
         }catch ( \Exception  $exception){

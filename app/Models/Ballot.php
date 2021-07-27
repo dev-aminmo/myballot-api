@@ -27,5 +27,14 @@ class Ballot extends Model
         return $this->belongsToMany(User::class)->withPivot('voted');
 
     }
+    public function getTypeAttribute($value)
+    {
+      switch($value){
+          case 1:$v="plurality";break;
+          case 2:$v="lists";break;
+          case 3:$v="poll";break;
+      }
+        return $v;
+    }
 
 }

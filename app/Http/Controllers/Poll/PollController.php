@@ -46,7 +46,7 @@ class PollController extends Controller
             $id = auth()->user()['id'];
             $allData = $request->all();
             $allData['organizer_id'] = $id;
-            $allData['type']="poll";
+            $allData['type']=3;
 
             $poll_id=Ballot::create($allData)->id;
              Poll::create(["id" =>$poll_id]);
@@ -75,15 +75,14 @@ class PollController extends Controller
 
     }
     function get(Request $request){
-        $request->merge(['election_id' => $request->route('id')]);
+        $request->merge(['ballot_id' => $request->route('id')]);
         $validation = Validator::make($request->all(), [
-            'election_id'=>'required|integer|exists:polls,id'
+            'ballot_id'=>'required|integer|exists:polls,id'
             ,]);
         if ($validation->fails()) {
             return response()->json($validation->errors(), 422);
         }
-       $id= $request->election_id;
-        $election=Ballot::find($id);
+       $id= $request->ballot_id;
         $data=Question::where("poll_id",$id)->with("answers")->get();
         return $this->returnDataResponse($data);
 

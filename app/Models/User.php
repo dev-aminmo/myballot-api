@@ -62,9 +62,9 @@ class User extends Authenticatable
         }
         return false;
     }
-    public function elections()
+    public function ballots()
     {
-        return $this->belongsToMany(Ballot::class, 'election_user', 'user_id', 'election_id')
+        return $this->belongsToMany(Ballot::class, 'ballot_user', 'user_id', 'ballot_id')
             ->withPivot('voted');
     }
 }

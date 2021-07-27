@@ -109,22 +109,20 @@ class BallotController extends Controller
     }
     function update(UpdateBallotRequest $request){
         try{
-
             Ballot::where('id',$request->ballot_id)->update($request->only(['start_date','end_date','title','description']));
             return $this->returnSuccessResponse("ballot updated successfully");
-
         }catch ( \Exception  $exception){
 
             return $this->returnErrorResponse();
         }
     }
-    function elections(Request $request){
+    function ballots(Request $request){
         $user=auth()->user();
-        if($user->hasRole("organizer")){
+        if($user->is_organizer){
             $data =Ballot::where('organizer_id',$user->id)->get();
             return $this->returnDataResponse($data);
         }else{
-            $data =  $user->elections()->where('user_id',$user->id)->get()->each(function($value){
+            $data =  $user->ballots()->where('user_id',$user->id)->get()->each(function($value){
                 unset($value->pivot);
                 return $value;
             });

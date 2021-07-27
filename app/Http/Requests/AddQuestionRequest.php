@@ -21,7 +21,7 @@ class AddQuestionRequest extends FormRequest
      */
     public function authorizeValidated()
     {
-        return !$this->isStarted($this->election_id) && $this->isOrganizer($this->election_id);
+        return !$this->isStarted($this->ballot_id) && $this->isOrganizer($this->ballot_id);
 
     }
     /**
@@ -37,7 +37,7 @@ class AddQuestionRequest extends FormRequest
             'questions.*.type' => 'required|integer|min:1|max:2',
             'questions.*.answers' => 'required|array|min:2|max:20',
             'questions.*.answers.*.value' => 'required|string|min:4|max:255',
-            'election_id'=>'required|integer|exists:polls,id'
+            'ballot_id'=>'required|integer|exists:polls,id'
         ];
     }
 

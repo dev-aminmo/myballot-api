@@ -21,7 +21,7 @@ class UpdateQuestionRequest extends FormRequest
      */
     public function authorizeValidated()
     {
-        return !$this->isStarted($this->election_id) && $this->isOrganizer($this->election_id);
+        return !$this->isStarted($this->ballot_id) && $this->isOrganizer($this->ballot_id);
 
     }
     /**
@@ -33,9 +33,9 @@ class UpdateQuestionRequest extends FormRequest
     {
         return [
             'value' => 'string|min:10|max:400',
-            'candidate_type' => 'integer|min:1|max:2',
+            'type' => 'integer|min:1|max:2',
             "question_id"=>'required|integer|exists:questions,id',
-            'election_id'=>'required|integer|exists:polls,id'
+            'ballot_id'=>'required|integer|exists:polls,id'
         ];
     }
 
