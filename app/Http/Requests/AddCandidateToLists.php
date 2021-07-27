@@ -6,11 +6,12 @@ use App\Helpers\AuthorizesAfterValidation;
 use App\Helpers\MyHelper;
 use App\Helpers\MyResponse;
 use App\Models\ListsElection\ElectionList;
+use App\Models\ListsElection\ListsElection;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class AddFreeCandidateLists extends FormRequest
+class AddCandidateToLists extends FormRequest
 {
 
     use MyResponse;
@@ -23,7 +24,7 @@ class AddFreeCandidateLists extends FormRequest
      */
     public function authorizeValidated()
     {
-      $list=  ElectionList::find($this->list_id);
+      $list=  ListsElection::find($this->list_id);
         return !$this->isStarted($list->election_id) && $this->isOrganizer($list->election_id);
     }
     /**
@@ -37,7 +38,7 @@ class AddFreeCandidateLists extends FormRequest
             'candidates' => 'required|array|min:1',
             'candidates.*.name' => 'required|string|min:4|max:255',
             'candidates.*.description' => 'string|min:4|max:400',
-            'list_id'=>'required|integer|exists:free_election_lists,id'
+            'list_id'=>'required|integer|exists:lists_elections,id'
         ];
     }
 

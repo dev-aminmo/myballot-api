@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\MyResponse;
-use App\Http\Requests\AddFreeCandidateLists;
-use App\Http\Requests\AddFreeCandidatesPlurality;
+use App\Http\Requests\AddCandidateToLists;
+use App\Http\Requests\AddCandidatesToPlurality;
 use App\Http\Requests\DeleteCandidateRequest;
 use App\Http\Requests\UpdateCandidatePartyRequest;
 use App\Models\Candidate;
@@ -88,15 +88,16 @@ class CandidateController extends Controller
         return  $this->returnDataResponse($data);
 
     }
-    function add_free_list(AddFreeCandidateLists $request){
+    function add_candidates_to_list(AddCandidateToLists $request){
         $list_id= $request->list_id;
         foreach( $request->candidates as $candidate){
             $candidate_id=Candidate::create([
                     'name'=> $candidate['name'],
                     'description'=>(!empty($candidate['description'])) ? $candidate['description'] : null,
+                    "type"=>2
                 ]
             )->id;
-            PluralityCandidate::create([
+            ListCandidate::create([
                     'id'=> $candidate_id,
                     "list_id"=>$list_id
                 ]
@@ -105,7 +106,7 @@ class CandidateController extends Controller
         return $this->returnSuccessResponse('candidates added successfully');
 
     }
-    function add_free_plurality(AddFreeCandidatesPlurality $request){
+    function add_candidates_to_plurality(AddCandidatesToPlurality $request){
         $election_id= $request->election_id;
         foreach( $request->candidates as $candidate){
             $candidate_id=Candidate::create([
