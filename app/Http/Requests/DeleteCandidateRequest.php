@@ -31,9 +31,9 @@ if($this->candidate){
         switch($this->candidate->type){
             case 1:
                 $election_id=$this->candidate->plurality_candidate->election_id;
-                ;break;
-            //TODO ListCandidate
-            case 2:;break;
+                break;
+            case 2:
+                $election_id=$this->candidate->list_candidate->listx->election_id;break;
         }
         return !$this->isStarted($election_id) && $this->isOrganizer($election_id);
     }else{

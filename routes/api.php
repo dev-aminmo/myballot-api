@@ -88,13 +88,6 @@ Route::middleware('auth:api')->group(function (){
    // Route::get("/plurality-election/results/{id}",[PluralityElectionController::class,"results"]);
 
     /*
-     * party routes
-     */
-    Route::post("/party/plurality/add",[PartyController::class,"add_to_plurality"]);
-    Route::post("/party/update",[PartyController::class,"update"]);
-    Route::post("/party/delete",[PartyController::class,"delete"]);
-
-    /*
     *  voter managing routes
     */
     Route::post("/election/voter/add",[ElectionController::class,"add_voters"]);
