@@ -34,7 +34,7 @@ class CreateListsElectionRequest extends FormRequest
             'end_date'      => 'required|date|date_format:Y-m-d H:i|after:start_date',
             'title'=> 'required|string|min:2|max:255',
             'description'=> 'string|min:10|max:400',
-            'seats_number'=>'integer|min:2',
+            'seats_number'=>'required|integer|min:2',
             'lists' => 'required|array|min:2|max:30',
             'lists.*.name'=>'required|string|min:2|max:255',
             'lists.*.program'=>'string|string|min:2|max:400',

@@ -18,6 +18,7 @@ use App\Models\Party;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -44,16 +45,14 @@ class ListsElectionController extends Controller
             $election_id=Ballot::create($allData)->id;
 
 
-            ListsElection::create([
-                'id'=>$election_id,
-                'seats_number'=>(!empty($request->seats_number)) ? $request->seats_number : 1,
-            ]);
+
 
                 foreach($request->lists as $list){
-                   $list_id= ElectionList::create([
+                    $list_id= ListsElection::create([
                        "name"=>$list["name"],
                        "program"=>$list["program"],
-                       "election_id"=>$election_id
+                       'seats_number'=> $request->seats_number,
+                        "election_id"=>$election_id
                    ])->id;
                 foreach($list["candidates"] as $candidate){
                     $candidate_id= Candidate::create([
@@ -63,7 +62,7 @@ class ListsElectionController extends Controller
                     ])->id;
                     ListCandidate::create([
                         'id'=>$candidate_id,
-                            'list_id'=>$list_id
+                        'list_id'=>$list_id
                         ]
                     );
                 }
@@ -141,32 +140,22 @@ class ListsElectionController extends Controller
     function lists(Request $request){
         $request->merge(['id' => $request->route('id')]);
         $validation =  Validator::make($request->all(), [
-            'id'=>'required|integer|exists:elections,id',
+            'id'=>'required|integer|exists:ballots,id',
         ]);
         if ($validation->fails()) {
             return response()->json($validation->errors(), 422);
         }
-       $election= Ballot::find($request->id);
-        if ($election->candidate_type == 0){
-        $list_election  =  ListsElection::where("id",$request->id)->with(["free_lists"=>function($query){
-          //  $query->orderBy("count","DESC");
-            $query->with("candidates");
-        },
-        ])->first();
-        $data["free_lists"]=$list_election->free_lists->each(
-            function($list){
-                unset(  $list ->count);
-                $list->candidates->each(function($candidate){
-                    unset($candidate->count);
-                    return $candidate;
-                });
-                return $list;
-            }
-        );
+        $data["lists"]  =  ListsElection::where("election_id",$request->id)->with("candidates.candidate")->get();
+        $data["lists"] ->each(function($list){
+            $list->candidates->transform(function($candidate){
+                $can=$candidate->candidate;
+               return $can;
+
+            });
+            return $list;
+        });
         return  $this->returnDataResponse($data);
-        }else{
-            $this->returnDataResponse("mock response if type is one");
-        }
+
     }
     function update(UpdateElectionList $request){
         $jsonData= $request->get("body");

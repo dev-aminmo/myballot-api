@@ -6,6 +6,7 @@ use App\Helpers\AuthorizesAfterValidation;
 use App\Helpers\MyHelper;
 use App\Helpers\MyResponse;
 use App\Models\ListsElection\ElectionList;
+use App\Models\ListsElection\ListsElection;
 use App\Models\ListsElection\PartisanElectionList;
 use App\Models\Party;
 use Illuminate\Contracts\Validation\Validator;
@@ -64,7 +65,7 @@ class UpdateElectionList extends FormRequest
         if ($validation->fails()) {
             return  $this->returnValidationResponse($validation->errors());
         }
-        $this->list=ElectionList::find($jsonData["id"]);
+        $this->list=ListsElection::find($jsonData["id"]);
         if(!$this->list){
                 return  $this->returnValidationResponse(["Invalid list id"]);
             }

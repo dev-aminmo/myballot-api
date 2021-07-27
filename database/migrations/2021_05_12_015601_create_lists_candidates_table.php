@@ -18,7 +18,7 @@ class CreateListsCandidatesTable extends Migration
             $table->foreign("id")->references('id')->on("candidates")->onDelete('cascade');
 
             $table->bigInteger('list_id')->unsigned();
-           $table->foreign("list_id")->references('id')->on("election_lists")->onDelete('cascade');
+           $table->foreign("list_id")->references('id')->on("lists_elections")->onDelete('cascade');
         });
     }
 
