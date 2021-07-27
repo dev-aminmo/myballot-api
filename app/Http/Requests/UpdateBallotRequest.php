@@ -9,7 +9,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Carbon;
 
-class UpdateElectionRequest extends FormRequest
+class UpdateBallotRequest extends FormRequest
 {
     use MyResponse;
     use MyHelper;
@@ -25,7 +25,7 @@ class UpdateElectionRequest extends FormRequest
     }
     public function authorizeValidated()
     {
-        return !$this->isStarted($this->election_id) && $this->isOrganizer($this->election_id);
+        return !$this->isStarted($this->ballot_id) && $this->isOrganizer($this->ballot_id);
     }
 
     /**
@@ -36,7 +36,7 @@ class UpdateElectionRequest extends FormRequest
     public function rules()
     {
         return [
-            'election_id'=>'required|integer|exists:elections,id',
+            'ballot_id'=>'required|integer|exists:ballots,id',
             'start_date'    => 'required|date|date_format:Y-m-d H:i|after_or_equal:now',
             'end_date'      => 'required|date|date_format:Y-m-d H:i|after:start_date',
             'title'=> 'string|min:2|max:255',

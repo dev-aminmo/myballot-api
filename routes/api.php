@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Poll\AnswerController;
-use App\Http\Controllers\ElectionController;
+use App\Http\Controllers\BallotController;
 use App\Http\Controllers\ListsElection\ListsElectionController;
 use App\Http\Controllers\Poll\PollController;
 use App\Http\Controllers\Poll\QuestionController;
@@ -45,7 +45,7 @@ Route::middleware('auth:api')->group(function (){
          * users routes
          */
 
-    Route::get("/election/all",[ElectionController::class,"elections"]);
+    Route::get("/election/all",[BallotController::class,"elections"]);
 
     Route::get("email/resend",[VerificationController::class,"resend"])->name("verification.resend");
 
@@ -84,15 +84,15 @@ Route::middleware('auth:api')->group(function (){
         Route::post("/poll/answer/update",[AnswerController::class,"update"]);
         Route::post("/poll/answer/delete",[AnswerController::class,"delete"]);
 
-        Route::post("/election/update",[ElectionController::class,"update"]);
+        Route::post("/ballot/update",[BallotController::class,"update"]);
    // Route::get("/plurality-election/results/{id}",[PluralityElectionController::class,"results"]);
 
     /*
     *  voter managing routes
     */
-    Route::post("/election/voter/add",[ElectionController::class,"add_voters"]);
-    Route::get("/election/voter/get/{id}",[ElectionController::class,"get_voters"]);
-    Route::post("/election/voter/delete",[ElectionController::class,"delete_voter"]);
+    Route::post("/election/voter/add",[BallotController::class,"add_voters"]);
+    Route::get("/election/voter/get/{id}",[BallotController::class,"get_voters"]);
+    Route::post("/election/voter/delete",[BallotController::class,"delete_voter"]);
 
     /*
     * candidate routes

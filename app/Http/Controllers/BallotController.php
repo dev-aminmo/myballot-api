@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\MyHelper;
 use App\Http\Requests\AddVotersRequest;
 use App\Http\Requests\DeleteVoterRequest;
-use App\Http\Requests\UpdateElectionRequest;
+use App\Http\Requests\UpdateBallotRequest;
 use App\Jobs\SendMailsJob;
 use App\Models\Candidate;
 use App\Models\Ballot;
@@ -19,7 +19,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use App\Helpers\MyResponse;
-class ElectionController extends Controller
+class BallotController extends Controller
 {
     use MyResponse;
     use MyHelper;
@@ -107,11 +107,11 @@ class ElectionController extends Controller
        }
         return $this->returnSuccessResponse("voter deleted successfully");
     }
-    function update(UpdateElectionRequest $request){
+    function update(UpdateBallotRequest $request){
         try{
 
-            Ballot::where('id',$$request->election_id)->update($request->only(['start_date','end_date','title','description']));
-            return $this->returnSuccessResponse("election updated successfully");
+            Ballot::where('id',$request->ballot_id)->update($request->only(['start_date','end_date','title','description']));
+            return $this->returnSuccessResponse("ballot updated successfully");
 
         }catch ( \Exception  $exception){
 
