@@ -6,12 +6,12 @@ use App\Helpers\MyResponse;
 use App\Http\Requests\AddCandidateToLists;
 use App\Http\Requests\AddCandidatesToPlurality;
 use App\Http\Requests\DeleteCandidateRequest;
-use App\Http\Requests\UpdateCandidatePartyRequest;
+use App\Http\Requests\UpdateCandidateRequest;
 use App\Models\Candidate;
 use App\Models\Ballot;
+use App\Models\ListsElection\ListsElection;
 use App\Models\PluralityCandidate;
 use App\Models\ListCandidate;
-use App\Models\Party;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Helpers\MyHelper;
@@ -29,7 +29,7 @@ class CandidateController extends Controller
             return  $this->returnErrorResponse("An error has occured");
         }
         }
-    function update(UpdateCandidatePartyRequest $request){
+    function update(UpdateCandidateRequest $request){
         $jsonData= $request->get("body");
 
         if(!is_array($jsonData)) $jsonData= json_decode($request->get("body"),true);
@@ -67,21 +67,19 @@ class CandidateController extends Controller
      $type=Ballot::find($request->id)->type;
         switch ($type) {
             case 1:
-                $data= PluralityCandidate::where('election_id',$request->id)->with("candidate")->get()->pluck("candidate");
+                $data["candidates"]= PluralityCandidate::where('election_id',$request->id)->with("candidate")->get()->pluck("candidate");
                 break;
-            case 2:$data=Candidate::where('election_id',$request->id)->select('id','name','description','picture')->with(['partisan_candidate'=> function ($query) {
-                    $query->with('party');
-                }])->get()->transform(function ($value){
-                    $data=$value;
-                    if (!empty($value->partisan_candidate)){
-                        $data-> party=$value->partisan_candidate->party;
-                        unset($data->party->list_id);
-                    }else{
-                        $data-> party=null;
-                    }
-                    unset($data->partisan_candidate);
-                    return $data;
+            case 2:
+            $isis  =  ListsElection::where("election_id",$request->id)->with("candidates.candidate")->get();
+                $isis ->each(function($list){
+                    $list->candidates->transform(function($candidate){
+                        $can=$candidate->candidate;
+                        return $can;
+                    });
+                    return $list;
                 });
+                $data["candidates"]=$isis->pluck("candidates");
+
                 break;
                 default:$data=null;break;
         }

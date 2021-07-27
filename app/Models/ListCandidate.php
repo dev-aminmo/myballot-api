@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\ListsElection\ListsElection;
 use App\Models\ListsElection\PartisanElectionList;
 use App\Models\PluralityElection\PluralityElection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,22 +15,11 @@ class ListCandidate extends Model
     protected $fillable=['id'/*,'name','description','picture',*/,'list_id'];
     public $timestamps=false;
 
-    public function party(){
-        return $this->belongsTo(Party::class,'party_id');
+    public function listx(){
+        return $this->belongsTo(ListsElection::class,'list_id');
     }
     public function candidate()
     {
         return $this->belongsTo(Candidate::class,'id');
-    }
-    public function carOwner()
-    {
-        return $this->hasOneThrough(
-            Owner::class,
-            Car::class,
-            'mechanic_id', // Foreign key on the cars table...
-            'car_id', // Foreign key on the owners table...
-            'id', // Local key on the mechanics table...
-            'id' // Local key on the cars table...
-        );
     }
 }

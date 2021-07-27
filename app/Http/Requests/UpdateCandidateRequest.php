@@ -5,12 +5,11 @@ namespace App\Http\Requests;
 use App\Helpers\MyHelper;
 use App\Helpers\MyResponse;
 use App\Models\Candidate;
-use App\Models\Party;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class UpdateCandidatePartyRequest extends FormRequest
+class UpdateCandidateRequest extends FormRequest
 {
     use MyResponse;
     use MyHelper;
@@ -63,25 +62,13 @@ class UpdateCandidatePartyRequest extends FormRequest
 
         switch($candidate->type){
             case 1:
-                $election_id=$candidate->plurality_candidate->election_id;
-                ;break;
-                //TODO ListCandidate
-            case 2:;break;
+                $election_id=$candidate->plurality_candidate->election_id;break;
+            case 2:
+                $election_id=$candidate->list_candidate->listx->election_id;break;
         }
         if ($this->isStarted($election_id) || !$this->isOrganizer($election_id)) $this->failedAuthorization();
+      //  return true;
     }
-        public function is_valid_party($jsonData){
-        $validation = \Illuminate\Support\Facades\Validator::make($jsonData, [
-            'id'=>'required|integer|exists:parties,id',
-            'name'=>'string|min:4|max:255',
-        ]);
-        if ($validation->fails()) {
-            return  $this->returnValidationResponse($validation->errors());
-        }
-        $party=Party::where('id',$jsonData["id"])->first();
-        if ($this->isStarted($party->election_id) || !$this->isOrganizer($party->election_id))$this->failedAuthorization();
 
-        return null;
-    }
 
 }

@@ -17,15 +17,11 @@ class Candidate extends Model
     public function election(){
         return $this->belongsTo(PluralityElection::class,'election_id');
     }
-    public function partisan_candidate()
+    public function list_candidate()
     {
         return $this->hasOne(ListCandidate::class,'id');
     }
 
-    public function free_candidate()
-    {
-        return $this->hasOne(PluralityCandidate::class,'id');
-    }
   public function plurality_candidate()
     {
         return $this->hasOne(PluralityCandidate::class,'id');
