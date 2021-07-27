@@ -177,9 +177,7 @@ class ListsElectionController extends Controller
         }
         try{
         $id= $jsonData['id'];
-        $list=ElectionList::find($jsonData["id"]);
-            if(!$list){
-                $list=   PartisanElectionList::find($jsonData["id"]);}
+        $list=$request->list;
         if($request->hasFile('file')) {
             $response = cloudinary()->upload($request->file('file')->getRealPath(),[
                 'folder'=> 'myballot/lists/',
@@ -191,7 +189,7 @@ class ListsElectionController extends Controller
         }
         unset($jsonData['list_id'],$jsonData['election_id']);
             $list->update($jsonData);
-        return  $this->returnSuccessResponse('party updated successfully');
+        return  $this->returnSuccessResponse('list updated successfully');
          }catch ( \Exception  $exception){
         return  $this->returnErrorResponse();
          }

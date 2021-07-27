@@ -16,6 +16,7 @@ class UpdateElectionList extends FormRequest
 {
     use MyResponse;
     use MyHelper;
+    public $list;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -36,7 +37,7 @@ class UpdateElectionList extends FormRequest
     {
         return [
             'file' => 'mimes:jpg,jpeg,png,bmp|max:20000',
-            'body'=>'required',
+            'body'=>'required|json',
         ];
     }
     public function messages()
@@ -58,19 +59,16 @@ class UpdateElectionList extends FormRequest
            // 'id'=>'required|integer',
             'id' => 'required|integer',
             'name'=>'string|min:4|max:255',
-            "program"=> 'string|min:4|max:255',
+           "program"=> 'string|min:4|max:255',
         ]);
         if ($validation->fails()) {
             return  $this->returnValidationResponse($validation->errors());
         }
-        $list=ElectionList::find($jsonData["id"]);
-        if(!$list){
-            $list=   PartisanElectionList::find($jsonData["id"]);
-            if(!$list){
+        $this->list=ElectionList::find($jsonData["id"]);
+        if(!$this->list){
                 return  $this->returnValidationResponse(["Invalid list id"]);
             }
-            }
-        if ($this->isStarted($list->election_id) || !$this->isOrganizer($list->election_id))$this->failedAuthorization();
+        if ($this->isStarted($this->list->election_id) || !$this->isOrganizer($this->list->election_id))$this->failedAuthorization();
 
         return null;
     }
