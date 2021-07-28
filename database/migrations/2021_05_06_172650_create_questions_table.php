@@ -18,11 +18,12 @@ class CreateQuestionsTable extends Migration
             $table->string('name');
         });
         DB::table('question_types')->insert([
-            'name'=>"question with multiple choice",
-        ]);
-        DB::table('question_types')->insert([
             'name'=>"question with single choice",
         ]);
+        DB::table('question_types')->insert([
+            'name'=>"question with multiple choice",
+        ]);
+
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
             $table->string('value',400);

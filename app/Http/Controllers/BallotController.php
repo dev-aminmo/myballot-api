@@ -116,7 +116,6 @@ class BallotController extends Controller
             Ballot::where('id',$request->ballot_id)->update($request->only(['start_date','end_date','title','description']));
             return $this->returnSuccessResponse("ballot updated successfully");
         }catch ( \Exception  $exception){
-
             return $this->returnErrorResponse();
         }
     }
@@ -126,7 +125,8 @@ class BallotController extends Controller
             $data =Ballot::where('organizer_id',$user->id)->get();
             return $this->returnDataResponse($data);
         }else{
-            $data =  $user->ballots()->where('user_id',$user->id)->get()->each(function($value){
+            $data =  $user->ballots()->where('user_id',$user->id)->get()->transform(function($value){
+                $value->voted=(bool) $value->pivot->voted;
                 unset($value->pivot);
                 return $value;
             });

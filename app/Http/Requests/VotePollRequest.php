@@ -23,7 +23,7 @@ class VotePollRequest extends FormRequest
      */
     public function authorizeValidated()
     {
-        return $this->isStarted($this->election_id)&& !$this->isEnded($this->election_id);
+        return $this->isStarted($this->ballot_id)&& !$this->isEnded($this->ballot_id);
     }
 
     /**
@@ -35,12 +35,12 @@ class VotePollRequest extends FormRequest
     {
 
         return [
-            'election_id'=>'required|integer|exists:polls,id',
+            'ballot_id'=>'required|integer|exists:polls,id',
            // 'candidate_id'=>'required|integer|exists:candidates,id'
             "votes"=>'required|array',
-            "votes.*.questions_id"=>'required|integer|exists:questions,id',
+            "votes.*.question_id"=>'required|integer|distinct|exists:questions,id',
             "votes.*.answers"=>"array",
-            "votes.*.answers.*"=>'required|integer|exists:answers,id'
+            "votes.*.answers.*"=>'required|integer|distinct|exists:answers,id'
         ];
     }
 

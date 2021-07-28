@@ -11,6 +11,8 @@ use App\Models\Poll\Poll;
 use App\Models\Poll\Question;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class PollController extends Controller
@@ -87,7 +89,67 @@ class PollController extends Controller
         return $this->returnDataResponse($data);
 
     }
-    function vote(VotePollRequest $request){
+    function vote(VotePollRequest $request)
+    {
 
+        $ballot_id=$request->ballot_id;
+        $user=auth()->user();
+        $is_voter =  $user->ballots()->where('ballot_id', $ballot_id)->first();
+        if($is_voter){
+            $voted =   $is_voter->pivot->voted;
+            if( $voted){
+                return  $this->returnErrorResponse('vote already casted');
+            }
+        $collection = collect($request->votes);
+        $collection= $collection->sortBy("question_id")->values();
+        $data = Question::where("poll_id", $ballot_id)->with("answers")->orderBy("id")->get();
+        if (count($collection) == count($data)) {
+            $errors=null;
+            $collection->each(function ($question)use(&$data,&$ballot_id,&$errors) {
+                $db_question=$data->find($question["question_id"]);
+                if(empty($db_question)){
+                    $errors[]="all the questions should belong to the same ballot";
+                    return false;
+                }else{
+                        if (count($question["answers"]) > 1 && $db_question->type_id == 1) {
+                            $errors[]= "question with type 1 must choose only one answer";
+                            return false;
+                        } else {
+                            foreach ($question["answers"] as $answer_id => $v) {
+                                $answer = Answer::find($v);
+                                if ($answer->question_id != $question["question_id"]) {
+                                    $errors[] = "answer ->qst id not equal to original qst id ";
+                                    return false;
+                                }
+                                if ($answer->question->poll_id != $ballot_id) {
+                                    $errors[] = "answer ballot id not equal to original ballot id ";
+
+                                    return false;
+                                }
+                            }
+                        }
+                }
+                });
+            if(@count($errors)<=0){
+                //Cast Vote
+                $collection->each(function ($question)use(&$ballot_id){
+                    foreach ($question["answers"] as $answer_id => $v) {
+                        Answer::find($v)->update(['count'=> DB::raw('count+1'),]);
+                        Auth::user()->ballots()->updateExistingPivot($ballot_id, ['voted'=>true]);
+
+                    }
+                    });
+                return  $this->returnSuccessResponse('vote casted successfully');
+            }else{
+                return $errors;
+            }
+        } else {
+           return "the number of questions doesn't match with the actual number of questions in the database";
+        }
+    }else{
+            return  redirect('/');
+
+        }
     }
+
 }
