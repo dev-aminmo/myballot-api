@@ -46,6 +46,7 @@ Route::middleware('auth:api')->group(function (){
          */
 
     Route::get("/ballot/all",[BallotController::class, "ballots"]);
+    Route::get("/ballot/results/{id}",[BallotController::class, "results"]);
 
     Route::get("email/resend",[VerificationController::class,"resend"])->name("verification.resend");
 
@@ -60,9 +61,10 @@ Route::middleware('auth:api')->group(function (){
     Route::get("/plurality-election/candidates/{id}",[CandidateController::class,"plurality_candidates"]);
     Route::get("/plurality-election/results/{id}",[PluralityElectionController::class,"results"]);
     Route::get("/lists-election/results/{id}",[ListsElectionController::class,"results"]);
+    Route::get("/poll/results/{id}",[PollController::class,"results"]);
+
     Route::get("/lists-election/lists/{id}",[ListsElectionController::class,"lists"]);
     Route::get("/poll/all/{id}",[PollController::class,"get"]);
-    Route::get("/poll/results/{id}",[PollController::class,"results"]);
 
 
     /*
