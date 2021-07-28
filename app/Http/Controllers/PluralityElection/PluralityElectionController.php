@@ -68,35 +68,18 @@ use MyResponse;
     function results(Request $request){
         $request->merge(['id' => $request->route('id')]);
       $validation =  Validator::make($request->all(), [
-            'id'=>'required|integer|exists:elections,id',
+            'id'=>'required|integer|exists:ballots,id',
         ]);
         if ($validation->fails()) {
             return response()->json($validation->errors(), 422);
         }
        $election= Ballot::where('id',$request->id)->first();
         if(json_decode($election->result,true ) == null){
-      if($election->candidate_type == 1){
-          $data["candidates"]= Candidate::where('election_id',$request->id)->orderBy('count', 'DESC')->with(['partisan_candidate'=> function ($query) {
-              $query->with('party');
-        }])->get()->transform(function ($value){
-             $data=$value;
-             if (!empty($value->partisan_candidate)){
-                 $data-> party=$value->partisan_candidate->party;
-                 unset($data->party->list_id);
-             }else{
-                 $data-> party=null;
-             }
-             unset($data->partisan_candidate);
-             return $data;
-     });
-      }else{
-          $data["candidates"]=Candidate::where('election_id',$request->id)->orderBy('count', 'DESC')->get();
-
-      }
-            $election_id =  $election->id;
-
+          $data["candidates"]= PluralityCandidate::where('election_id',$request->id)->with('candidate')->get()->pluck("candidate")->sortByDesc('count')->values();
+          $election_id =  $election->id;
          $seats_number= PluralityElection::find($election_id)->seats_number;
             $data["candidates"]->each(function($candidate)use (&$seats_number){
+                $candidate->makeVisible("count");
                 if($seats_number>0){
                     $candidate->selected=true;
                     $seats_number--;
@@ -107,8 +90,8 @@ use MyResponse;
 
             });
 
-       $data["added_voters"] =$election->users()->where('election_id',$election_id )->count();
-       $data["vote_casted"] =$election->users()->where(['election_id'=>$election_id ,
+       $data["added_voters"] =$election->users()->where('ballot_id',$election_id )->count();
+       $data["vote_casted"] =$election->users()->where(['ballot_id'=>$election_id ,
            'voted'=>true
        ])->count();
         $data["vote_ratio"] =  ( $data["added_voters"] == 0)?0: $data["vote_casted"]/  $data["added_voters"];
@@ -116,7 +99,8 @@ use MyResponse;
         $data["code"]=200;
         $election->result=$data;
         $election->save();
-        return Response()->json($data,200);}
+        return Response()->json($data,200);
+    }
        else{
           $data=  json_decode($election->result,true );
            return Response()->json( $data,200);

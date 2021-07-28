@@ -65,11 +65,12 @@ class CandidateController extends Controller
             return response()->json($validation->errors(), 422);
         }
      $type=Ballot::find($request->id)->type;
+       // dd($type);
         switch ($type) {
-            case 1:
+            case "plurality":
                 $data["candidates"]= PluralityCandidate::where('election_id',$request->id)->with("candidate")->get()->pluck("candidate");
                 break;
-            case 2:
+            case "lists":
             $isis  =  ListsElection::where("election_id",$request->id)->with("candidates.candidate")->get();
                 $isis ->each(function($list){
                     $list->candidates->transform(function($candidate){

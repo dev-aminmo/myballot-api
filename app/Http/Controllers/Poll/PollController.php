@@ -91,7 +91,6 @@ class PollController extends Controller
     }
     function vote(VotePollRequest $request)
     {
-
         $ballot_id=$request->ballot_id;
         $user=auth()->user();
         $is_voter =  $user->ballots()->where('ballot_id', $ballot_id)->first();
@@ -151,5 +150,6 @@ class PollController extends Controller
 
         }
     }
+    function results(){}
 
 }

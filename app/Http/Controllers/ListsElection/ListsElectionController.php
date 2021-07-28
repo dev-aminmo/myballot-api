@@ -94,37 +94,42 @@ class ListsElectionController extends Controller
     function results(Request $request){
         $request->merge(['id' => $request->route('id')]);
         $validation =  Validator::make($request->all(), [
-            'id'=>'required|integer|exists:elections,id',
+            'id'=>'required|integer|exists:ballots,id',
         ]);
         if ($validation->fails()) {
             return response()->json($validation->errors(), 422);
         }
         $election= Ballot::where('id',$request->id)->first();
-        //TODO implement if type is 1
-        if($election->candidate_type==0){
-        $data["added_voters"] =$election->users()->where('election_id',$election->id )->count();
-        $data["vote_casted"] =$election->users()->where(['election_id'=>$election->id ,
+
+        $data["added_voters"] =$election->users()->where('ballot_id',$election->id )->count();
+        $data["vote_casted"] =$election->users()->where(['ballot_id'=>$election->id ,
             'voted'=>true
         ])->count();
         $data["vote_ratio"] =  ( $data["added_voters"] == 0)?0: $data["vote_casted"]/  $data["added_voters"];
         $data["vote_ratio"] =(float) number_format((float) $data["vote_ratio"], 2, '.', '');
-         $list_election  =  ListsElection::where("id",$election->id)->with(["free_lists"=>function($query){
-             $query->orderBy("count","DESC");
-                $query->with("candidates");
-                },
-            ])->first();
-         $chairs_number=1;
-            $data["free_lists"]=$list_election->free_lists->each(function($list)use(&$chairs_number){
-                if($chairs_number>0){
+
+        $data["lists"]  =  ListsElection::where("election_id",$request->id)->orderBy('count', 'DESC')->with("candidates.candidate")->get();
+        $data["lists"] ->each(function($list){
+            $list->candidates->transform(function($candidate){
+                $can=$candidate->candidate;
+                return $can;
+
+            });
+            return $list;
+        });
+
+        $seats_number=ListsElection::find($election->id)->seats_number;
+            $data["lists"]->transform(function($list)use(&$seats_number){
+                if($seats_number>0){
                     $list->selected=true;
-                    $chairs_number--;
+                    $seats_number--;
                 }else{
                     $list->selected=false;
                 }
+                return $list;
             });
      return $this->returnDataResponse($data);
-        }
-        return "hello";
+
 
     }
 
