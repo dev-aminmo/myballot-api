@@ -62,6 +62,7 @@ Route::middleware('auth:api')->group(function (){
     Route::get("/lists-election/results/{id}",[ListsElectionController::class,"results"]);
     Route::get("/lists-election/lists/{id}",[ListsElectionController::class,"lists"]);
     Route::get("/poll/all/{id}",[PollController::class,"get"]);
+    Route::get("/poll/results/{id}",[PollController::class,"results"]);
 
 
     /*

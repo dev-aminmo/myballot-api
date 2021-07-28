@@ -150,6 +150,26 @@ class PollController extends Controller
 
         }
     }
-    function results(){}
+    function results(Request $request){
+        $request->merge(['id' => $request->route('id')]);
+        $validation =  Validator::make($request->all(), [
+            'id'=>'required|integer|exists:polls,id',
+        ]);
+        if ($validation->fails()) {
+            return response()->json($validation->errors(), 422);
+        }
+        $ballot= Ballot::where('id',$request->id)->first();
+        $data["added_voters"] =$ballot->users()->where('ballot_id',$ballot->id )->count();
+        $data["vote_casted"] =$ballot->users()->where(['ballot_id'=>$ballot->id ,
+            'voted'=>true
+        ])->count();
+        $data["vote_ratio"] =  ( $data["added_voters"] == 0)?0: $data["vote_casted"]/  $data["added_voters"];
+        $data["vote_ratio"] =(float) number_format((float) $data["vote_ratio"], 2, '.', '');
 
+        $data["questions"]=Question::where("poll_id",$request->id)->with("answers")->get();
+
+        return $this->returnDataResponse($data);
+
+
+    }
 }
