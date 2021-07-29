@@ -27,5 +27,14 @@ class Candidate extends Model
         return $this->hasOne(PluralityCandidate::class,'id');
     }
 
+    public function getPictureAttribute($value)
+    {
+        if($value == null){
+            return "https://res.cloudinary.com/dtvc2pr8i/image/upload/w_150,f_auto/v1627571884/myballot/users/Asset_1_cqcehd.png";
+
+        }
+        return $value;
+    }
+
 
 }
