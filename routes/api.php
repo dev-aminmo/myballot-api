@@ -41,12 +41,7 @@ Route::group([
     Route::post('create', [PasswordResetController::class,"create"]);
 });
 Route::middleware('auth:api')->group(function (){
-    Route::middleware('voter')->group(function () {
-        Route::get("/papa",function(){
-            return "Hello paapa test";
-        });
 
-    });
         /*
          * users routes
          */

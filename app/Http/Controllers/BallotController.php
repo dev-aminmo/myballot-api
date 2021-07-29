@@ -98,7 +98,10 @@ class BallotController extends Controller
 
         $ballot=Ballot::where('id',$ballot_id)->first();
         $data["data"] =$ballot->users()->where('ballot_id',$ballot_id)->get()->each(function($value){
-          unset($value->pivot);
+            $value->voted=(bool) $value->pivot->voted;
+
+            unset($value->pivot);
+
             return $value;
         });
         $data['message']="success";
