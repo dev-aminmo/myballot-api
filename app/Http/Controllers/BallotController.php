@@ -250,4 +250,8 @@ function results(Request $request){
 
     }
 }
+public function delete(Request $request,$id){
+        Ballot::find($id)->delete();
+        return 200;
+}
 }

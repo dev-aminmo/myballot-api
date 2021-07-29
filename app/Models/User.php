@@ -50,7 +50,8 @@ class User extends Authenticatable
     public function getAvatarAttribute($value)
     {
         if($value == null){
-            return "https://res.cloudinary.com/dtvc2pr8i/image/upload/w_150,f_auto/v1627571884/myballot/users/Asset_1_cqcehd.png";
+
+            return "https://res.cloudinary.com/dtvc2pr8i/image/upload/w_150,f_auto/v1627577895/myballot/users/user_znc23a.png";
 
         }
         return $value;
