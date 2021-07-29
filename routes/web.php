@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PasswordResetController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,3 +21,10 @@ return response()->json([
 ],403);
    // return view('welcome');
 })->name("/");
+Route::group([
+    'middleware' => 'web'
+], function () {
+
+    Route::post('password/reset', [PasswordResetController::class,"reset"])->name("resetpassword");
+    Route::get('password/find/{token}', [PasswordResetController::class,'find'])->name('find');
+});

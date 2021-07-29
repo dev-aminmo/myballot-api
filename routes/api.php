@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\Poll\AnswerController;
 use App\Http\Controllers\BallotController;
 use App\Http\Controllers\ListsElection\ListsElectionController;
@@ -33,7 +34,12 @@ Route::post("/login",[UserController::class,"login"]);
 
 Route::get("email/verify/{id}",[VerificationController::class,"verify"])->name("verification.verify");
 //Route::get("/login",[UserController::class,"login"])->name('login');
-
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'password'
+], function () {
+    Route::post('create', [PasswordResetController::class,"create"]);
+});
 Route::middleware('auth:api')->group(function (){
     Route::middleware('voter')->group(function () {
         Route::get("/papa",function(){
