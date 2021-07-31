@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\ListsElection\ListsElection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -36,5 +37,28 @@ class Ballot extends Model
       }
         return $v;
     }
+      public static function boot() {
+      parent::boot();
+      static::deleting(function($ballot) { // before delete() method call this
+
+          switch($ballot->type){
+              case "plurality":
+                  $candidates = PluralityCandidate::where('election_id',$ballot->id)->get();
+                  $candidates->each(function ($candidate){
+                      $candidate->candidate()->delete();
+                  });
+                  ;break;
+              case "lists":
+                  $candidates =  ListsElection::where("election_id",$ballot->id)->with("candidates.candidate")->get()->pluck("candidates.*.candidate")->collapse();
+                  $candidates->each(function($candidate){
+                      $candidate->delete();
+                  });
+                  break;
+              case "poll":
+                  ;break;
+          }
+
+      });
+  }
 
 }

@@ -21,7 +21,7 @@ class CreateListsElectionsTable extends Migration
            $table->integer("count")->default(0);
             $table->integer("seats_number")->default(1);
             $table->bigInteger('election_id')->unsigned();
-            $table->foreign("election_id")->references('id')->on("ballots");
+            $table->foreign("election_id")->references('id')->on("ballots")->onDelete("cascade");
         });
     }
 

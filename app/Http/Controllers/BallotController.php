@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\MyHelper;
 use App\Http\Requests\AddVotersRequest;
+use App\Http\Requests\DeleteBallotRequest;
 use App\Http\Requests\DeleteVoterRequest;
 use App\Http\Requests\UpdateBallotRequest;
 use App\Jobs\SendMailsJob;
@@ -250,8 +251,10 @@ function results(Request $request){
 
     }
 }
-public function delete(Request $request,$id){
+public function delete(DeleteBallotRequest $request,$id){
+
+
         Ballot::find($id)->delete();
-        return 200;
+    return $this->returnSuccessResponse("ballot deleted successfully");
 }
 }

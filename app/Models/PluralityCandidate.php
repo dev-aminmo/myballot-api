@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Models\ListsElection\ElectionList;
-use App\Models\PluralityElection\PluralityElection;
+
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,5 +24,24 @@ class PluralityCandidate extends Model
     public function candidate(){
         return $this->belongsTo(Candidate::class,'id');
     }
+  /*  public static function boot() {
+        parent::boot();
+        static::deleting(function($plurality_candidate) { // before delete() method call this
+            $plurality_candidate->candidate()->delete();
+            return parent::delete();
+            // do the rest of the cleanup...
+        });
+    }*/
+/*    public static function boot()
+    {
+        User::observe(UserObserver::class);
+    }*/
 
 }
+/*class UserObserver
+{
+    public function deleting(User $user)
+    {
+        $user->photos()->delete();
+    }
+}*/
