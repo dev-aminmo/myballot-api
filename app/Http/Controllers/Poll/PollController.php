@@ -135,15 +135,15 @@ class PollController extends Controller
                     foreach ($question["answers"] as $answer_id => $v) {
                         Answer::find($v)->update(['count'=> DB::raw('count+1'),]);
                         Auth::user()->ballots()->updateExistingPivot($ballot_id, ['voted'=>true]);
-
                     }
                     });
                 return  $this->returnSuccessResponse('vote casted successfully');
             }else{
-                return $errors;
+                return $this->returnErrorResponse($errors);
             }
         } else {
-           return "the number of questions doesn't match with the actual number of questions in the database";
+            return $this->returnErrorResponse("the number of questions doesn't match with the actual number of questions in the database");
+
         }
     }else{
             return  redirect('/');

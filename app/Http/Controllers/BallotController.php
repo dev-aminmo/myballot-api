@@ -252,8 +252,6 @@ function results(Request $request){
     }
 }
 public function delete(DeleteBallotRequest $request,$id){
-
-
         Ballot::find($id)->delete();
     return $this->returnSuccessResponse("ballot deleted successfully");
 }
