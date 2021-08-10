@@ -100,7 +100,6 @@ class ListsElectionController extends Controller
             return response()->json($validation->errors(), 422);
         }
         $election= Ballot::where('id',$request->id)->first();
-
         $data["added_voters"] =$election->users()->where('ballot_id',$election->id )->count();
         $data["vote_casted"] =$election->users()->where(['ballot_id'=>$election->id ,
             'voted'=>true

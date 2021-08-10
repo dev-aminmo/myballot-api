@@ -142,6 +142,7 @@ class BallotController extends Controller
     }
 
 function results(Request $request){
+
     $request->merge(['id' => $request->route('id')]);
     $validation =  Validator::make($request->all(), [
         'id'=>'required|integer|exists:ballots,id',
@@ -152,8 +153,8 @@ function results(Request $request){
     $ballot= Ballot::where('id',$request->id)->first();
     switch($ballot->type){
         case "plurality":
-            if(json_decode($ballot->result,true ) == null){
-                $data["candidates"]= PluralityCandidate::where('election_id',$request->id)->with('candidate')->get()->pluck("candidate")->sortByDesc('count')->values();
+            $data=  cache()->remember("result_Ballot".$ballot->id,60*60*24,function()use (&$ballot){
+                $data["candidates"]= PluralityCandidate::where('election_id',$ballot->id)->with('candidate')->get()->pluck("candidate")->sortByDesc('count')->values();
                 $election_id =  $ballot->id;
                 $seats_number= PluralityElection::find($election_id)->seats_number;
                 $data["candidates"]->each(function($candidate)use (&$seats_number){
@@ -175,79 +176,55 @@ function results(Request $request){
                 $data["vote_ratio"] =  ( $data["added_voters"] == 0)?0: $data["vote_casted"]/  $data["added_voters"];
                 $data["vote_ratio"] =(float) number_format((float) $data["vote_ratio"], 2, '.', '');
                 $data["code"]=200;
-                $ballot->result=$data;
-                $ballot->save();
-                return $this->returnDataResponse($data);
-            }
-            else{
-
-                $data=  json_decode($ballot->result,true );
-                return $this->returnDataResponse($data);
-
-            }
+              return $data;
+          });
+            return $this->returnDataResponse($data);
             break;
         case "lists":
-            if(json_decode($ballot->result,true ) == null){
+            $data=  cache()->remember("result_Ballot".$ballot->id,60*60*24,function()use (&$ballot) {
+                $data["added_voters"] = $ballot->users()->where('ballot_id', $ballot->id)->count();
+                $data["vote_casted"] = $ballot->users()->where(['ballot_id' => $ballot->id,
+                    'voted' => true
+                ])->count();
+                $data["vote_ratio"] = ($data["added_voters"] == 0) ? 0 : $data["vote_casted"] / $data["added_voters"];
+                $data["vote_ratio"] = (float)number_format((float)$data["vote_ratio"], 2, '.', '');
 
-                $data["added_voters"] =$ballot->users()->where('ballot_id',$ballot->id )->count();
-            $data["vote_casted"] =$ballot->users()->where(['ballot_id'=>$ballot->id ,
-                'voted'=>true
-            ])->count();
-            $data["vote_ratio"] =  ( $data["added_voters"] == 0)?0: $data["vote_casted"]/  $data["added_voters"];
-            $data["vote_ratio"] =(float) number_format((float) $data["vote_ratio"], 2, '.', '');
+                $data["lists"] = ListsElection::where("election_id", $request->id)->orderBy('count', 'DESC')->with("candidates.candidate")->get();
+                $data["lists"]->each(function ($list) {
+                    $list->candidates->transform(function ($candidate) {
+                        $can = $candidate->candidate;
+                        return $can;
 
-            $data["lists"]  =  ListsElection::where("election_id",$request->id)->orderBy('count', 'DESC')->with("candidates.candidate")->get();
-            $data["lists"] ->each(function($list){
-                $list->candidates->transform(function($candidate){
-                    $can=$candidate->candidate;
-                    return $can;
-
+                    });
+                    return $list;
                 });
-                return $list;
+
+                $seats_number = ListsElection::find($ballot->id)->seats_number;
+                $data["lists"]->transform(function ($list) use (&$seats_number) {
+                    if ($seats_number > 0) {
+                        $list->selected = true;
+                        $seats_number--;
+                    } else {
+                        $list->selected = false;
+                    }
+                    return $list;
+                });
             });
-
-            $seats_number=ListsElection::find($ballot->id)->seats_number;
-            $data["lists"]->transform(function($list)use(&$seats_number){
-                if($seats_number>0){
-                    $list->selected=true;
-                    $seats_number--;
-                }else{
-                    $list->selected=false;
-                }
-                return $list;
-            });
-            $ballot->result=$data;
-            $ballot->save();
-            return $this->returnDataResponse($data);}
-            else{
-
-                    $data=  json_decode($ballot->result,true );
-                    return $this->returnDataResponse($data);
-
-                }
+            return $this->returnDataResponse($data);
             break;
         case "poll":
-            if(json_decode($ballot->result,true ) == null){
+            $data=  cache()->remember("result_Ballot".$ballot->id,60*60*24,function()use (&$ballot) {
+                $data["added_voters"] = $ballot->users()->where('ballot_id', $ballot->id)->count();
+                $data["vote_casted"] = $ballot->users()->where(['ballot_id' => $ballot->id,
+                    'voted' => true
+                ])->count();
+                $data["vote_ratio"] = ($data["added_voters"] == 0) ? 0 : $data["vote_casted"] / $data["added_voters"];
+                $data["vote_ratio"] = (float)number_format((float)$data["vote_ratio"], 2, '.', '');
 
-                $data["added_voters"] =$ballot->users()->where('ballot_id',$ballot->id )->count();
-            $data["vote_casted"] =$ballot->users()->where(['ballot_id'=>$ballot->id ,
-                'voted'=>true
-            ])->count();
-            $data["vote_ratio"] =  ( $data["added_voters"] == 0)?0: $data["vote_casted"]/  $data["added_voters"];
-            $data["vote_ratio"] =(float) number_format((float) $data["vote_ratio"], 2, '.', '');
-
-            $data["questions"]=Question::where("poll_id",$request->id)->with("answers")->get();
-            $ballot->result=$data;
-            $ballot->save();
+                $data["questions"] = Question::where("poll_id", $ballot->id)->with("answers")->get();
+            });
             return $this->returnDataResponse($data);
-
-            break;}
-        else{
-
-            $data=  json_decode($ballot->result,true );
-            return $this->returnDataResponse($data);
-
-        }
+            break;
 
     }
 }
