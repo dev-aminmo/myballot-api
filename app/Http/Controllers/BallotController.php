@@ -189,7 +189,7 @@ function results(Request $request){
                 $data["vote_ratio"] = ($data["added_voters"] == 0) ? 0 : $data["vote_casted"] / $data["added_voters"];
                 $data["vote_ratio"] = (float)number_format((float)$data["vote_ratio"], 2, '.', '');
 
-                $data["lists"] = ListsElection::where("election_id", $request->id)->orderBy('count', 'DESC')->with("candidates.candidate")->get();
+                $data["lists"] = ListsElection::where("election_id", $ballot->id)->orderBy('count', 'DESC')->with("candidates.candidate")->get();
                 $data["lists"]->each(function ($list) {
                     $list->candidates->transform(function ($candidate) {
                         $can = $candidate->candidate;
