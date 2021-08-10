@@ -19,9 +19,7 @@ class Ballot extends Model
         'description',
         'organizer_id',
     ];
-    protected $hidden = [
-        'result',
-    ];
+
 
     public function users()
     {

@@ -72,7 +72,7 @@ class PluralityElectionController extends Controller
 
     function results(Request $request)
     {
-        dump(Carbon::now());
+
         $request->merge(['id' => $request->route('id')]);
         $validation = Validator::make($request->all(), [
             'id' => 'required|integer|exists:ballots,id',
@@ -103,9 +103,6 @@ class PluralityElectionController extends Controller
         $data["vote_ratio"] = ($data["added_voters"] == 0) ? 0 : $data["vote_casted"] / $data["added_voters"];
         $data["vote_ratio"] = (float)number_format((float)$data["vote_ratio"], 2, '.', '');
         $data["code"] = 200;
-
-        dump(Carbon::now());
-
         return Response()->json($data, 200);
 
 
