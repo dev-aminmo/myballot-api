@@ -47,6 +47,7 @@ Route::middleware('auth:api')->group(function (){
          */
 
     Route::get("/ballot/all",[BallotController::class, "ballots"]);
+    Route::get("/ballot/{id}",[BallotController::class, "ballot"]);
     Route::get("/ballot/results/{id}",[BallotController::class, "results"]);
 
     Route::get("email/resend",[VerificationController::class,"resend"])->name("verification.resend");

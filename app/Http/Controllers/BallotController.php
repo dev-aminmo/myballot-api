@@ -19,6 +19,7 @@ use App\Models\Poll\Question;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use App\Helpers\MyResponse;
@@ -138,6 +139,28 @@ class BallotController extends Controller
             });
             return $this->returnDataResponse($data);
         }
+
+    }
+    function ballot(Request $request,$id){
+        $data =Ballot::find($id);
+        if(!empty($data)){
+        $user=auth()->user();
+        if($user->is_organizer){
+            return $this->returnDataResponse($data);
+        }else{
+            $voted= DB::table('ballot_user')
+                ->where([
+                    ['user_id', $user->id],
+                    ['ballot_id' , $data->id]])
+                ->select('voted')
+                ->get()->first();
+            $data->voted=(bool) $voted->voted;
+            return $this->returnDataResponse($data);
+        }
+    }else{
+            return $this->returnErrorResponse("ballot not found");
+        }
+
 
     }
 
