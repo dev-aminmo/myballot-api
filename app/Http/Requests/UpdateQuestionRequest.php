@@ -33,6 +33,9 @@ class UpdateQuestionRequest extends FormRequest
     {
         return [
             'value' => 'string|min:10|max:400',
+            'answers' => 'array',
+            'answers.*.value' => 'required|string|min:4|max:255',
+            'answers.*.id' => 'required|int|exists:answers,id',
             'type' => 'integer|min:1|max:2',
             "question_id"=>'required|integer|exists:questions,id',
             'ballot_id'=>'required|integer|exists:polls,id'

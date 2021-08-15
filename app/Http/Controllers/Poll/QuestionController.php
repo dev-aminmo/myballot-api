@@ -43,7 +43,14 @@ public function add(AddQuestionRequest $request){
 }
 public function  update(UpdateQuestionRequest $request){
         try{
-           $question= Question::find($request->question_id);
+            $question= Question::find($request->question_id);
+          if(!empty($request->answers))  foreach ($request->answers as $answer) {
+                $answer=Answer::find($answer["id"]);
+                if($answer->question_id != $question->id){
+                    return  $this->returnValidationResponse("answer_id doesn't match question_id");
+                }
+            }
+
            if(!empty($request->value)){
                $question->value=$request->value;
            }
@@ -52,8 +59,14 @@ public function  update(UpdateQuestionRequest $request){
 
            }
            $question->save();
+    if(!empty($request->answers))  foreach ($request->answers as $answer) {
+        $db_answer=Answer::find($answer["id"]);
+       $db_answer->value=$answer["value"];
+       $db_answer->save();
+    }
+
             return $this->returnSuccessResponse('question updated successfully');
-        }catch ( \Exception  $exception){
+       }catch ( \Exception  $exception){
             return $this->returnErrorResponse();
         }
     }
