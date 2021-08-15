@@ -40,6 +40,8 @@ class UpdateBallotRequest extends FormRequest
             'start_date'    => 'required|date|date_format:Y-m-d H:i|after_or_equal:now',
             'end_date'      => 'required|date|date_format:Y-m-d H:i|after:start_date',
             'title'=> 'string|min:2|max:255',
+            'seats_number'=>'integer|min:1',
+
             'description'=> 'string|min:10|max:400',
         ];
     }

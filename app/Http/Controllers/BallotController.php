@@ -122,7 +122,7 @@ class BallotController extends Controller
     }
     function update(UpdateBallotRequest $request){
         try{
-            Ballot::where('id',$request->ballot_id)->update($request->only(['start_date','end_date','title','description']));
+            Ballot::where('id',$request->ballot_id)->update($request->only(['start_date','end_date','title','description','seats_number']));
             return $this->returnSuccessResponse("ballot updated successfully");
         }catch ( \Exception  $exception){
             return $this->returnErrorResponse();
