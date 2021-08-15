@@ -6,6 +6,7 @@ use App\Helpers\MyHelper;
 use App\Http\Requests\AddVotersRequest;
 use App\Http\Requests\DeleteBallotRequest;
 use App\Http\Requests\DeleteVoterRequest;
+use App\Http\Requests\ResultRequest;
 use App\Http\Requests\UpdateBallotRequest;
 use App\Jobs\SendMailsJob;
 use App\Models\Candidate;
@@ -27,6 +28,7 @@ class BallotController extends Controller
 {
     use MyResponse;
     use MyHelper;
+
 
     function add_voters(AddVotersRequest $request)
     {
@@ -164,7 +166,7 @@ class BallotController extends Controller
 
     }
 
-function results(Request $request){
+function results(ResultRequest $request){
 
     $request->merge(['id' => $request->route('id')]);
     $validation =  Validator::make($request->all(), [
@@ -179,7 +181,7 @@ function results(Request $request){
             $data=  cache()->remember("result_Ballot".$ballot->id,60*60*24,function()use (&$ballot){
                 $data["candidates"]= PluralityCandidate::where('election_id',$ballot->id)->with('candidate')->get()->pluck("candidate")->sortByDesc('count')->values();
                 $election_id =  $ballot->id;
-                $seats_number= PluralityElection::find($election_id)->seats_number;
+                $seats_number= $ballot->seats_number;
                 $data["candidates"]->each(function($candidate)use (&$seats_number){
                     $candidate->makeVisible("count");
                     if($seats_number>0){
@@ -222,7 +224,7 @@ function results(Request $request){
                     return $list;
                 });
 
-                $seats_number = ListsElection::find($ballot->id)->seats_number;
+                $seats_number = $ballot->seats_number;
                 $data["lists"]->transform(function ($list) use (&$seats_number) {
                     if ($seats_number > 0) {
                         $list->selected = true;
@@ -232,6 +234,7 @@ function results(Request $request){
                     }
                     return $list;
                 });
+                return $data;
             });
             return $this->returnDataResponse($data);
             break;

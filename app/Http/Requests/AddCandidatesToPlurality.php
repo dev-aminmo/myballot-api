@@ -35,7 +35,7 @@ class AddCandidatesToPlurality extends FormRequest
             'candidates' => 'required|array|min:1',
             'candidates.*.name' => 'required|string|min:4|max:255',
             'candidates.*.description' => 'string|min:4|max:400',
-            'election_id'=>'required|integer|exists:plurality_elections,id'
+            'election_id'=>'required|integer|exists:ballots,id'
         ];
     }
 

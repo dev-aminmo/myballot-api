@@ -37,7 +37,7 @@ class AddQuestionRequest extends FormRequest
             'questions.*.type' => 'required|integer|min:1|max:2',
             'questions.*.answers' => 'required|array|min:2|max:20',
             'questions.*.answers.*.value' => 'required|string|min:4|max:255',
-            'ballot_id'=>'required|integer|exists:polls,id'
+            'ballot_id'=>'required|integer|exists:ballots,id'
         ];
     }
 

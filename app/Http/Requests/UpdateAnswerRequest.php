@@ -34,7 +34,7 @@ class UpdateAnswerRequest extends FormRequest
         return [
             "answer_id"=>'required|integer|exists:answers,id',
             'value' => 'required|string|min:4|max:255',
-            'ballot_id'=>'required|integer|exists:polls,id'
+            'ballot_id'=>'required|integer|exists:ballots,id'
         ];
     }
 

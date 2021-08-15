@@ -11,11 +11,13 @@ class Ballot extends Model
     use HasFactory;
     public $timestamps=false;
     protected $table="ballots";
+    protected $hidden=['seats_number'];
     protected $fillable = [
         'start_date',
         'end_date',
         'title',
         "type",
+        'seats_number',
         'description',
         'organizer_id',
     ];

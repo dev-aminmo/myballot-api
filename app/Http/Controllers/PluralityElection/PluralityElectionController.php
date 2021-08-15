@@ -5,14 +5,12 @@ namespace App\Http\Controllers\PluralityElection;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PluralityElection\CreatePluralityElectionRequest;
 use App\Http\Requests\PluralityElection\VotePluralityElectionRequest;
+use App\Http\Requests\ResultRequest;
 use App\Models\Candidate;
 use App\Models\Ballot;
 use App\Models\PluralityCandidate;
-use App\Models\ListCandidate;
 use App\Models\Party;
-use App\Models\PluralityElection\PluralityElection;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Helpers\MyHelper;
@@ -30,10 +28,6 @@ class PluralityElectionController extends Controller
         $allData['organizer_id'] = $id;
         $allData['type'] = 1;
         $ballot_id = Ballot::create($allData)->id;
-        PluralityElection::create([
-            'id' => $ballot_id,
-            'seats_number' => (!empty($request->seats_number)) ? $request->seats_number : 1,
-        ]);
 
         foreach ($request->candidates as $candidate) {
             $candidate_id = Candidate::create(['name' => $candidate['name'],
@@ -70,7 +64,7 @@ class PluralityElectionController extends Controller
         }
     }
 
-    function results(Request $request)
+    function results(ResultRequest $request)
     {
 
         $request->merge(['id' => $request->route('id')]);
@@ -83,7 +77,7 @@ class PluralityElectionController extends Controller
         $election = Ballot::where('id', $request->id)->first();
         $data["candidates"] = PluralityCandidate::where('election_id', $request->id)->with('candidate')->get()->pluck("candidate")->sortByDesc('count')->values();
         $election_id = $election->id;
-        $seats_number = PluralityElection::find($election_id)->seats_number;
+        $seats_number = $election->seats_number;
         $data["candidates"]->each(function ($candidate) use (&$seats_number) {
             $candidate->makeVisible("count");
             if ($seats_number > 0) {

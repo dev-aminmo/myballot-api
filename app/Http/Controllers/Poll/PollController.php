@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Poll;
 
 use App\Helpers\MyResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ResultRequest;
 use App\Http\Requests\VotePollRequest;
 use App\Models\Ballot;
 use App\Models\Poll\Answer;
@@ -51,7 +52,7 @@ class PollController extends Controller
             $allData['type']=3;
 
             $poll_id=Ballot::create($allData)->id;
-             Poll::create(["id" =>$poll_id]);
+
 
             foreach ($request->questions as $question) {
                 $question_id = Question::create([
@@ -79,7 +80,7 @@ class PollController extends Controller
     function get(Request $request){
         $request->merge(['ballot_id' => $request->route('id')]);
         $validation = Validator::make($request->all(), [
-            'ballot_id'=>'required|integer|exists:polls,id'
+            'ballot_id'=>'required|integer|exists:ballots,id'
             ,]);
         if ($validation->fails()) {
             return response()->json($validation->errors(), 422);
@@ -150,10 +151,10 @@ class PollController extends Controller
 
         }
     }
-    function results(Request $request){
+    function results(ResultRequest $request){
         $request->merge(['id' => $request->route('id')]);
         $validation =  Validator::make($request->all(), [
-            'id'=>'required|integer|exists:polls,id',
+            'id'=>'required|integer|exists:ballots,id',
         ]);
         if ($validation->fails()) {
             return response()->json($validation->errors(), 422);

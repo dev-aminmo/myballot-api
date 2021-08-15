@@ -5,15 +5,17 @@ namespace App\Http\Requests;
 use App\Helpers\AuthorizesAfterValidation;
 use App\Helpers\MyHelper;
 use App\Helpers\MyResponse;
+use App\Models\ListsElection\ListsElection;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class UpdateQuestionRequest extends FormRequest
+class DeleteListRequest extends FormRequest
 {
     use MyResponse;
     use MyHelper;
     use AuthorizesAfterValidation;
+    public $list;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -21,8 +23,15 @@ class UpdateQuestionRequest extends FormRequest
      */
     public function authorizeValidated()
     {
-        return !$this->isStarted($this->ballot_id) && $this->isOrganizer($this->ballot_id);
 
+        $list_id=$this->route('id');
+        $this->list=ListsElection::find($list_id);
+        if($this->list){
+            $election_id= $this->list->election_id;
+            return !$this->isStarted($election_id) && $this->isOrganizer($election_id);
+        }else{
+            return false;
+        }
     }
     /**
      * Get the validation rules that apply to the request.
@@ -32,13 +41,7 @@ class UpdateQuestionRequest extends FormRequest
     public function rules()
     {
         return [
-            'value' => 'string|min:10|max:400',
-            'answers' => 'array',
-            'answers.*.value' => 'required|string|min:4|max:255',
-            'answers.*.id' => 'required|int|exists:answers,id',
-            'type' => 'integer|min:1|max:2',
-            "question_id"=>'required|integer|exists:questions,id',
-            'ballot_id'=>'required|integer|exists:ballots,id'
+
         ];
     }
 

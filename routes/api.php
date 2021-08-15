@@ -79,6 +79,8 @@ Route::middleware('auth:api')->group(function (){
         Route::delete("/ballot/{id}",[BallotController::class,"delete"]);
         Route::post("/plurality-election/create",[PluralityElectionController::class,"create"]);
     Route::post("/lists-election/create",[ListsElectionController::class,"create"]);
+    Route::post("/lists-election/add",[ListsElectionController::class,"add"]);
+    Route::delete("/lists-election/delete/{id}",[ListsElectionController::class,"delete"]);
         Route::post("/lists-election/list/update",[ListsElectionController::class,"update"]);
 
         Route::post("/poll/create",[PollController::class,"create"]);

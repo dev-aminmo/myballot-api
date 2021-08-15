@@ -35,8 +35,7 @@ class VotePollRequest extends FormRequest
     {
 
         return [
-            'ballot_id'=>'required|integer|exists:polls,id',
-           // 'candidate_id'=>'required|integer|exists:candidates,id'
+            'ballot_id'=>'required|integer|exists:ballots,id',
             "votes"=>'required|array',
             "votes.*.question_id"=>'required|integer|distinct|exists:questions,id',
             "votes.*.answers"=>"array",

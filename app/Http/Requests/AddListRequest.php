@@ -9,7 +9,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class UpdateQuestionRequest extends FormRequest
+class AddListRequest extends FormRequest
 {
     use MyResponse;
     use MyHelper;
@@ -32,12 +32,11 @@ class UpdateQuestionRequest extends FormRequest
     public function rules()
     {
         return [
-            'value' => 'string|min:10|max:400',
-            'answers' => 'array',
-            'answers.*.value' => 'required|string|min:4|max:255',
-            'answers.*.id' => 'required|int|exists:answers,id',
-            'type' => 'integer|min:1|max:2',
-            "question_id"=>'required|integer|exists:questions,id',
+            'name'=>'required|string|min:2|max:255',
+            'program'=>'string|string|min:2|max:400',
+            'candidates' => 'array|max:30',
+            'candidates.*.name' => 'required|string|min:4|max:255',
+            'candidates.*.description' => 'string|min:4|max:400',
             'ballot_id'=>'required|integer|exists:ballots,id'
         ];
     }

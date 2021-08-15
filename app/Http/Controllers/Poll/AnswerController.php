@@ -30,7 +30,6 @@ class AnswerController extends Controller
           Answer::find($request->answer_id)->update([
               "value"=>$request->value,
           ]);
-
       return $this->returnSuccessResponse('answer updated successfully');
       }catch ( \Exception  $exception){
           return $this->returnErrorResponse();
@@ -39,9 +38,6 @@ class AnswerController extends Controller
   public function  delete(DeleteAnswerRequest $request){
       try{
           $request->answer->delete();
-
-        //  Answer::find($request->answer_id)->delete();
-
       return $this->returnSuccessResponse('answer deleted successfully');
       }catch ( \Exception  $exception){
           return $this->returnErrorResponse();

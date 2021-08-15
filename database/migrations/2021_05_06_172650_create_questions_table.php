@@ -30,7 +30,7 @@ class CreateQuestionsTable extends Migration
             $table->bigInteger('type_id')->unsigned();
             $table->bigInteger('poll_id')->unsigned();
             $table->foreign("type_id")->references('id')->on("question_types");
-            $table->foreign("poll_id")->references('id')->on("polls")->onDelete('cascade');
+            $table->foreign("poll_id")->references('id')->on("ballots")->onDelete('cascade');
         });
     }
 

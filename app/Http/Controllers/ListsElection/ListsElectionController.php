@@ -4,8 +4,11 @@ namespace App\Http\Controllers\ListsElection;
 
 use App\Helpers\MyResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AddListRequest;
 use App\Http\Requests\CreateListsElectionRequest;
+use App\Http\Requests\DeleteListRequest;
 use App\Http\Requests\PluralityElection\VotePluralityElectionRequest;
+use App\Http\Requests\ResultRequest;
 use App\Http\Requests\UpdateElectionList;
 use App\Models\Candidate;
 use App\Models\Ballot;
@@ -43,15 +46,10 @@ class ListsElectionController extends Controller
             $allData['organizer_id']=$id;
             $allData['type']=2;
             $election_id=Ballot::create($allData)->id;
-
-
-
-
                 foreach($request->lists as $list){
                     $list_id= ListsElection::create([
                        "name"=>$list["name"],
                        "program"=>$list["program"],
-                       'seats_number'=> $request->seats_number,
                         "election_id"=>$election_id
                    ])->id;
                 foreach($list["candidates"] as $candidate){
@@ -74,6 +72,39 @@ class ListsElectionController extends Controller
            return $this->returnErrorResponse($exception->getTrace());
         }
     }
+    function add(AddListRequest $request){
+        try{
+            $list_id= ListsElection::create([
+                "name"=>$request->name,
+                "program"=>(!empty($request->program))?$request->program:null,
+                "election_id"=>$request->ballot_id
+            ])->id;
+            foreach($request->candidates as $candidate){
+                $candidate_id= Candidate::create([
+                    'name'=> $candidate['name'],
+                    'description'=>(!empty($candidate['description'])) ? $candidate['description'] : null,
+                    "type"=>2
+                ])->id;
+                ListCandidate::create([
+                        'id'=>$candidate_id,
+                        'list_id'=>$list_id
+                    ]
+                );
+            }
+            return  $this->returnSuccessResponse('list created successfully');
+        }catch ( \Exception  $exception){
+            return  $this->returnErrorResponse();
+        }
+    }
+    public function  delete(DeleteListRequest $request){
+        try{
+            $request->list->delete();
+            return $this->returnSuccessResponse('list deleted successfully');
+        }catch ( \Exception  $exception){
+            return $this->returnErrorResponse();
+        }
+
+    }
     function vote(VotePluralityElectionRequest $request){
         $ballot_id= $request->ballot_id;
         $user=auth()->user();
@@ -91,7 +122,7 @@ class ListsElectionController extends Controller
 
     }
 
-    function results(Request $request){
+    function results(ResultRequest $request){
         $request->merge(['id' => $request->route('id')]);
         $validation =  Validator::make($request->all(), [
             'id'=>'required|integer|exists:ballots,id',
@@ -117,7 +148,7 @@ class ListsElectionController extends Controller
             return $list;
         });
 
-        $seats_number=ListsElection::find($election->id)->seats_number;
+        $seats_number=$election->seats_number;
             $data["lists"]->transform(function($list)use(&$seats_number){
                 if($seats_number>0){
                     $list->selected=true;
@@ -178,5 +209,6 @@ class ListsElectionController extends Controller
         return  $this->returnErrorResponse();
          }
     }
+
 
 }

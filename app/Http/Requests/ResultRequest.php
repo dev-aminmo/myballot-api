@@ -9,7 +9,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class AddPluralityPartyRequest extends FormRequest
+class ResultRequest extends FormRequest
 {
     use MyResponse;
     use MyHelper;
@@ -21,7 +21,8 @@ class AddPluralityPartyRequest extends FormRequest
      */
     public function authorizeValidated()
     {
-        return !$this->isStarted($this->election_id) && $this->isOrganizer($this->election_id) && $this->typeIsOne($this->election_id);
+        return $this->isEnded($this->ballot_id) ;
+
     }
     /**
      * Get the validation rules that apply to the request.
@@ -31,11 +32,7 @@ class AddPluralityPartyRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'=>'required',
-            'candidates' => 'required|array|min:1|max:1',
-            'candidates.*.name' => 'required|string|min:4|max:255',
-            'candidates.*.description' => 'string|min:4|max:400',
-            'election_id'=>'required|integer|exists:plurality_elections,id'
+
         ];
     }
 

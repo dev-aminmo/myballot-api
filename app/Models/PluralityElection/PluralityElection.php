@@ -21,14 +21,4 @@ class PluralityElection extends Model
         'description',*/
         'seats_number',
     ];
-
-    public function partisan_candidates()
-    {
-        return $this->hasMany(Party::class,'election_id');
-    }
-    public function free_candidates()
-    {
-        return $this->hasMany(PluralityCandidate::class,'election_id');
-    }
-
 }

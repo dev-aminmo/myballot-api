@@ -19,7 +19,6 @@ class CreateListsElectionsTable extends Migration
             $table->string('picture',255)->nullable();
             $table->string('program',400)->nullable();
            $table->integer("count")->default(0);
-            $table->integer("seats_number")->default(1);
             $table->bigInteger('election_id')->unsigned();
             $table->foreign("election_id")->references('id')->on("ballots")->onDelete("cascade");
         });

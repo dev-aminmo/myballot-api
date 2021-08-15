@@ -18,7 +18,7 @@ class CreatePluralityCandidatesTable extends Migration
             $table->foreign("id")->references('id')->on("candidates")->onDelete('cascade');
 
             $table->bigInteger('election_id')->unsigned();
-           $table->foreign("election_id")->references('id')->on("plurality_elections")->onDelete('cascade');
+           $table->foreign("election_id")->references('id')->on("ballots")->onDelete('cascade');
         });
     }
 
