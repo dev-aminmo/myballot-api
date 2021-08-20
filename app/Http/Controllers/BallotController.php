@@ -98,7 +98,7 @@ class BallotController extends Controller
         }
 
         $ballot_id= $request->ballot_id;
-        if ($this->isStarted($ballot_id) ||!$this->isOrganizer($ballot_id)) return  redirect('/');
+        if (!$this->isOrganizer($ballot_id)) return  redirect('/');
 
         $ballot=Ballot::where('id',$ballot_id)->first();
         $data["data"] =$ballot->users()->where('ballot_id',$ballot_id)->get()->each(function($value){
