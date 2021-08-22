@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\PluralityElection;
+namespace App\Http\Requests;
 
 use App\Helpers\AuthorizesAfterValidation;
 use Illuminate\Contracts\Validation\Validator;
