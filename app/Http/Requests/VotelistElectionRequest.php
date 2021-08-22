@@ -10,7 +10,7 @@ use App\Helpers\MyResponse;
 use App\Helpers\MyHelper;
 
 
-class VotePluralityElectionRequest extends FormRequest
+class VotelistElectionRequest extends FormRequest
 {
     use MyResponse;
     use MyHelper;
@@ -37,7 +37,7 @@ class VotePluralityElectionRequest extends FormRequest
 
         return [
             'ballot_id'=>'required|integer|exists:ballots,id',
-            'candidate_id'=>'required|integer|exists:candidates,id'
+            'list_id'=>'required|integer|exists:lists_elections,id'
         ];
     }
 

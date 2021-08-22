@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\AddListRequest;
 use App\Http\Requests\CreateListsElectionRequest;
 use App\Http\Requests\DeleteListRequest;
+use App\Http\Requests\PluralityElection\VotelistElectionRequest;
 use App\Http\Requests\PluralityElection\VotePluralityElectionRequest;
 use App\Http\Requests\ResultRequest;
 use App\Http\Requests\UpdateElectionList;
@@ -105,7 +106,7 @@ class ListsElectionController extends Controller
         }
 
     }
-    function vote(VotePluralityElectionRequest $request){
+    function vote(VotelistElectionRequest $request){
         $ballot_id= $request->ballot_id;
         $user=auth()->user();
         $is_voter =  $user->ballots()->where('ballot_id', $ballot_id)->first();
