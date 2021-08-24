@@ -22,7 +22,6 @@ class ResultRequest extends FormRequest
     public function authorizeValidated()
     {
         $ballot_id=$this->route('id');
-
         return $this->isEnded($ballot_id) ;
 
     }

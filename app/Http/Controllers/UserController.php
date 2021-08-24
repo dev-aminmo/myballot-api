@@ -87,7 +87,26 @@ class UserController extends Controller
         }
 
     }
+    public function updatePassword(Request $request)
+    {
+        $this->validate($request, [
+            'old_password' => 'required|string|min:6',
+            'new_password' => 'required|string|min:6',
+        ]);
 
+        $hashedPassword = Auth::user()->password;
+        if (\Hash::check($request->old_password , $hashedPassword)) {
+
+                $user = User::find(Auth::user()->id);
+                $user->password = bcrypt($request->new_password);
+                $user->save();
+            return $this->returnSuccessResponse('password updated successfully',201);
+
+        }
+        else{
+            return $this->returnValidationResponse(["old_password does not match"],422);
+        }
+    }
     /**
      * Logout user (Revoke the token)
      *
