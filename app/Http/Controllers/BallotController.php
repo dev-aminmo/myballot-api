@@ -179,6 +179,7 @@ function results(ResultRequest $request){
     switch($ballot->type){
         case "plurality":
             $data=  cache()->remember("result_Ballot".$ballot->id,60*60*24,function()use (&$ballot){
+
                 $data["candidates"]= PluralityCandidate::where('election_id',$ballot->id)->with('candidate')->get()->pluck("candidate")->sortByDesc('count')->values();
                 $election_id =  $ballot->id;
                 $seats_number= $ballot->seats_number;
@@ -248,6 +249,7 @@ function results(ResultRequest $request){
                 $data["vote_ratio"] = (float)number_format((float)$data["vote_ratio"], 2, '.', '');
 
                 $data["questions"] = Question::where("poll_id", $ballot->id)->with("answers")->get();
+                return $data;
             });
             return $this->returnDataResponse($data);
             break;

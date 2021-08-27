@@ -58,7 +58,6 @@ Route::middleware('auth:api')->group(function (){
         Route::post("/profile/update",[UserController::class,"updateProfile"]);
         Route::post("/password/update",[UserController::class,"updatePassword"]);
         Route::post("/logout",[UserController::class,"logout"]);
-        //Route::post("add",[ReviewController::class,"addReview"]);
     });//end of users routes
 // TODO need to be grouped
     Route::get("/plurality-election/candidates/{id}",[CandidateController::class,"plurality_candidates"]);
