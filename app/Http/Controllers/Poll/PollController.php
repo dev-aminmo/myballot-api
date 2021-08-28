@@ -31,7 +31,7 @@ class PollController extends Controller
             'questions.*.value' => 'required|string|min:10|max:400',
             'questions.*.type' => 'required|integer|min:1|max:2',
             'questions.*.answers' => 'required|array|min:2|max:20',
-            'questions.*.answers.*.value' => 'required|string|min:4|max:255',
+            'questions.*.answers.*.value' => 'required|string|min:2|max:255',
         ]);
         if ($validation->fails()) {
             return response()->json($validation->errors(), 422);
