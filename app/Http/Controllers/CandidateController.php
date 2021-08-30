@@ -106,6 +106,47 @@ class CandidateController extends Controller
 
     }
     function add_candidates_to_plurality(AddCandidatesToPlurality $request){
+        $jsonData= $request->get("body");
+        if(!is_array($jsonData)) $jsonData= json_decode($request->get("body"),true);
+        $is_valid=$request->is_valid($jsonData);
+        if (!empty($is_valid)){
+            return $is_valid;
+        }
+        try{
+          //  $id= $jsonData['id'];
+
+
+        $election_id= $jsonData['election_id'];
+            $candidate=Candidate::create([
+                    'name'=> $jsonData['name'],
+                    'description'=>(!empty($jsonData['description'])) ? $jsonData['description'] : null,
+                    'type'=>1
+                ]
+            );
+            PluralityCandidate::create([
+                    'id'=> $candidate->id,
+                    'election_id'=>$election_id
+                ]
+            );
+            if($request->hasFile('file')) {
+                $response = cloudinary()->upload($request->file('file')->getRealPath(),[
+                    'folder'=> 'myballot/candidates/',
+                    'public_id'=>'picture'.$candidate->id,
+                    'overwrite'=>true,
+                    'format'=>"webp"
+                ])->getSecurePath();
+                $candidate->picture=$response;
+                $candidate->save();
+            }
+        return $this->returnSuccessResponse('candidates added successfully'); }
+        catch ( \Exception  $exception){
+            return  $this->returnErrorResponse();
+        }
+
+        }
+
+
+/*    function add_candidates_to_plurality(AddCandidatesToPlurality $request){
         $election_id= $request->election_id;
         foreach( $request->candidates as $candidate){
             $candidate_id=Candidate::create([
@@ -122,7 +163,7 @@ class CandidateController extends Controller
         }
         return $this->returnSuccessResponse('candidates added successfully');
 
-    }
+    }*/
 
 
 

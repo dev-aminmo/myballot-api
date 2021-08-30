@@ -12,18 +12,21 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 class AddCandidatesToPlurality extends FormRequest
 {
 
+
     use MyResponse;
     use MyHelper;
-    use AuthorizesAfterValidation;
+    public $list;
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorizeValidated()
+    public function authorize()
     {
-        return !$this->isStarted($this->election_id) && $this->isOrganizer($this->election_id);
+        return true;
     }
+
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -32,10 +35,16 @@ class AddCandidatesToPlurality extends FormRequest
     public function rules()
     {
         return [
-            'candidates' => 'required|array|min:1',
-            'candidates.*.name' => 'required|string|min:4|max:255',
-            'candidates.*.description' => 'string|min:4|max:400',
-            'election_id'=>'required|integer|exists:ballots,id'
+            'file' => 'mimes:jpg,jpeg,png,bmp|max:20000',
+            'body'=>'required|json',
+        ];
+    }
+    public function messages()
+    {
+        return [
+            'file.required' => 'Please upload an image',
+            'file.mimes' => 'Only jpeg,jpg,png and bmp images are allowed',
+            'file.max' => 'Sorry! Maximum allowed size for an image is 20MB',
         ];
     }
 
@@ -44,4 +53,18 @@ class AddCandidatesToPlurality extends FormRequest
         $res=   $this->returnValidationResponse($validator->errors());
         throw new HttpResponseException($res);
     }
+    public function is_valid($jsonData){
+        $validation = \Illuminate\Support\Facades\Validator::make($jsonData, [
+            'name' => 'required|string|min:4|max:255',
+            'description' => 'string|min:4|max:400',
+            'election_id'=>'required|integer|exists:ballots,id'
+        ]);
+        if ($validation->fails()) {
+            return  $this->returnValidationResponse($validation->errors());
+        }
+        if ($this->isStarted($jsonData["election_id"]) || !$this->isOrganizer($jsonData["election_id"]))  $this->failedAuthorization();
+
+        return null;
+    }
+
 }

@@ -196,8 +196,8 @@ class ListsElectionController extends Controller
         if($request->hasFile('file')) {
             $response = cloudinary()->upload($request->file('file')->getRealPath(),[
                 'folder'=> 'myballot/lists/',
-                //'public_id'=>'picture'.$jsonData['id'],
-               // 'overwrite'=>true,
+                'public_id'=>'picture'.$jsonData['id'],
+                'overwrite'=>true,
                 'format'=>"webp"
             ])->getSecurePath();
             $jsonData['picture']=$response;
