@@ -73,13 +73,20 @@ class ListsElectionController extends Controller
         }
     }
     function add(AddListRequest $request){
+
+        $jsonData= $request->get("body");
+        if(!is_array($jsonData)) $jsonData= json_decode($request->get("body"),true);
+        $is_valid=$request->is_valid($jsonData);
+        if (!empty($is_valid)){
+            return $is_valid;
+        }
         try{
-            $list_id= ListsElection::create([
-                "name"=>$request->name,
-                "program"=>(!empty($request->program))?$request->program:null,
-                "election_id"=>$request->ballot_id
-            ])->id;
-            foreach($request->candidates as $candidate){
+            $list= ListsElection::create([
+                "name"=>$jsonData['name'],
+                "program"=>(!empty($jsonData['program']))?$jsonData['program']:null,
+                "election_id"=>$jsonData['ballot_id']
+            ]);
+            foreach($jsonData['candidates'] as $candidate){
                 $candidate_id= Candidate::create([
                     'name'=> $candidate['name'],
                     'description'=>(!empty($candidate['description'])) ? $candidate['description'] : null,
@@ -87,9 +94,19 @@ class ListsElectionController extends Controller
                 ])->id;
                 ListCandidate::create([
                         'id'=>$candidate_id,
-                        'list_id'=>$list_id
+                        'list_id'=>$list->id
                     ]
                 );
+            }
+            if($request->hasFile('file')) {
+                $response = cloudinary()->upload($request->file('file')->getRealPath(),[
+                    'folder'=> 'myballot/lists/',
+                    'public_id'=>'picture'.$list->id,
+                    'overwrite'=>true,
+                    'format'=>"webp"
+                ])->getSecurePath();
+                $list->picture=$response;
+                $list->save();
             }
             return  $this->returnSuccessResponse('list created successfully');
         }catch ( \Exception  $exception){
