@@ -160,27 +160,4 @@ class CandidateController extends Controller
         }
 
         }
-
-
-/*    function add_candidates_to_plurality(AddCandidatesToPlurality $request){
-        $election_id= $request->election_id;
-        foreach( $request->candidates as $candidate){
-            $candidate_id=Candidate::create([
-                    'name'=> $candidate['name'],
-                    'description'=>(!empty($candidate['description'])) ? $candidate['description'] : null,
-                    'type'=>1
-                ]
-            )->id;
-            PluralityCandidate::create([
-                    'id'=> $candidate_id,
-                    'election_id'=>$election_id
-                ]
-            );
-        }
-        return $this->returnSuccessResponse('candidates added successfully');
-
-    }*/
-
-
-
 }
