@@ -8,7 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class MyTestMail extends Mailable
+class AddVoterMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -34,6 +34,6 @@ class MyTestMail extends Mailable
     {
 
         return $this->subject('Mail from MyBallot.com')
-            ->view('emails.myTestMail');
+            ->view('emails.addVoter');
     }
 }

@@ -56,13 +56,15 @@ class BallotController extends Controller
 
                 $email=$voter["email"];
                 $name=(isset($voter["name"]))?$voter["name"]:false;
+                $ballot=Ballot::find( $ballot_id);
 
                 $u = User::where('email', $email)->first();
                 if (!empty($u)) {
                     $hasBeenAdded = $u->ballots()->where('ballot_id', $ballot_id)->exists();
                     if(!$hasBeenAdded){
                         $u->ballots()->syncWithoutDetaching($ballot_id);
-                        $data=['type'=>2,"email"=>$email];
+
+                        $data=['type'=>2,"email"=>$email,'ballot'=>$ballot->getAttributes(),"voter_name"=>$u->name];
                         $this->dispatch(new SendMailsJob($data));
                     }
                 } else {
@@ -76,7 +78,6 @@ class BallotController extends Controller
                     );
 
                     $user->ballots()->attach($request->ballot_id);
-                   $ballot=Ballot::find( $ballot_id);
                     $data=['type'=>1,"email"=>$email,'password' => $pass,'ballot'=>$ballot->getAttributes(),"voter_name"=>$user->name];
                     $this->dispatch(new SendMailsJob($data));
                 } }

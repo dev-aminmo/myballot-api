@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Mail\ElectionEnded;
 use App\Mail\ElectionStarted;
-use App\Mail\MyTestMail;
+use App\Mail\AddVoterMail;
 use App\Mail\YouAreInvited;
 use App\Models\Ballot;
 use Illuminate\Bus\Queueable;
@@ -52,23 +52,30 @@ public  $data;
                     'voter_name' =>$this->data['voter_name'],
                 ];
 
-                Mail::to($details['email'])->send(new MyTestMail($details));
+                Mail::to($details['email'])->send(new AddVoterMail($details));
                 break;
             case 2:
                 $details = [
-                    'link' => "https://www.google.com/",
+                    'ballot' =>$this->data['ballot'],
+                    'voter_name' =>$this->data['voter_name'],
                 ];
                 Mail::to($this->data['email'])->send(new YouAreInvited($details));
                 break;
             case 3:
                 $details = [
-                    'link' => "https://www.google.com/",
+                    'ballot' =>$this->data['ballot'],
+
+                    'voter_name' =>$this->data['voter_name'],
+
                 ];
                 Mail::to($this->data['email'])->send(new ElectionStarted($details));
                 break;
             case 4:
                 $details = [
-                    'link' => "https://www.google.com/",
+                    'ballot' =>$this->data['ballot'],
+
+                    'voter_name' =>$this->data['voter_name'],
+
                 ];
                 Mail::to($this->data['email'])->send(new ElectionEnded($details));
                 break;

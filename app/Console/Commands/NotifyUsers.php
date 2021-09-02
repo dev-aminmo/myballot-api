@@ -50,10 +50,11 @@ class NotifyUsers extends Command
         $elections_ends = Ballot::where("end_date", $now)->get();
         if (!$elections_starts->isEmpty()) {
             foreach ($elections_starts as $election) {
-                $data = ['type' => 3, "email" =>  User::where('id',$election->organizer_id)->first()->email];
+                $organizer=User::find($election->organizer_id);
+                $data = ['type' => 3, "email" => $organizer->email,"voter_name"=>$organizer->name,'ballot'=>$election->getAttributes()];
                 dispatch(new SendMailsJob($data));
-                $election->users()->where('election_id', $election->id)->get()->each(function ($user) {
-                    $data = ['type' => 3, "email" => $user->email];
+                $election->users()->where('election_id', $election->id)->get()->each(function ($user)use(&$election) {
+                    $data = ['type' => 3, "email" => $user->email,'ballot'=>$election->getAttributes(),"voter_name"=>$user->name];
                     dispatch(new SendMailsJob($data));
                     return $user;
                 });
@@ -63,10 +64,12 @@ class NotifyUsers extends Command
         }
         if (!$elections_ends->isEmpty()) {
             foreach ($elections_ends as $election) {
-                $data = ['type' => 4, "email" =>  User::where('id',$election->organizer_id)->first()->email];
+                $organizer=User::find($election->organizer_id);
+                $data = ['type' => 4, "email" => $organizer->email,"voter_name"=>$organizer->name,'ballot'=>$election->getAttributes()];
                 dispatch(new SendMailsJob($data));
-                $election->users()->where('election_id', $election->id)->get()->each(function ($user) {
-                    $data = ['type' => 4, "email" => $user->email];
+                $election->users()->where('election_id', $election->id)->get()->each(function ($user)use(&$election) {
+                    $data = ['type' => 4, "email" => $user->email,'ballot'=>$election->getAttributes(),"voter_name"=>$user->name];
+
                     dispatch(new SendMailsJob($data));
                     return $user;
                 });
