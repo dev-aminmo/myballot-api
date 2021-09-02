@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\Ballot;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -12,6 +13,7 @@ class MyTestMail extends Mailable
     use Queueable, SerializesModels;
 
     public $details;
+    public $firstName;
     /**
      * Create a new message instance.
      *
@@ -30,7 +32,8 @@ class MyTestMail extends Mailable
      */
     public function build()
     {
-        return $this->subject('Mail from ItSolutionStuff.com')
+
+        return $this->subject('Mail from MyBallot.com')
             ->view('emails.myTestMail');
     }
 }

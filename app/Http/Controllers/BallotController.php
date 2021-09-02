@@ -76,7 +76,8 @@ class BallotController extends Controller
                     );
 
                     $user->ballots()->attach($request->ballot_id);
-                    $data=['type'=>1,"email"=>$email,'password' => $pass];
+                   $ballot=Ballot::find( $ballot_id);
+                    $data=['type'=>1,"email"=>$email,'password' => $pass,'ballot'=>$ballot->getAttributes(),"voter_name"=>$user->name];
                     $this->dispatch(new SendMailsJob($data));
                 } }
                 return $this->returnSuccessResponse('voters added successfully');

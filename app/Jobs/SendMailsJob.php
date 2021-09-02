@@ -6,6 +6,7 @@ use App\Mail\ElectionEnded;
 use App\Mail\ElectionStarted;
 use App\Mail\MyTestMail;
 use App\Mail\YouAreInvited;
+use App\Models\Ballot;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -43,9 +44,12 @@ public  $data;
 
         switch ($this->data['type']) {
             case 1:
+
                 $details = [
                     'email' => $this->data['email'],
-                    'password' => $this->data['password']
+                    'password' => $this->data['password'],
+                    'ballot' =>$this->data['ballot'],
+                    'voter_name' =>$this->data['voter_name'],
                 ];
 
                 Mail::to($details['email'])->send(new MyTestMail($details));
